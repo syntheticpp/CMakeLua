@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmake.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/11/19 19:22:38 $
-  Version:   $Revision: 1.334 $
+  Date:      $Date: 2007/12/03 18:35:33 $
+  Version:   $Revision: 1.335 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -224,7 +224,8 @@ void cmake::CleanupCommandsAndMacros()
   for(RegisteredCommandsMap::iterator j = this->Commands.begin();
       j != this->Commands.end(); ++j)
     {
-    if ( !j->second->IsA("cmMacroHelperCommand") )
+    if ( !j->second->IsA("cmMacroHelperCommand") && 
+         !j->second->IsA("cmFunctionHelperCommand"))
       {
       commands.push_back(j->second);
       }

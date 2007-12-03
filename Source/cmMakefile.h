@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefile.h,v $
   Language:  C++
-  Date:      $Date: 2007/08/26 07:17:10 $
-  Version:   $Revision: 1.215 $
+  Date:      $Date: 2007/12/03 18:35:33 $
+  Version:   $Revision: 1.216 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -737,6 +737,11 @@ public:
   // Define the properties
   static void DefineProperties(cmake *cm);
 
+  // push and pop variable scopes
+  void PushScope();
+  void PopScope();
+  void RaiseScope(const char *var);
+
 protected:
   // add link libraries and directories to the target
   void AddGlobalLinkInformation(const char* name, cmTarget& target);
@@ -787,7 +792,7 @@ protected:
   std::vector<cmSourceGroup> SourceGroups;
 #endif
 
-  DefinitionMap Definitions;
+  std::vector<DefinitionMap> DefinitionStack;
   std::vector<cmCommand*> UsedCommands;
   cmLocalGenerator* LocalGenerator;
   bool IsFunctionBlocked(const cmListFileFunction& lff);
