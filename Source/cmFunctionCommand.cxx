@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmFunctionCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/03 17:43:52 $
-  Version:   $Revision: 1.1 $
+  Date:      $Date: 2007/12/04 15:43:32 $
+  Version:   $Revision: 1.2 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -111,9 +111,9 @@ bool cmFunctionHelperCommand::InvokeInitialPass
   // set the values for ARGV0 ARGV1 ...
   for (unsigned int t = 0; t < expandedArgs.size(); ++t)
     {
-    strStream.str("");
-    strStream << "ARGV" << t;
-    this->Makefile->AddDefinition(strStream.str().c_str(), 
+    cmOStringStream tmpStream;
+    tmpStream << "ARGV" << t;
+    this->Makefile->AddDefinition(tmpStream.str().c_str(), 
                                   expandedArgs[t].c_str());
     }
   

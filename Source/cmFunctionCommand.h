@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmFunctionCommand.h,v $
   Language:  C++
-  Date:      $Date: 2007/12/03 17:43:52 $
-  Version:   $Revision: 1.1 $
+  Date:      $Date: 2007/12/04 15:43:33 $
+  Version:   $Revision: 1.2 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -91,8 +91,8 @@ public:
       "    ...\n"
       "  endfunction(<name>)\n"
       "Define a function named <name> that takes arguments named "
-      "arg1 arg2 arg3 (...).  Commands listed after function, "
-      "but before the matching endfunction, are not invoked until the function "
+      "arg1 arg2 arg3 (...).  Commands listed after function, but before "
+      "the matching endfunction, are not invoked until the function "
       "is invoked.  When it is invoked, the commands recorded in the "
       "function are first modified by replacing formal parameters (${arg1}) "
       "with the arguments passed, and then invoked as normal commands. In "
