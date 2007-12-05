@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmDependsFortran.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/04 21:09:46 $
-  Version:   $Revision: 1.26 $
+  Date:      $Date: 2007/12/05 14:17:07 $
+  Version:   $Revision: 1.27 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -222,7 +222,8 @@ bool cmDependsFortran::WriteDependencies(const char *src, const char *obj,
       makeDepends << "\t$(CMAKE_COMMAND) -E cmake_copy_f90_mod "
          << i->c_str() << " " << m.c_str() << ".mod.stamp\n";
       }
-    makeDepends << "\t$(CMAKE_COMMAND) -E touch " << obj << ".provides.build\n";
+    makeDepends << "\t$(CMAKE_COMMAND) -E touch " << obj 
+                << ".provides.build\n";
     }
 
   /*
