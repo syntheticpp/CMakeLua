@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalVisualStudio7Generator.h,v $
   Language:  C++
-  Date:      $Date: 2007/11/12 20:42:37 $
-  Version:   $Revision: 1.44 $
+  Date:      $Date: 2007/12/06 13:40:18 $
+  Version:   $Revision: 1.45 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -137,6 +137,10 @@ struct cmVS7FlagTable
     UserIgnored  = (1<<1), // ignore any user value
     UserRequired = (1<<2), // match only when user value is non-empty
     Continue     = (1<<3), // continue looking for matching entries
+    SemicolonAppendable = (1<<4), // a flag that if specified multiple times
+                                  // should have its value appended to the
+                                  // old value with semicolons (e.g.
+                                  // /NODEFAULTLIB: => IgnoreDefaultLibraryNames)
 
     UserValueIgnored  = UserValue | UserIgnored,
     UserValueRequired = UserValue | UserRequired
