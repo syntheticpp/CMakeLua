@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCoreTryCompile.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/07/27 14:55:24 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2007/12/06 14:56:02 $
+  Version:   $Revision: 1.5 $
 
   Copyright (c) 2007 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -214,6 +214,7 @@ int cmCoreTryCompile::TryCompileCode(std::vector<std::string> const& argv)
       }
     fprintf(fout, " ${COMPILE_DEFINITIONS}\")\n");
     fprintf(fout, "INCLUDE_DIRECTORIES(${INCLUDE_DIRECTORIES})\n");
+    fprintf(fout, "SET(CMAKE_SUPPRESS_REGENERATION 1)\n");
     fprintf(fout, "LINK_DIRECTORIES(${LINK_DIRECTORIES})\n");
     // handle any compile flags we need to pass on
     if (compileFlags.size())
