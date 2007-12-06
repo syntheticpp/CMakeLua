@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: CMakeSetupDialog.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/11/13 21:25:38 $
-  Version:   $Revision: 1.25 $
+  Date:      $Date: 2007/12/06 19:07:52 $
+  Version:   $Revision: 1.26 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -100,6 +100,8 @@ CMakeSetupDialog::CMakeSetupDialog()
 
   QMenu* ToolsMenu = this->menuBar()->addMenu(tr("&Tools"));
   this->ConfigureAction = ToolsMenu->addAction(tr("&Configure"));
+  // prevent merging with Preferences menu item on Mac OS X
+  this->ConfigureAction->setMenuRole(QAction::NoRole);
   QObject::connect(this->ConfigureAction, SIGNAL(triggered(bool)), 
                    this, SLOT(doConfigure()));
   this->GenerateAction = ToolsMenu->addAction(tr("&Generate"));
