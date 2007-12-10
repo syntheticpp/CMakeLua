@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalVisualStudio7Generator.h,v $
   Language:  C++
-  Date:      $Date: 2007/12/06 13:40:18 $
-  Version:   $Revision: 1.45 $
+  Date:      $Date: 2007/12/10 00:58:33 $
+  Version:   $Revision: 1.46 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -140,7 +140,8 @@ struct cmVS7FlagTable
     SemicolonAppendable = (1<<4), // a flag that if specified multiple times
                                   // should have its value appended to the
                                   // old value with semicolons (e.g.
-                                  // /NODEFAULTLIB: => IgnoreDefaultLibraryNames)
+                                  // /NODEFAULTLIB: => 
+                                  // IgnoreDefaultLibraryNames)
 
     UserValueIgnored  = UserValue | UserIgnored,
     UserValueRequired = UserValue | UserRequired
