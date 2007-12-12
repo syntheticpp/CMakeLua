@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: CMakeSetupDialog.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/06 19:07:52 $
-  Version:   $Revision: 1.26 $
+  Date:      $Date: 2007/12/12 18:25:24 $
+  Version:   $Revision: 1.27 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -580,8 +580,8 @@ void CMakeSetupDialog::addBinaryPath(const QString& path)
 
 void CMakeSetupDialog::dragEnterEvent(QDragEnterEvent* e)
 {
-  if(this->CurrentState != ReadyConfigure || 
-     this->CurrentState != ReadyGenerate)
+  if(!(this->CurrentState == ReadyConfigure || 
+     this->CurrentState == ReadyGenerate))
     {
     e->ignore();
     return;
@@ -604,8 +604,8 @@ void CMakeSetupDialog::dragEnterEvent(QDragEnterEvent* e)
 
 void CMakeSetupDialog::dropEvent(QDropEvent* e)
 {
-  if(this->CurrentState != ReadyConfigure || 
-     this->CurrentState != ReadyGenerate)
+  if(!(this->CurrentState == ReadyConfigure || 
+     this->CurrentState == ReadyGenerate))
     {
     return;
     }
