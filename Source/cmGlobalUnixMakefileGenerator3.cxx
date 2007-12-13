@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator3
   Module:    $RCSfile: cmGlobalUnixMakefileGenerator3.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/10/22 16:48:39 $
-  Version:   $Revision: 1.116 $
+  Date:      $Date: 2007/12/13 20:54:29 $
+  Version:   $Revision: 1.117 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -63,7 +63,7 @@ void cmGlobalUnixMakefileGenerator3
                            " not set, after EnableLanguage");
       continue;
       }
-    const char* name = mf->GetRequiredDefinition(langComp.c_str());
+    const char* name = mf->GetRequiredDefinition(langComp.c_str()); 
     if(!cmSystemTools::FileIsFullPath(name))
       {
       path = cmSystemTools::FindProgram(name);
@@ -87,6 +87,26 @@ void cmGlobalUnixMakefileGenerator3
       }
     std::string doc = lang;
     doc += " compiler.";
+    const char* cname = this->GetCMakeInstance()->
+      GetCacheManager()->GetCacheValue(langComp.c_str());
+    std::string changeVars;
+    if(cname && (path != cname))
+      {
+      const char* cvars = 
+        this->GetCMakeInstance()->GetProperty(
+          "__CMAKE_DELETE_CACHE_CHANGE_VARS_");
+      if(cvars)
+        {
+        changeVars += cvars;
+        changeVars += ";";
+        }
+      changeVars += langComp;
+      changeVars += ";";
+      changeVars += cname;
+      this->GetCMakeInstance()->SetProperty(
+        "__CMAKE_DELETE_CACHE_CHANGE_VARS_",
+        changeVars.c_str());
+      }
     mf->AddCacheDefinition(langComp.c_str(), path.c_str(),
                            doc.c_str(), cmCacheManager::FILEPATH);
     }

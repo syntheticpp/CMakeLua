@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefileTargetGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/11/23 19:53:06 $
-  Version:   $Revision: 1.73 $
+  Date:      $Date: 2007/12/13 20:54:29 $
+  Version:   $Revision: 1.74 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -236,6 +236,18 @@ void cmMakefileTargetGenerator::WriteTargetLanguageFlags()
   // write language flags for target
   std::set<cmStdString> languages;
   this->Target->GetLanguages(languages);
+    // put the compiler in the rules.make file so that if it changes
+  // things rebuild
+  for(std::set<cmStdString>::const_iterator l = languages.begin();
+      l != languages.end(); ++l)
+    {
+    cmStdString compiler = "CMAKE_";
+    compiler += *l;
+    compiler += "_COMPILER";
+    *this->FlagFileStream << "# compile " << l->c_str() << " with " << 
+      this->Makefile->GetSafeDefinition(compiler.c_str()) << "\n";
+    }
+
   for(std::set<cmStdString>::const_iterator l = languages.begin();
       l != languages.end(); ++l)
     {
