@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmake.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/13 22:56:49 $
-  Version:   $Revision: 1.339 $
+  Date:      $Date: 2007/12/13 23:30:53 $
+  Version:   $Revision: 1.340 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1810,6 +1810,7 @@ int cmake::HandleDeleteCacheVariables(const char* var)
     // re-run configure
     return this->Configure();
     }
+  return 0;
 }
 
 int cmake::Configure()
