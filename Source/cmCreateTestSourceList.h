@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCreateTestSourceList.h,v $
   Language:  C++
-  Date:      $Date: 2007/10/10 15:47:43 $
-  Version:   $Revision: 1.12 $
+  Date:      $Date: 2007/12/13 20:41:54 $
+  Version:   $Revision: 1.13 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -73,7 +73,7 @@ public:
       "the arguments consist of a list of test source files, can be "
       "semicolon separated.  Each test source file should have a function in "
       "it that is the same name as the file with no extension (foo.cxx "
-      "should have int foo();) DriverName will be able to call each of the "
+      "should have int foo(int, char*[]);) DriverName will be able to call each of the "
       "tests by name on the command line. If EXTRA_INCLUDE is specified, "
       "then the next argument is included into the generated file. If "
       "FUNCTION is specified, then the next argument is taken as a function "
