@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmakemain.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/11/19 18:42:54 $
-  Version:   $Revision: 1.74 $
+  Date:      $Date: 2007/12/13 20:11:09 $
+  Version:   $Revision: 1.75 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -168,7 +168,7 @@ static const char * cmDocumentationOptions[][3] =
    "If a file is specified, the documentation is written into and the output "
    "format is determined depending on the filename suffix. Supported are man "
    "page, HTML and plain text."},
-  {"--help-Variable-list [file]", "List documented variables and exit.",
+  {"--help-variable-list [file]", "List documented variables and exit.",
    "The list contains all variables for which help may be obtained by using "
    "the --help-variable argument followed by a variable name.  If a file is "
    "specified, the help is written into it."
