@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalVisualStudio7Generator.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/06 13:40:18 $
-  Version:   $Revision: 1.207 $
+  Date:      $Date: 2007/12/13 20:42:49 $
+  Version:   $Revision: 1.208 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1810,7 +1810,7 @@ cmLocalVisualStudio7GeneratorOptions
         else if(entry->special & cmVS7FlagTable::SemicolonAppendable)
           {
           const char *new_value = flag+1+n;
-
+          
           std::map<cmStdString,cmStdString>::iterator itr;
           itr = this->FlagMap.find(entry->IDEName);
           if(itr != this->FlagMap.end())
@@ -1821,9 +1821,9 @@ cmLocalVisualStudio7GeneratorOptions
             }
           else
             {
-              this->FlagMap[entry->IDEName] = new_value;
+            this->FlagMap[entry->IDEName] = new_value;
             }
-        }
+          }
         else
           {
           // Use the user-specified value.
@@ -1838,18 +1838,18 @@ cmLocalVisualStudio7GeneratorOptions
       this->FlagMap[entry->IDEName] = entry->value;
       entry_found = true;
       }
-
+    
     // If the flag has been handled by an entry not requesting a
     // search continuation we are done.
     if(entry_found && !(entry->special & cmVS7FlagTable::Continue))
       {
       return true;
       }
-
+    
     // If the entry was found the flag has been handled.
     flag_handled = flag_handled || entry_found;
     }
-
+  
   return false;
 }
 
