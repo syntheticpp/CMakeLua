@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmDumpDocumentation.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/10/22 16:48:39 $
-  Version:   $Revision: 1.19 $
+  Date:      $Date: 2007/12/13 22:56:49 $
+  Version:   $Revision: 1.20 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -121,6 +121,7 @@ int DumpForCoverage(const char* outname)
 int main(int ac, char** av)
 {
   cmSystemTools::EnableMSVCDebugHook();
+  cmSystemTools::FindExecutableDirectory(av[0]);
   const char* outname = "cmake.html";
   bool coverage = false;
   if(ac > 1)

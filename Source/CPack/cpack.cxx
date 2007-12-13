@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cpack.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/11/06 13:28:26 $
-  Version:   $Revision: 1.41 $
+  Date:      $Date: 2007/12/13 22:56:49 $
+  Version:   $Revision: 1.42 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -126,6 +126,7 @@ int cpackDefinitionArgument(const char* argument, const char* cValue,
 // this is CPack.
 int main (int argc, char *argv[])
 {
+  cmSystemTools::FindExecutableDirectory(argv[0]);
   cmCPackLog log;
   log.SetErrorPrefix("CPack Error: ");
   log.SetWarningPrefix("CPack Warning: ");
@@ -246,7 +247,7 @@ int main (int argc, char *argv[])
     {
     // find out which system cpack is running on, so it can setup the search
     // paths, so FIND_XXX() commands can be used in scripts
-    cminst.AddCMakePaths(argv[0]);
+    cminst.AddCMakePaths();
     std::string systemFile = 
       globalMF->GetModulesFile("CMakeDetermineSystem.cmake");
     if (!globalMF->ReadListFile(0, systemFile.c_str()))

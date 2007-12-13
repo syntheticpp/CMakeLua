@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: ccmake.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/10/22 16:48:39 $
-  Version:   $Revision: 1.36 $
+  Date:      $Date: 2007/12/13 22:56:50 $
+  Version:   $Revision: 1.37 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -105,6 +105,7 @@ void CMakeErrorHandler(const char* message, const char* title, bool&, void* clie
 
 int main(int argc, char** argv)
 {
+  cmSystemTools::FindExecutableDirectory(argv[0]);
   cmDocumentation doc;
   if(doc.CheckOptions(argc, argv))
     {

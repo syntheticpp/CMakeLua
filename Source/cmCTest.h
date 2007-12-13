@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCTest.h,v $
   Language:  C++
-  Date:      $Date: 2007/06/12 13:40:36 $
-  Version:   $Revision: 1.98 $
+  Date:      $Date: 2007/12/13 22:56:49 $
+  Version:   $Revision: 1.99 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -398,7 +398,7 @@ private:
     const VectorOfStrings& files);
 
   ///! Find the running cmake
-  void FindRunningCMake(const char* arg0);
+  void FindRunningCMake();
 
   //! Check if the argument is the one specified
   bool CheckArgument(const std::string& arg, const char* varg1,

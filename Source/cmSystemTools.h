@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmSystemTools.h,v $
   Language:  C++
-  Date:      $Date: 2007/10/05 13:46:28 $
-  Version:   $Revision: 1.142 $
+  Date:      $Date: 2007/12/13 22:56:49 $
+  Version:   $Revision: 1.143 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -349,6 +349,14 @@ public:
   /** Copy the file create/access/modify times from the file named by
       the first argument to that named by the second.  */
   static bool CopyFileTime(const char* fromFile, const char* toFile);
+
+  /** Find the directory containing the running executable.  Save it
+   in a global location to be queried by GetExecutableDirectory
+   later.  */
+  static void FindExecutableDirectory(const char* argv0);
+
+  /** Get the directory containing the currently running executable.  */
+  static const char* GetExecutableDirectory();
 
 private:
   static bool s_ForceUnixPaths;

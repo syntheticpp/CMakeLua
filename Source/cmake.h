@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmake.h,v $
   Language:  C++
-  Date:      $Date: 2007/12/13 20:54:29 $
-  Version:   $Revision: 1.96 $
+  Date:      $Date: 2007/12/13 22:56:49 $
+  Version:   $Revision: 1.97 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -288,7 +288,7 @@ class cmake
   /**
    * Generate CMAKE_ROOT and CMAKE_COMMAND cache entries
    */
-  int AddCMakePaths(const char *arg0);
+  int AddCMakePaths();
 
   /**
    * Get the file comparison class

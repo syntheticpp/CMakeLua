@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCTestScriptHandler.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/07/27 12:59:59 $
-  Version:   $Revision: 1.41 $
+  Date:      $Date: 2007/12/13 22:56:49 $
+  Version:   $Revision: 1.42 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -293,7 +293,7 @@ void cmCTestScriptHandler::CreateCMake()
     delete this->LocalGenerator;
     }
   this->CMake = new cmake;
-  this->CMake->AddCMakePaths(this->CTest->GetCTestExecutable());
+  this->CMake->AddCMakePaths();
   this->GlobalGenerator = new cmGlobalGenerator;
   this->GlobalGenerator->SetCMakeInstance(this->CMake);
 

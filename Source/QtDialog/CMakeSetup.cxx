@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: CMakeSetup.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/11/27 06:04:02 $
-  Version:   $Revision: 1.8 $
+  Date:      $Date: 2007/12/13 22:56:50 $
+  Version:   $Revision: 1.9 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -21,6 +21,7 @@
 
 #include "CMakeSetupDialog.h"
 #include "cmDocumentation.h"
+#include "cmSystemTools.h"
 #include "cmake.h"
 
 //----------------------------------------------------------------------------
@@ -61,6 +62,7 @@ static const char * cmDocumentationOptions[][3] =
 
 int main(int argc, char** argv)
 {
+  cmSystemTools::FindExecutableDirectory(argv[0]);
   QApplication app(argc, argv);
   app.setApplicationName("CMakeSetup");
   app.setOrganizationName("Kitware");
@@ -72,7 +74,7 @@ int main(int argc, char** argv)
     {
     // Construct and print requested documentation.
     cmake hcm;
-    hcm.AddCMakePaths(app.argv()[0]);
+    hcm.AddCMakePaths();
     doc.SetCMakeRoot(hcm.GetCacheDefinition("CMAKE_ROOT"));
     std::vector<cmDocumentationEntry> commands;
     std::vector<cmDocumentationEntry> compatCommands;

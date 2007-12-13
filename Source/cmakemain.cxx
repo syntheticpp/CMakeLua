@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmakemain.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/13 20:11:09 $
-  Version:   $Revision: 1.75 $
+  Date:      $Date: 2007/12/13 22:56:49 $
+  Version:   $Revision: 1.76 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -273,6 +273,7 @@ static void cmakemainProgressCallback(const char *m, float prog,
 int main(int ac, char** av)
 {
   cmSystemTools::EnableMSVCDebugHook();
+  cmSystemTools::FindExecutableDirectory(av[0]);
   int ret = do_cmake(ac, av);
 #ifdef CMAKE_BUILD_WITH_CMAKE
   cmDynamicLoader::FlushCache();
@@ -299,7 +300,7 @@ int do_cmake(int ac, char** av)
     { 
     // Construct and print requested documentation.
     cmake hcm;
-    hcm.AddCMakePaths(av[0]);
+    hcm.AddCMakePaths();
     doc.SetCMakeRoot(hcm.GetCacheDefinition("CMAKE_ROOT"));
 
     // the command line args are processed here so that you can do 
