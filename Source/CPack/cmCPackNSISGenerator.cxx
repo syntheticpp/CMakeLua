@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCPackNSISGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/11/07 18:11:58 $
-  Version:   $Revision: 1.29 $
+  Date:      $Date: 2007/12/14 19:58:27 $
+  Version:   $Revision: 1.30 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -115,7 +115,7 @@ int cmCPackNSISGenerator::CompressFiles(const char* outFileName,
     installerIconCode += this->GetOption("CPACK_NSIS_MUI_ICON");
     installerIconCode += "\"\n";
     installerIconCode += "!define MUI_UNICON \"";
-    installerIconCode += this->GetOption("CPACK_NSIS_MUI_ICON");
+    installerIconCode += this->GetOption("CPACK_NSIS_MUI_UNIICON");
     installerIconCode += "\"\n";
     this->SetOptionIfNotSet("CPACK_NSIS_INSTALLER_MUI_ICON_CODE",
                             installerIconCode.c_str());
