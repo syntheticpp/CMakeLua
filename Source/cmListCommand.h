@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmListCommand.h,v $
   Language:  C++
-  Date:      $Date: 2007/10/10 15:47:43 $
-  Version:   $Revision: 1.11 $
+  Date:      $Date: 2007/12/14 20:50:10 $
+  Version:   $Revision: 1.12 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -87,6 +87,11 @@ public:
       "REMOVE_AT will remove the items at the given indices.\n"
       "REVERSE reverses the contents of the list in-place.\n"
       "SORT sorts the list in-place alphabetically.\n"
+      "NOTE: A list in cmake is a ; separated group of strings. "
+      "To create a list the set command can be used. For example, "
+      "set(var a b c d e)  creates a list with a;b;c;d;e, and "
+      "set(var \"a b c d e\") creates a string or a list with one "
+      "item in it."
       ;
     }
 
