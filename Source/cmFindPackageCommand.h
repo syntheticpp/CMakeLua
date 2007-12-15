@@ -3,14 +3,14 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmFindPackageCommand.h,v $
   Language:  C++
-  Date:      $Date: 2007/10/10 15:47:43 $
-  Version:   $Revision: 1.14 $
+  Date:      $Date: 2007/12/15 19:17:21 $
+  Version:   $Revision: 1.15 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -30,7 +30,7 @@ public:
   /**
    * This is a virtual constructor for the command.
    */
-  virtual cmCommand* Clone() 
+  virtual cmCommand* Clone()
     {
     return new cmFindPackageCommand;
     }
@@ -54,7 +54,7 @@ public:
   /**
    * Succinct documentation.
    */
-  virtual const char* GetTerseDocumentation() 
+  virtual const char* GetTerseDocumentation()
     {
     return "Load settings for an external project.";
     }
@@ -90,7 +90,7 @@ public:
       "REQUIRED option, or after the COMPONENTS option if no REQUIRED "
       "option is given.";
     }
-  
+
   cmTypeMacro(cmFindPackageCommand, cmCommand);
 private:
   void AppendSuccessInformation(bool quiet);
