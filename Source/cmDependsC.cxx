@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmDependsC.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/02/07 14:23:41 $
-  Version:   $Revision: 1.32 $
+  Date:      $Date: 2007/12/15 01:31:27 $
+  Version:   $Revision: 1.33 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -113,13 +113,13 @@ bool cmDependsC::WriteDependencies(const char *src, const char *obj,
     std::string fullName;
     if(first || cmSystemTools::FileIsFullPath(current.FileName.c_str()))
       {
-      if(cmSystemTools::FileExists(current.FileName.c_str()))
+      if(cmSystemTools::FileExists(current.FileName.c_str(), true))
         {
         fullName = current.FileName;
         }
       }
     else if(!current.QuotedLocation.empty() &&
-            cmSystemTools::FileExists(current.QuotedLocation.c_str()))
+            cmSystemTools::FileExists(current.QuotedLocation.c_str(), true))
       {
       // The include statement producing this entry was a double-quote
       // include and the included file is present in the directory of
@@ -167,7 +167,7 @@ bool cmDependsC::WriteDependencies(const char *src, const char *obj,
           }
 
         // Look for the file in this location.
-        if(cmSystemTools::FileExists(tempPathStr.c_str()))
+        if(cmSystemTools::FileExists(tempPathStr.c_str(), true))
           {
             fullName = tempPathStr;
             HeaderLocationCache[cacheKey]=fullName;

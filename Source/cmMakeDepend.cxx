@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakeDepend.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/06/18 15:59:23 $
-  Version:   $Revision: 1.45 $
+  Date:      $Date: 2007/12/15 01:31:27 $
+  Version:   $Revision: 1.46 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -103,7 +103,7 @@ void cmMakeDepend::GenerateDependInformation(cmDependInformation* info)
   bool found = false;
 
   // If the file exists, use it to find dependency information.
-  if(cmSystemTools::FileExists(path))
+  if(cmSystemTools::FileExists(path, true))
     {
     // Use the real file to find its dependencies.
     this->DependWalk(info);
@@ -311,7 +311,7 @@ std::string cmMakeDepend::FullPath(const char* fname, const char *extraPath)
       }
     }
 
-  if(cmSystemTools::FileExists(fname))
+  if(cmSystemTools::FileExists(fname, true))
     {
     std::string fp = cmSystemTools::CollapseFullPath(fname);
     this->DirectoryToFileToPathMap[extraPath? extraPath: ""][fname] = fp;
@@ -327,7 +327,7 @@ std::string cmMakeDepend::FullPath(const char* fname, const char *extraPath)
       path = path + "/";
       }
     path = path + fname;
-    if(cmSystemTools::FileExists(path.c_str())
+    if(cmSystemTools::FileExists(path.c_str(), true)
        && !cmSystemTools::FileIsDirectory(path.c_str()))
       {
       std::string fp = cmSystemTools::CollapseFullPath(path.c_str());
@@ -344,7 +344,7 @@ std::string cmMakeDepend::FullPath(const char* fname, const char *extraPath)
       path = path + "/";
       }
     path = path + fname;
-    if(cmSystemTools::FileExists(path.c_str())
+    if(cmSystemTools::FileExists(path.c_str(), true)
        && !cmSystemTools::FileIsDirectory(path.c_str()))
       {
       std::string fp = cmSystemTools::CollapseFullPath(path.c_str());
