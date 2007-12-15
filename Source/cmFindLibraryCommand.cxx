@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmFindLibraryCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/10/26 13:55:40 $
-  Version:   $Revision: 1.44 $
+  Date:      $Date: 2007/12/15 01:46:15 $
+  Version:   $Revision: 1.45 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -38,6 +38,7 @@ cmFindLibraryCommand::cmFindLibraryCommand()
                                "CMAKE_FIND_ROOT_PATH_MODE_XXX", 
                                "CMAKE_FIND_ROOT_PATH_MODE_LIBRARY");
 
+  this->EnvironmentPath = "LIB";
   this->GenericDocumentation += 
     "\n"
     "If the library found is a framework, then VAR will be set to "
