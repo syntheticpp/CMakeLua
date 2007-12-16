@@ -1,3 +1,12 @@
 (^|/)CVS($|/)
 (^|/)\.hg($|/)
 (^|/)\.hgtags($|/)
+
+.DS_Store
+
+syntax: glob
+*.orig
+*.rej
+*~
+*.o
+	
