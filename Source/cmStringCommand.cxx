@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmStringCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/08/29 15:58:38 $
-  Version:   $Revision: 1.25 $
+  Date:      $Date: 2007/12/16 12:56:43 $
+  Version:   $Revision: 1.26 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -675,8 +675,20 @@ bool cmStringCommand::HandleStripCommand(
     ++ ptr;
     }
 
-  size_t outLength = endPos - startPos + 1;
- 
+  size_t outLength = 0;
+
+  // if the input string didn't contain any non-space characters, return 
+  // an empty string
+  if (startPos > inStringLength)
+    {
+    outLength = 0;
+    startPos = 0;
+    }
+  else
+    {
+    outLength=endPos - startPos + 1;
+    }
+
   this->Makefile->AddDefinition(variableName.c_str(),
     stringValue.substr(startPos, outLength).c_str());
   return true;
