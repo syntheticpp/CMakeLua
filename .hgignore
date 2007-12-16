@@ -6,6 +6,7 @@
 
 syntax: glob
 *.orig
+*.swp
 *.rej
 *~
 *.o
