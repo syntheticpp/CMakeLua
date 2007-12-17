@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCPackPackageMakerGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/11/05 19:34:36 $
-  Version:   $Revision: 1.21 $
+  Date:      $Date: 2007/12/17 20:27:30 $
+  Version:   $Revision: 1.22 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -112,7 +112,23 @@ int cmCPackPackageMakerGenerator::CompressFiles(const char* outFileName,
       << std::endl);
     return 0;
     }
-
+  // sometimes the pkgCmd finishes but the directory is not yet
+  // created, so try 10 times to see if it shows up
+  int tries = 10;
+  while(tries > 0 && 
+        !cmSystemTools::FileExists(packageDirFileName.c_str()))
+    {
+    cmSystemTools::Delay(500);
+    tries--;
+    }
+  if(!cmSystemTools::FileExists(packageDirFileName.c_str()))
+    {
+    cmCPackLogger(
+      cmCPackLog::LOG_ERROR,
+      "Problem running PackageMaker command: " << pkgCmd.str().c_str()
+      << std::endl << "Package not created: " << packageDirFileName.c_str()
+      << std::endl);
+    }
   tmpFile = this->GetOption("CPACK_TOPLEVEL_DIRECTORY");
   tmpFile += "/hdiutilOutput.log";
   cmOStringStream dmgCmd;
