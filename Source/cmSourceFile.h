@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmSourceFile.h,v $
   Language:  C++
-  Date:      $Date: 2007/06/18 15:59:23 $
-  Version:   $Revision: 1.22 $
+  Date:      $Date: 2007/12/17 15:12:19 $
+  Version:   $Revision: 1.23 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -53,10 +53,22 @@ public:
   bool GetPropertyAsBool(const char *prop) const;
 
   /**
-   * The full path to the file.
+   * The full path to the file.  The non-const version of this method
+   * may attempt to locate the file on disk and finalize its location.
+   * The const version of this method may return an empty string if
+   * the non-const version has not yet been called (yes this is a
+   * horrible interface, but is necessary for backwards
+   * compatibility).
    */
   std::string const& GetFullPath();
   std::string const& GetFullPath() const;
+
+  /**
+   * Get the information currently known about the source file
+   * location without attempting to locate the file as GetFullPath
+   * would.  See cmSourceFileLocation documentation.
+   */
+  cmSourceFileLocation const& GetLocation() const;
 
   /**
    * Get the file extension of this source file.

@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmSourceFile.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/11/19 19:27:31 $
-  Version:   $Revision: 1.38 $
+  Date:      $Date: 2007/12/17 15:12:19 $
+  Version:   $Revision: 1.39 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -73,6 +73,12 @@ const char* cmSourceFile::GetLanguage() const
 
   // The language is not known.
   return 0;
+}
+
+//----------------------------------------------------------------------------
+cmSourceFileLocation const& cmSourceFile::GetLocation() const
+{
+    return this->Location;
 }
 
 //----------------------------------------------------------------------------
