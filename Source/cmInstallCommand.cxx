@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmInstallCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/10/16 14:20:59 $
-  Version:   $Revision: 1.36 $
+  Date:      $Date: 2007/12/17 20:20:06 $
+  Version:   $Revision: 1.37 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -925,7 +925,8 @@ cmInstallCommand::HandleDirectoryMode(std::vector<std::string> const& args)
         }
 
       // Make sure the name is a directory.
-      if(!cmSystemTools::FileIsDirectory(dir.c_str()))
+      if(cmSystemTools::FileExists(dir.c_str()) &&
+         !cmSystemTools::FileIsDirectory(dir.c_str()))
         {
         cmOStringStream e;
         e << args[0] << " given non-directory \""
