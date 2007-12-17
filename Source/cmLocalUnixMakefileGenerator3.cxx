@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalUnixMakefileGenerator3.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/11/26 15:01:49 $
-  Version:   $Revision: 1.218 $
+  Date:      $Date: 2007/12/17 22:54:43 $
+  Version:   $Revision: 1.219 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -466,6 +466,8 @@ void cmLocalUnixMakefileGenerator3::WriteDirectoryInformationFile()
     << "  )\n";
   infoFileStream
     << "SET(CMAKE_CXX_INCLUDE_PATH ${CMAKE_C_INCLUDE_PATH})\n";
+  infoFileStream
+    << "SET(CMAKE_Fortran_INCLUDE_PATH ${CMAKE_C_INCLUDE_PATH})\n";
 
   // Store the include regular expressions for this directory.
   infoFileStream
