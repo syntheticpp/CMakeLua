@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalGenerator.h,v $
   Language:  C++
-  Date:      $Date: 2007/11/26 22:57:39 $
-  Version:   $Revision: 1.86 $
+  Date:      $Date: 2007/12/18 22:50:27 $
+  Version:   $Revision: 1.87 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -242,6 +242,13 @@ public:
    */
   virtual std::string GetTargetDirectory(cmTarget const& target) const;
 
+  ///! Determine the arguments for the linker call, used also by 
+  /// cmInstallTargetGenerator
+  bool GetLinkerArgs(std::string& rpath, std::string& linkLibs,
+                     cmTarget& tgt, bool relink, int minRpathSize);
+  
+  bool IsChrpathAvailable(const cmTarget& target);
+
 protected:
 
   /** Construct a comment for a custom command.  */
@@ -258,10 +265,6 @@ protected:
   ///! put all the libraries for a target on into the given stream
   virtual void OutputLinkLibraries(std::ostream&, cmTarget&, bool relink);
   
-  ///! Determine the arguments for the linker call
-  bool GetLinkerArgs(std::string& rpath, std::string& linkLibs,
-                     cmTarget& tgt, bool relink);
-
   // Expand rule variables in CMake of the type found in language rules
   void ExpandRuleVariables(std::string& string,
                            const RuleVariables& replaceValues);

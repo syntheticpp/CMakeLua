@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/11/26 22:57:39 $
-  Version:   $Revision: 1.241 $
+  Date:      $Date: 2007/12/18 22:50:27 $
+  Version:   $Revision: 1.242 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1479,7 +1479,8 @@ void cmLocalGenerator::GetTargetFlags(std::string& linkLibs,
 bool cmLocalGenerator::GetLinkerArgs(std::string& rpath, 
                                      std::string& linkLibs,
                                      cmTarget& tgt,
-                                     bool relink)
+                                     bool relink,
+                                     int minRpathSize)
 {
   rpath = "";
   // collect all the flags needed for linking libraries
@@ -1656,6 +1657,18 @@ bool cmLocalGenerator::GetLinkerArgs(std::string& rpath,
         }
       }
     }
+
+  if (rpath.size()<minRpathSize)
+    {
+    if (rpath.size()==0)
+      {
+      rpath += runtimeFlag;
+      }
+    while (rpath.size() < minRpathSize)
+      {
+      rpath += runtimeSep;
+      }
+    }
   return true;
 }
 
@@ -1670,7 +1683,19 @@ void cmLocalGenerator::OutputLinkLibraries(std::ostream& fout,
 {
   std::string rpath;
   std::string linkLibs;
-  if (!this->GetLinkerArgs(rpath, linkLibs, tgt, relink))
+  int minBuildRpathSize = 0;
+  
+  if ((relink==false) 
+    && this->Makefile->IsOn("CMAKE_USE_CHRPATH") 
+    && (tgt.IsChrpathAvailable()))
+    {
+    std::string installRpath;
+    std::string dummy;
+    this->GetLinkerArgs(installRpath, dummy, tgt, true, 0);
+    minBuildRpathSize=installRpath.size();
+    }
+
+  if (!this->GetLinkerArgs(rpath, linkLibs, tgt, relink, minBuildRpathSize))
     {
     return;
     }
