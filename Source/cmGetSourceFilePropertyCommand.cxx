@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmGetSourceFilePropertyCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/07/10 18:05:06 $
-  Version:   $Revision: 1.11 $
+  Date:      $Date: 2007/12/18 14:57:41 $
+  Version:   $Revision: 1.12 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -49,6 +49,11 @@ bool cmGetSourceFilePropertyCommand::InitialPass(
       // needs to be changed to be mutable etc. for computed properties to
       // work properly.
       sf->GetFullPath();
+      } 
+    else if(args[2] == "LANGUAGE")
+      {
+      this->Makefile->AddDefinition(var, sf->GetLanguage());
+      return true;
       }
     const char *prop = sf->GetProperty(args[2].c_str());
     if (prop)
