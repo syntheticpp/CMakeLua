@@ -3,8 +3,8 @@
 Program:   CMake - Cross-Platform Makefile Generator
 Module:    $RCSfile: cmGlobalXCodeGenerator.cxx,v $
 Language:  C++
-Date:      $Date: 2007/10/22 17:28:49 $
-Version:   $Revision: 1.169 $
+Date:      $Date: 2007/12/18 00:48:13 $
+Version:   $Revision: 1.170 $
 
 Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
 See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -213,7 +213,6 @@ std::string cmGlobalXCodeGenerator
     makeCommand += " ";
     makeCommand += additionalOptions;
     }
-  std::cerr << "**** build command " << makeCommand.c_str() << "\n";
   return makeCommand;
 }
 
