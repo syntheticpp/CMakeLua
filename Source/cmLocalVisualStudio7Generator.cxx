@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalVisualStudio7Generator.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/13 20:42:49 $
-  Version:   $Revision: 1.208 $
+  Date:      $Date: 2007/12/18 14:50:08 $
+  Version:   $Revision: 1.209 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1355,6 +1355,12 @@ void cmLocalVisualStudio7Generator
     {
     if(!init)
       {
+      const char* comment = cr->GetComment();
+      if(comment && *comment)
+        {
+        fout << "\nDescription=\""
+             << this->EscapeForXML(comment) << "\"";
+        }
       fout << "\nCommandLine=\"";
       init = true;
       }
@@ -1385,6 +1391,12 @@ void cmLocalVisualStudio7Generator
     {
     if(!init)
       {
+      const char* comment = cr->GetComment();
+      if(comment && *comment)
+        {
+        fout << "\nDescription=\""
+             << this->EscapeForXML(comment) << "\"";
+        }
       fout << "\nCommandLine=\"";
       init = true;
       }
@@ -1415,6 +1427,12 @@ void cmLocalVisualStudio7Generator
     {
     if(!init)
       {
+      const char* comment = cr->GetComment();
+      if(comment && *comment)
+        {
+        fout << "\nDescription=\""
+             << this->EscapeForXML(comment) << "\"";
+        }
       fout << "\nCommandLine=\"";
       init = true;
       }

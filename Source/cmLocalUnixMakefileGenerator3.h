@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalUnixMakefileGenerator3.h,v $
   Language:  C++
-  Date:      $Date: 2007/08/07 17:57:13 $
-  Version:   $Revision: 1.75 $
+  Date:      $Date: 2007/12/18 14:50:08 $
+  Version:   $Revision: 1.76 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -313,7 +313,8 @@ protected:
   void AppendCustomCommands(std::vector<std::string>& commands,
                             const std::vector<cmCustomCommand>& ccs);
   void AppendCustomCommand(std::vector<std::string>& commands,
-                           const cmCustomCommand& cc);
+                           const cmCustomCommand& cc,
+                           bool echo_comment=false);
   void AppendCleanCommand(std::vector<std::string>& commands,
                           const std::vector<std::string>& files,
                           cmTarget& target, const char* filename =0);

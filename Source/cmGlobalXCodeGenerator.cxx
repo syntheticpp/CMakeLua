@@ -3,8 +3,8 @@
 Program:   CMake - Cross-Platform Makefile Generator
 Module:    $RCSfile: cmGlobalXCodeGenerator.cxx,v $
 Language:  C++
-Date:      $Date: 2007/12/18 00:48:13 $
-Version:   $Revision: 1.170 $
+Date:      $Date: 2007/12/18 14:50:08 $
+Version:   $Revision: 1.171 $
 
 Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
 See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1144,11 +1144,6 @@ void  cmGlobalXCodeGenerator
       {
       bool escapeOldStyle = cc.GetEscapeOldStyle();
       bool escapeAllowMakeVars = cc.GetEscapeAllowMakeVars();
-      makefileStream << "\n#" << "Custom command rule: ";
-      if(cc.GetComment())
-        {
-        makefileStream << cc.GetComment();
-        }
       makefileStream << "\n";
       const std::vector<std::string>& outputs = cc.GetOutputs();
       if(!outputs.empty())
@@ -1174,6 +1169,14 @@ void  cmGlobalXCodeGenerator
           ->ConvertToRelativeForMake(dep.c_str());
         }
       makefileStream << "\n";
+
+      if(const char* comment = cc.GetComment())
+        {
+        std::string echo_cmd = "echo ";
+        echo_cmd += (this->CurrentLocalGenerator->
+                     EscapeForShell(comment, escapeAllowMakeVars));
+        makefileStream << "\t" << echo_cmd.c_str() << "\n";
+        }
 
       // Add each command line to the set of commands.
       for(cmCustomCommandLines::const_iterator cl = 
