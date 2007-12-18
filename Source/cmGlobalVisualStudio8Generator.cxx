@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmGlobalVisualStudio8Generator.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/17 22:28:23 $
-  Version:   $Revision: 1.30 $
+  Date:      $Date: 2007/12/18 13:53:10 $
+  Version:   $Revision: 1.31 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -285,7 +285,8 @@ static cmVS7FlagTable cmVS8ExtraFlagTable[] =
   {"CallingConvention", "Gr", "fastcall", "1", 0 },
   {"CallingConvention", "Gz", "stdcall", "2", 0 },
 
-  {"Detect64BitPortabilityProblems", "Wp64", "Detect 64Bit Portability Problems", "true", 0 },
+  {"Detect64BitPortabilityProblems", "Wp64",
+   "Detect 64Bit Portability Problems", "true", 0 },
   {"ErrorReporting", "errorReport:prompt", "Report immediately", "1", 0 },
   {"ErrorReporting", "errorReport:queue", "Queue for next login", "2", 0 },
   // Precompiled header and related options.  Note that the
