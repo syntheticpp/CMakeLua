@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmSystemTools.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/13 22:56:49 $
-  Version:   $Revision: 1.356 $
+  Date:      $Date: 2007/12/19 22:15:41 $
+  Version:   $Revision: 1.357 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -23,6 +23,9 @@
 #include <cmsys/RegularExpression.hxx>
 #include <cmsys/Directory.hxx>
 #include <cmsys/System.h>
+#if defined(CMAKE_BUILD_WITH_CMAKE)
+# include <cmsys/Terminal.h>
+#endif
 
 #if defined(_WIN32)
 # include <windows.h>
@@ -2087,3 +2090,36 @@ const char* cmSystemTools::GetExecutableDirectory()
 {
   return cmSystemToolsExecutableDirectory.c_str();
 }
+
+//----------------------------------------------------------------------------
+#if defined(CMAKE_BUILD_WITH_CMAKE)
+void cmSystemTools::MakefileColorEcho(int color, const char* message,
+                                      bool newline, bool enabled)
+{
+  // On some platforms (an MSYS prompt) cmsysTerminal may not be able
+  // to determine whether the stream is displayed on a tty.  In this
+  // case it assumes no unless we tell it otherwise.  Since we want
+  // color messages to be displayed for users we will assume yes.
+  // However, we can test for some situations when the answer is most
+  // likely no.
+  int assumeTTY = cmsysTerminal_Color_AssumeTTY;
+  if(cmSystemTools::GetEnv("DART_TEST_FROM_DART") ||
+     cmSystemTools::GetEnv("DASHBOARD_TEST_FROM_CTEST") ||
+     cmSystemTools::GetEnv("CTEST_INTERACTIVE_DEBUG_MODE"))
+    {
+    // Avoid printing color escapes during dashboard builds.
+    assumeTTY = 0;
+    }
+
+  if(enabled)
+    {
+    cmsysTerminal_cfprintf(color | assumeTTY, stdout, "%s%s",
+                           message, newline? "\n" : "");
+    }
+  else
+    {
+    // Color is disabled.  Print without color.
+    fprintf(stdout, "%s%s", message, newline? "\n" : "");
+    }
+}
+#endif

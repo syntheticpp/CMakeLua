@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalUnixMakefileGenerator3.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/19 21:36:29 $
-  Version:   $Revision: 1.222 $
+  Date:      $Date: 2007/12/19 22:15:41 $
+  Version:   $Revision: 1.223 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -31,6 +31,7 @@
 #ifdef CMAKE_BUILD_WITH_CMAKE
 # include "cmDependsFortran.h"
 # include "cmDependsJava.h"
+# include <cmsys/Terminal.h>
 #endif
 
 #include <memory> // auto_ptr
@@ -1225,7 +1226,8 @@ cmLocalUnixMakefileGenerator3
 
 //----------------------------------------------------------------------------
 bool cmLocalUnixMakefileGenerator3::UpdateDependencies(const char* tgtInfo,
-                                                       bool verbose)
+                                                       bool verbose,
+                                                       bool color)
 {
   std::string dir = cmSystemTools::GetFilenamePath(tgtInfo);
   std::string internalDependFile = dir + "/depend.internal";
@@ -1242,11 +1244,18 @@ bool cmLocalUnixMakefileGenerator3::UpdateDependencies(const char* tgtInfo,
   if(!checker.Check(dependFile.c_str(), internalDependFile.c_str()))
     {
     // The dependencies must be regenerated.
-
-    // TODO: Make this like cmLocalUnixMakefileGenerator3::EchoDepend
     std::string targetName = cmSystemTools::GetFilenameName(dir);
     targetName = targetName.substr(0, targetName.length()-4);
-    fprintf(stdout, "Scanning dependencies of target %s\n", targetName.c_str());
+    std::string message = "Scanning dependencies of target ";
+    message += targetName;
+#ifdef CMAKE_BUILD_WITH_CMAKE
+    cmSystemTools::MakefileColorEcho(
+      cmsysTerminal_Color_ForegroundMagenta |
+      cmsysTerminal_Color_ForegroundBold,
+      message.c_str(), true, color);
+#else
+    fprintf(stdout, "%s\n", message.c_str());
+#endif
 
     return this->ScanDependencies(tgtInfo);
     }

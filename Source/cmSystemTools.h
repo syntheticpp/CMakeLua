@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmSystemTools.h,v $
   Language:  C++
-  Date:      $Date: 2007/12/13 22:56:49 $
-  Version:   $Revision: 1.143 $
+  Date:      $Date: 2007/12/19 22:15:41 $
+  Version:   $Revision: 1.144 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -357,6 +357,12 @@ public:
 
   /** Get the directory containing the currently running executable.  */
   static const char* GetExecutableDirectory();
+
+#if defined(CMAKE_BUILD_WITH_CMAKE)
+  /** Echo a message in color using KWSys's Terminal cprintf.  */
+  static void MakefileColorEcho(int color, const char* message,
+                                bool newline, bool enabled);
+#endif
 
 private:
   static bool s_ForceUnixPaths;

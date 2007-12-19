@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalUnixMakefileGenerator3.h,v $
   Language:  C++
-  Date:      $Date: 2007/12/19 21:36:29 $
-  Version:   $Revision: 1.77 $
+  Date:      $Date: 2007/12/19 22:15:41 $
+  Version:   $Revision: 1.78 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -200,7 +200,8 @@ public:
 
   /** Called from command-line hook to bring dependencies up to date
       for a target.  */
-  virtual bool UpdateDependencies(const char* tgtInfo, bool verbose);
+  virtual bool UpdateDependencies(const char* tgtInfo,
+                                  bool verbose, bool color);
 
   /** Called from command-line hook to scan dependencies.  */
   bool ScanDependencies(const char* tgtInfo);

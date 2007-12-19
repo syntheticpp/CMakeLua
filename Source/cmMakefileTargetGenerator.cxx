@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefileTargetGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/19 21:36:29 $
-  Version:   $Revision: 1.75 $
+  Date:      $Date: 2007/12/19 22:15:41 $
+  Version:   $Revision: 1.76 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -805,7 +805,7 @@ void cmMakefileTargetGenerator::WriteTargetDependRules()
   //   cmake -E cmake_depends <generator>
   //                          <home-src-dir> <start-src-dir>
   //                          <home-out-dir> <start-out-dir>
-  //                          <dep-info>
+  //                          <dep-info> --color=$(COLOR)
   //
   // This gives the dependency scanner enough information to recreate
   // the state of our local generator sufficiently for its needs.
@@ -824,7 +824,8 @@ void cmMakefileTargetGenerator::WriteTargetDependRules()
                           cmLocalGenerator::FULL, cmLocalGenerator::SHELL)
          << " "
          << this->Convert(this->InfoFileNameFull.c_str(),
-                          cmLocalGenerator::FULL, cmLocalGenerator::SHELL);
+                          cmLocalGenerator::FULL, cmLocalGenerator::SHELL)
+         << " --color=$(COLOR)";
   commands.push_back(depCmd.str());
 
   // Make sure all custom command outputs in this target are built.
