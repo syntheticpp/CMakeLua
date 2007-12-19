@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefile.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/03 18:35:33 $
-  Version:   $Revision: 1.418 $
+  Date:      $Date: 2007/12/19 21:46:15 $
+  Version:   $Revision: 1.419 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -347,7 +347,7 @@ bool cmMakefile::ExecuteCommand(const cmListFileFunction& lff)
       error << "Error in cmake code at\n"
             << lff.FilePath << ":" << lff.Line << ":\n"
             << "Command " << usedCommand->GetName()
-            << " not scriptable" << std::endl;
+            << "() is not scriptable" << std::endl;
       cmSystemTools::Error(error.str().c_str());
       result = false;
       cmSystemTools::SetFatalErrorOccured();
