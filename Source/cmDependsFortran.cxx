@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmDependsFortran.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/19 19:28:46 $
-  Version:   $Revision: 1.30 $
+  Date:      $Date: 2007/12/19 21:35:09 $
+  Version:   $Revision: 1.31 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -141,6 +141,7 @@ bool cmDependsFortran::WriteDependencies(const char *src, const char *obj,
 
   // Write the include dependencies to the output stream.
   internalDepends << obj << std::endl;
+  internalDepends << " " << src << std::endl;
   for(std::set<cmStdString>::const_iterator i = parser.Includes.begin();
       i != parser.Includes.end(); ++i)
     {
