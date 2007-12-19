@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalGenerator.h,v $
   Language:  C++
-  Date:      $Date: 2007/12/18 22:50:27 $
-  Version:   $Revision: 1.87 $
+  Date:      $Date: 2007/12/19 08:56:13 $
+  Version:   $Revision: 1.88 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -245,7 +245,7 @@ public:
   ///! Determine the arguments for the linker call, used also by 
   /// cmInstallTargetGenerator
   bool GetLinkerArgs(std::string& rpath, std::string& linkLibs,
-                     cmTarget& tgt, bool relink, int minRpathSize);
+                     cmTarget& tgt, bool relink, unsigned int minRpathSize);
   
   bool IsChrpathAvailable(const cmTarget& target);
 

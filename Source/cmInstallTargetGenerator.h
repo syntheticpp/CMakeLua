@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmInstallTargetGenerator.h,v $
   Language:  C++
-  Date:      $Date: 2007/12/18 22:50:27 $
-  Version:   $Revision: 1.19 $
+  Date:      $Date: 2007/12/19 08:56:13 $
+  Version:   $Revision: 1.20 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -55,7 +55,7 @@ protected:
                                const char* config,
                                const std::string& toDestDirPath);
   void AddChrpathPatchRule(std::ostream& os, Indent const& indent,
-                         const char* config, std::string const& toDestDirPath);
+                           std::string const& toDestDirPath);
   
   void AddStripRule(std::ostream& os, Indent const& indent,
                     cmTarget::TargetType type,

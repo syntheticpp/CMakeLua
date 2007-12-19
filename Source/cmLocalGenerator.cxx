@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/18 22:50:27 $
-  Version:   $Revision: 1.242 $
+  Date:      $Date: 2007/12/19 08:56:13 $
+  Version:   $Revision: 1.243 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1480,7 +1480,7 @@ bool cmLocalGenerator::GetLinkerArgs(std::string& rpath,
                                      std::string& linkLibs,
                                      cmTarget& tgt,
                                      bool relink,
-                                     int minRpathSize)
+                                     unsigned int minRpathSize)
 {
   rpath = "";
   // collect all the flags needed for linking libraries
@@ -1658,16 +1658,14 @@ bool cmLocalGenerator::GetLinkerArgs(std::string& rpath,
       }
     }
 
-  if (rpath.size()<minRpathSize)
+  while (rpath.size() < minRpathSize)
     {
     if (rpath.size()==0)
       {
       rpath += runtimeFlag;
       }
-    while (rpath.size() < minRpathSize)
-      {
-      rpath += runtimeSep;
-      }
+
+    rpath += runtimeSep;
     }
   return true;
 }

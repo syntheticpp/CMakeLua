@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmInstallTargetGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/18 22:50:27 $
-  Version:   $Revision: 1.48 $
+  Date:      $Date: 2007/12/19 08:56:13 $
+  Version:   $Revision: 1.49 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -305,7 +305,7 @@ cmInstallTargetGenerator
 
   os << indent << "IF(EXISTS \"" << toDestDirPath << "\")\n";
   this->AddInstallNamePatchRule(os, indent.Next(), config, toDestDirPath);
-  this->AddChrpathPatchRule(os, indent.Next(), config, toDestDirPath);
+  this->AddChrpathPatchRule(os, indent.Next(), toDestDirPath);
   this->AddRanlibRule(os, indent.Next(), type, toDestDirPath);
   this->AddStripRule(os, indent.Next(), type, toDestDirPath);
   os << indent << "ENDIF(EXISTS \"" << toDestDirPath << "\")\n";
@@ -509,7 +509,7 @@ cmInstallTargetGenerator
 void
 cmInstallTargetGenerator
 ::AddChrpathPatchRule(std::ostream& os, Indent const& indent,
-                          const char* config, std::string const& toDestDirPath)
+                      std::string const& toDestDirPath)
 {
   if(this->ImportLibrary ||
      !(this->Target->GetType() == cmTarget::SHARED_LIBRARY ||
