@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalUnixMakefileGenerator3.h,v $
   Language:  C++
-  Date:      $Date: 2007/12/18 14:50:08 $
-  Version:   $Revision: 1.76 $
+  Date:      $Date: 2007/12/19 21:36:29 $
+  Version:   $Revision: 1.77 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -198,12 +198,15 @@ public:
 
   std::string CreateMakeVariable(const char* sin, const char* s2in);
 
-  /** Called from command-line hook to scan dependencies.  */
-  virtual bool ScanDependencies(const char* tgtInfo);
+  /** Called from command-line hook to bring dependencies up to date
+      for a target.  */
+  virtual bool UpdateDependencies(const char* tgtInfo, bool verbose);
 
-  /** Called from command-line hook to check dependencies.  */
-  virtual void CheckDependencies(cmMakefile* mf, bool verbose,
-                                 bool clear);
+  /** Called from command-line hook to scan dependencies.  */
+  bool ScanDependencies(const char* tgtInfo);
+
+  /** Called from command-line hook to clear dependencies.  */
+  virtual void ClearDependencies(cmMakefile* mf, bool verbose);
   
   /** write some extra rules such as make test etc */
   void WriteSpecialTargetsTop(std::ostream& makefileStream);

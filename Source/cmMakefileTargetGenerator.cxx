@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefileTargetGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/13 20:54:29 $
-  Version:   $Revision: 1.74 $
+  Date:      $Date: 2007/12/19 21:36:29 $
+  Version:   $Revision: 1.75 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -519,15 +519,6 @@ cmMakefileTargetGenerator
     this->LocalGenerator->ExpandRuleVariables(*i, vars);
     }
 
-  // Make the target dependency scanning rule include cmake-time-known
-  // dependencies.  The others are handled by the check-build-system
-  // path.
-  std::string depMark =
-    this->LocalGenerator->GetRelativeTargetDirectory(*this->Target);
-  depMark += "/depend.make.mark";
-  this->LocalGenerator->WriteMakeRule(*this->BuildFileStream, 0,
-                                      depMark.c_str(),
-                                      depends, no_commands, false);
 
   // Write the rule.
   this->LocalGenerator->WriteMakeRule(*this->BuildFileStream, 0,
@@ -793,21 +784,6 @@ void cmMakefileTargetGenerator::WriteTargetDependRules()
     this->LocalGenerator->GetRelativeTargetDirectory(*this->Target);
   depTarget += "/depend";
 
-  std::string depMark = depTarget;
-  depMark += ".make.mark";
-  depends.push_back(depMark);
-
-  this->LocalGenerator->WriteMakeRule(*this->BuildFileStream, 0,
-                                      depTarget.c_str(),
-                                      depends, commands, true);
-  depends.clear();
-
-  // Write the dependency generation rule.
-  std::string depEcho = "Scanning dependencies of target ";
-  depEcho += this->Target->GetName();
-  this->LocalGenerator->AppendEcho(commands, depEcho.c_str(),
-                                   cmLocalUnixMakefileGenerator3::EchoDepend);
-
   // Add a command to call CMake to scan dependencies.  CMake will
   // touch the corresponding depends file after scanning dependencies.
   cmOStringStream depCmd;
@@ -859,7 +835,7 @@ void cmMakefileTargetGenerator::WriteTargetDependRules()
 
   // Write the rule.
   this->LocalGenerator->WriteMakeRule(*this->BuildFileStream, 0,
-                                      depMark.c_str(),
+                                      depTarget.c_str(),
                                       depends, commands, false);
 }
 

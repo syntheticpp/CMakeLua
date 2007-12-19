@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmDepends.h,v $
   Language:  C++
-  Date:      $Date: 2006/05/25 13:47:30 $
-  Version:   $Revision: 1.11 $
+  Date:      $Date: 2007/12/19 21:36:29 $
+  Version:   $Revision: 1.12 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -55,8 +55,11 @@ public:
   bool Write(const char *src, const char *obj,
     std::ostream &makeDepends, std::ostream &internalDepends);
   
-  /** Check dependencies for the target file.  */
-  void Check(const char *makeFile, const char* internalFile);
+  /** Check dependencies for the target file.  Returns true if
+      dependencies are okay and false if they must be generated.  If
+      they must be generated Clear has already been called to wipe out
+      the old dependencies.  */
+  bool Check(const char *makeFile, const char* internalFile);
 
   /** Clear dependencies for the target file so they will be regenerated.  */
   void Clear(const char *file);
@@ -70,7 +73,7 @@ protected:
   // Write dependencies for the target file to the given stream.
   // Return true for success and false for failure.
   virtual bool WriteDependencies(const char *src, const char* obj,
-    std::ostream& makeDepends, std::ostream& internalDepends)=0;
+    std::ostream& makeDepends, std::ostream& internalDepends);
 
   // Check dependencies for the target file in the given stream.
   // Return false if dependencies must be regenerated and true

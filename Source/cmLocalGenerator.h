@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalGenerator.h,v $
   Language:  C++
-  Date:      $Date: 2007/12/19 08:56:13 $
-  Version:   $Revision: 1.88 $
+  Date:      $Date: 2007/12/19 21:36:29 $
+  Version:   $Revision: 1.89 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -157,13 +157,14 @@ public:
   ///! for existing files convert to output path and short path if spaces
   std::string ConvertToOutputForExisting(const char* p);
   
-  /** Called from command-line hook to check dependencies.  */
-  virtual void CheckDependencies(cmMakefile* /* mf */, 
-                                 bool /* verbose */,
-                                 bool /* clear */) {};
+  /** Called from command-line hook to clear dependencies.  */
+  virtual void ClearDependencies(cmMakefile* /* mf */, 
+                                 bool /* verbose */) {}
   
-  /** Called from command-line hook to scan dependencies.  */
-  virtual bool ScanDependencies(const char* /* tgtInfo */) { return true; }
+  /** Called from command-line hook to update dependencies.  */
+  virtual bool UpdateDependencies(const char* /* tgtInfo */,
+                                  bool /*verbose*/)
+    { return true; }
 
   /** Compute the list of link libraries and directories for the given
       target and configuration.  */
