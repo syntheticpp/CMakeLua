@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalUnixMakefileGenerator3.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/19 22:15:41 $
-  Version:   $Revision: 1.223 $
+  Date:      $Date: 2007/12/19 22:54:24 $
+  Version:   $Revision: 1.224 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1650,6 +1650,9 @@ void cmLocalUnixMakefileGenerator3
                            cmLocalGenerator::SHELL);
   runRule += " 1";
   commands.push_back(runRule);
+  this->CreateCDCommand(commands,
+                        this->Makefile->GetHomeOutputDirectory(),
+                        this->Makefile->GetStartOutputDirectory());
   this->WriteMakeRule(ruleFileStream, "clear depends", 
                       "depend", 
                       depends, commands, true);
