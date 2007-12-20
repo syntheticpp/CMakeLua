@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmBuildCommand.h,v $
   Language:  C++
-  Date:      $Date: 2007/10/10 15:47:43 $
-  Version:   $Revision: 1.11 $
+  Date:      $Date: 2007/12/20 22:49:38 $
+  Version:   $Revision: 1.12 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -60,10 +60,10 @@ public:
   virtual const char* GetFullDocumentation()
     {
     return
-      "  build_command(variable MAKECOMMAND)\n"
-      "Sets the given variable to a string containing the command that "
+      "  build_command(<variable> <makecommand>)\n"
+      "Sets the given <variable> to a string containing the command that "
       "will build this project from the root of the build tree using the "
-      "build tool given by MAKECOMMAND.  MAKECOMMAND should be msdev, "
+      "build tool given by <makecommand>.  <makecommand> should be msdev, "
       "nmake, make or one of the end user build tools.  "
       "This is useful for configuring testing systems.";
     }

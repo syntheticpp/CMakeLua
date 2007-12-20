@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmExportCommand.h,v $
   Language:  C++
-  Date:      $Date: 2007/10/10 15:47:43 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2007/12/20 22:49:38 $
+  Version:   $Revision: 1.5 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -63,7 +63,7 @@ public:
   virtual const char* GetFullDocumentation()
     {
     return
-      "  export(TARGETS tgt1 tgt2 ...  [PREFIX <prefix>] FILE <filename> "
+      "  export(TARGETS tgt1 ... tgtN [PREFIX <prefix>] FILE <filename> "
       "[APPEND])\n"
       "Create a file that can be included into a CMake listfile with the "
       "INCLUDE command.  The file will contain a number of SET commands "

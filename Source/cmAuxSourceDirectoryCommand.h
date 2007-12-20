@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmAuxSourceDirectoryCommand.h,v $
   Language:  C++
-  Date:      $Date: 2007/10/10 15:47:43 $
-  Version:   $Revision: 1.14 $
+  Date:      $Date: 2007/12/20 22:49:38 $
+  Version:   $Revision: 1.15 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -64,9 +64,9 @@ public:
   virtual const char* GetFullDocumentation()
     {
     return
-      "  aux_source_directory(dir VARIABLE)\n"
+      "  aux_source_directory(<dir> <variable>)\n"
       "Collects the names of all the source files in the specified "
-      "directory and stores the list in the variable provided.  This "
+      "directory and stores the list in the <variable> provided.  This "
       "command is intended to be used by projects that use explicit "
       "template instantiation.  Template instantiation files can be "
       "stored in a \"Templates\" subdirectory and collected automatically "
