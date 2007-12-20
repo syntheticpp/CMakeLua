@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmFunctionCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/04 15:43:32 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2007/12/20 15:05:08 $
+  Version:   $Revision: 1.3 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -150,8 +150,6 @@ bool cmFunctionHelperCommand::InvokeInitialPass
   this->Makefile->AddDefinition("ARGN", argnDef.c_str());
 
   // Invoke all the functions that were collected in the block.
-  cmListFileFunction newLFF;
-
   // for each function
   for(unsigned int c = 0; c < this->Functions.size(); ++c)
     {
@@ -203,6 +201,18 @@ IsFunctionBlocked(const cmListFileFunction& lff, cmMakefile &mf)
       cmFunctionHelperCommand *f = new cmFunctionHelperCommand();
       f->Args = this->Args;
       f->Functions = this->Functions;
+      
+      // Set the FilePath on the arguments to match the function since it is
+      // not stored and the original values may be freed
+      for (unsigned int i = 0; i < f->Functions.size(); ++i)
+        {
+        for (unsigned int j = 0; j < f->Functions[i].Arguments.size(); ++j)
+          {
+          f->Functions[i].Arguments[j].FilePath = 
+            f->Functions[i].FilePath.c_str();
+          }
+        }
+
       std::string newName = "_" + this->Args[0];
       mf.GetCMakeInstance()->RenameCommand(this->Args[0].c_str(), 
                                            newName.c_str());
