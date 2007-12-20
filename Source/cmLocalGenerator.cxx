@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/19 08:56:13 $
-  Version:   $Revision: 1.243 $
+  Date:      $Date: 2007/12/20 14:27:59 $
+  Version:   $Revision: 1.244 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1681,7 +1681,7 @@ void cmLocalGenerator::OutputLinkLibraries(std::ostream& fout,
 {
   std::string rpath;
   std::string linkLibs;
-  int minBuildRpathSize = 0;
+  unsigned int minBuildRpathSize = 0;
   
   if ((relink==false) 
     && this->Makefile->IsOn("CMAKE_USE_CHRPATH") 
@@ -1690,7 +1690,7 @@ void cmLocalGenerator::OutputLinkLibraries(std::ostream& fout,
     std::string installRpath;
     std::string dummy;
     this->GetLinkerArgs(installRpath, dummy, tgt, true, 0);
-    minBuildRpathSize=installRpath.size();
+    minBuildRpathSize = static_cast<unsigned int>(installRpath.size());
     }
 
   if (!this->GetLinkerArgs(rpath, linkLibs, tgt, relink, minBuildRpathSize))
