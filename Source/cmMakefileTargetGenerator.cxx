@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefileTargetGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/19 22:15:41 $
-  Version:   $Revision: 1.76 $
+  Date:      $Date: 2007/12/21 16:00:03 $
+  Version:   $Revision: 1.77 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -837,7 +837,7 @@ void cmMakefileTargetGenerator::WriteTargetDependRules()
   // Write the rule.
   this->LocalGenerator->WriteMakeRule(*this->BuildFileStream, 0,
                                       depTarget.c_str(),
-                                      depends, commands, false);
+                                      depends, commands, true);
 }
 
 //----------------------------------------------------------------------------
