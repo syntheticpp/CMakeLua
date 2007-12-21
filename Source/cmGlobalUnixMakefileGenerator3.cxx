@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator3
   Module:    $RCSfile: cmGlobalUnixMakefileGenerator3.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/21 17:22:12 $
-  Version:   $Revision: 1.118 $
+  Date:      $Date: 2007/12/21 18:10:33 $
+  Version:   $Revision: 1.119 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -374,7 +374,7 @@ void cmGlobalUnixMakefileGenerator3
 
   // now list all the target info files
   cmakefileStream
-    << "# The set of files whose dependency integrity should be checked:\n";
+    << "# Dependency information for all targets:\n";
   cmakefileStream
     << "SET(CMAKE_DEPEND_INFO_FILES\n";
   for (unsigned int i = 0; i < lGenerators.size(); ++i)
@@ -387,7 +387,8 @@ void cmGlobalUnixMakefileGenerator3
       if((l->second.GetType() == cmTarget::EXECUTABLE) ||
          (l->second.GetType() == cmTarget::STATIC_LIBRARY) ||
          (l->second.GetType() == cmTarget::SHARED_LIBRARY) ||
-         (l->second.GetType() == cmTarget::MODULE_LIBRARY) )
+         (l->second.GetType() == cmTarget::MODULE_LIBRARY) ||
+         (l->second.GetType() == cmTarget::UTILITY))
         {
         std::string tname = lg->GetRelativeTargetDirectory(l->second);
         tname += "/DependInfo.cmake";
