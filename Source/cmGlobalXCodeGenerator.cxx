@@ -3,8 +3,8 @@
 Program:   CMake - Cross-Platform Makefile Generator
 Module:    $RCSfile: cmGlobalXCodeGenerator.cxx,v $
 Language:  C++
-Date:      $Date: 2007/12/18 14:50:08 $
-Version:   $Revision: 1.171 $
+Date:      $Date: 2007/12/21 20:04:06 $
+Version:   $Revision: 1.172 $
 
 Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
 See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -2006,34 +2006,33 @@ void cmGlobalXCodeGenerator
     }
 
   // Add dependencies on other CMake targets.
-  if(cmtarget->GetType() != cmTarget::STATIC_LIBRARY)
+  {
+  // Keep track of dependencies already listed.
+  std::set<cmStdString> emitted;
+
+  // A target should not depend on itself.
+  emitted.insert(cmtarget->GetName());
+
+  // Loop over all library dependencies.
+  const cmTarget::LinkLibraryVectorType& tlibs = 
+    cmtarget->GetLinkLibraries();
+  for(cmTarget::LinkLibraryVectorType::const_iterator lib = tlibs.begin();
+      lib != tlibs.end(); ++lib)
     {
-    // Keep track of dependencies already listed.
-    std::set<cmStdString> emitted;
-
-    // A target should not depend on itself.
-    emitted.insert(cmtarget->GetName());
-
-    // Loop over all library dependencies.
-    const cmTarget::LinkLibraryVectorType& tlibs = 
-      cmtarget->GetLinkLibraries();
-    for(cmTarget::LinkLibraryVectorType::const_iterator lib = tlibs.begin();
-        lib != tlibs.end(); ++lib)
+    // Don't emit the same library twice for this target.
+    if(emitted.insert(lib->first).second)
       {
-      // Don't emit the same library twice for this target.
-      if(emitted.insert(lib->first).second)
+      // Add this dependency.
+      cmTarget* t = this->FindTarget(this->CurrentProject.c_str(),
+                                     lib->first.c_str(), false);
+      cmXCodeObject* dptarget = this->FindXCodeTarget(t);
+      if(dptarget)
         {
-        // Add this dependency.
-        cmTarget* t = this->FindTarget(this->CurrentProject.c_str(),
-                                       lib->first.c_str(), false);
-        cmXCodeObject* dptarget = this->FindXCodeTarget(t);
-        if(dptarget)
-          {
-          this->AddDependTarget(target, dptarget);
-          }
+        this->AddDependTarget(target, dptarget);
         }
       }
     }
+  }
   
   // write utility dependencies.
   for(std::set<cmStdString>::const_iterator i

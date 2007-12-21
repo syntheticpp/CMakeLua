@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmGlobalVisualStudioGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/11/20 16:10:11 $
-  Version:   $Revision: 1.8 $
+  Date:      $Date: 2007/12/21 20:04:06 $
+  Version:   $Revision: 1.9 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -197,6 +197,12 @@ std::string cmGlobalVisualStudioGenerator::GetUserMacrosDirectory()
 //----------------------------------------------------------------------------
 void cmGlobalVisualStudioGenerator::FixUtilityDepends()
 {
+  // Skip for VS versions 8 and above.
+  if(!this->VSLinksDependencies())
+    {
+    return;
+    }
+
   // For VS versions before 8:
   //
   // When a target that links contains a project-level dependency on a
@@ -231,6 +237,33 @@ cmGlobalVisualStudioGenerator::FixUtilityDependsForTarget(cmTarget& target)
     {
     return;
     }
+
+#if 0
+  // This feature makes a mess in SLN files for VS 7.1 and below.  It
+  // creates an extra target for every target that is "linked" by a
+  // static library.  Without this feature static libraries do not
+  // wait until their "link" dependencies are built to build.  This is
+  // not a problem 99.9% of the time, and projects that do have the
+  // problem can enable this work-around by using add_dependencies.
+
+  // Static libraries cannot depend directly on the targets to which
+  // they link because VS will copy those targets into the library
+  // (for VS < 8).  To work around the problem we copy the
+  // dependencies to be utility dependencies so that the work-around
+  // below is used.
+  if(target.GetType() == cmTarget::STATIC_LIBRARY)
+    {
+    cmTarget::LinkLibraryVectorType const& libs = target.GetLinkLibraries();
+    for(cmTarget::LinkLibraryVectorType::const_iterator i = libs.begin();
+        i != libs.end(); ++i)
+      {
+      if(cmTarget* depTarget = this->FindTarget(0, i->first.c_str(), false))
+        {
+        target.AddUtility(depTarget->GetName());
+        }
+      }
+    }
+#endif
 
   // Look at each utility dependency.
   for(std::set<cmStdString>::const_iterator ui =

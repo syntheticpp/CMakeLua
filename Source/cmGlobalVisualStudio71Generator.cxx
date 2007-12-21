@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmGlobalVisualStudio71Generator.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/10/22 16:48:39 $
-  Version:   $Revision: 1.43 $
+  Date:      $Date: 2007/12/21 20:04:06 $
+  Version:   $Revision: 1.44 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -317,8 +317,14 @@ cmGlobalVisualStudio71Generator
                       const char* dspname,
                       const char*, cmTarget& target)
 {
-  // insert Begin Project Dependency  Project_Dep_Name project stuff here 
-  if (target.GetType() != cmTarget::STATIC_LIBRARY)
+  // Create inter-target dependencies in the solution file.  For VS
+  // 7.1 and below we cannot let static libraries depend directly on
+  // targets to which they "link" because the librarian tool will copy
+  // the targets into the static library.  See
+  // cmGlobalVisualStudioGenerator::FixUtilityDependsForTarget for a
+  // work-around.  VS 8 and above do not have this problem.
+  if (!this->VSLinksDependencies() ||
+      target.GetType() != cmTarget::STATIC_LIBRARY)
     {
     cmTarget::LinkLibraryVectorType::const_iterator j, jend;
     j = target.GetLinkLibraries().begin();
