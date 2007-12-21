@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmGlobalGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/11/20 16:10:11 $
-  Version:   $Revision: 1.213 $
+  Date:      $Date: 2007/12/21 17:22:12 $
+  Version:   $Revision: 1.214 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1678,13 +1678,6 @@ void cmGlobalGenerator::AppendDirectoryForConfig(const char*, const char*,
   // Subclasses that support multiple configurations should implement
   // this method to append the subdirectory for the given build
   // configuration.
-}
-
-//----------------------------------------------------------------------------
-void cmGlobalGenerator::CheckMultipleOutputs(cmMakefile*, bool)
-{
-  // Only certain generators need this check.  They define this
-  // method.
 }
 
 //----------------------------------------------------------------------------

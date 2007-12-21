@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefileUtilityTargetGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/05/01 17:51:25 $
-  Version:   $Revision: 1.6 $
+  Date:      $Date: 2007/12/21 17:22:12 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -88,6 +88,10 @@ void cmMakefileUtilityTargetGenerator::WriteRuleFiles()
 
   // Write clean target
   this->WriteTargetCleanRules();
+
+  // Write the dependency generation rule.  This must be done last so
+  // that multiple output pair information is available.
+  this->WriteTargetDependRules();
 
   // close the streams
   this->CloseFileStreams();

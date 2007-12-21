@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefileLibraryTargetGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/10/18 13:38:34 $
-  Version:   $Revision: 1.48 $
+  Date:      $Date: 2007/12/21 17:22:12 $
+  Version:   $Revision: 1.49 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -47,9 +47,6 @@ void cmMakefileLibraryTargetGenerator::WriteRuleFiles()
   // write the per-target per-language flags
   this->WriteTargetLanguageFlags();
 
-  // Write the dependency generation rule.
-  this->WriteTargetDependRules();
-
   // write the link rules
   // Write the rule for this target type.
   switch(this->Target->GetType())
@@ -84,6 +81,10 @@ void cmMakefileLibraryTargetGenerator::WriteRuleFiles()
 
   // Write clean target
   this->WriteTargetCleanRules();
+
+  // Write the dependency generation rule.  This must be done last so
+  // that multiple output pair information is available.
+  this->WriteTargetDependRules();
 
   // close the streams
   this->CloseFileStreams();

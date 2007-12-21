@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalUnixMakefileGenerator3.h,v $
   Language:  C++
-  Date:      $Date: 2007/12/19 22:15:41 $
-  Version:   $Revision: 1.78 $
+  Date:      $Date: 2007/12/21 17:22:12 $
+  Version:   $Revision: 1.79 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -203,9 +203,6 @@ public:
   virtual bool UpdateDependencies(const char* tgtInfo,
                                   bool verbose, bool color);
 
-  /** Called from command-line hook to scan dependencies.  */
-  bool ScanDependencies(const char* tgtInfo);
-
   /** Called from command-line hook to clear dependencies.  */
   virtual void ClearDependencies(cmMakefile* mf, bool verbose);
   
@@ -324,6 +321,10 @@ protected:
                           cmTarget& target, const char* filename =0);
 
   std::map<cmStdString, std::vector<int> > ProgressFiles;
+
+  // Helper methods for dependeny updates.
+  bool ScanDependencies(const char* targetDir);
+  void CheckMultipleOutputs(bool verbose);
 
 private:
   friend class cmMakefileTargetGenerator;
