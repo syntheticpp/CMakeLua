@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator3
   Module:    $RCSfile: cmGlobalUnixMakefileGenerator3.h,v $
   Language:  C++
-  Date:      $Date: 2007/12/21 17:22:12 $
-  Version:   $Revision: 1.50 $
+  Date:      $Date: 2007/12/21 23:32:22 $
+  Version:   $Revision: 1.51 $
 
   Copyright (c) 2005 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -147,7 +147,6 @@ protected:
                                  cmTarget& target);
   void AppendAnyGlobalDepend(std::vector<std::string>& depends, 
                              const char* name, 
-                             std::set<cmStdString>& emitted,
                              cmTarget &target);
 
   // does this generator need a requires step for any of its targets

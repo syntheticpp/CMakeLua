@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator3
   Module:    $RCSfile: cmGlobalUnixMakefileGenerator3.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/21 20:04:06 $
-  Version:   $Revision: 1.120 $
+  Date:      $Date: 2007/12/21 23:32:22 $
+  Version:   $Revision: 1.121 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -913,8 +913,7 @@ cmGlobalUnixMakefileGenerator3
     if(emitted.insert(lib->first).second)
       {
       // Add this dependency.
-      this->AppendAnyGlobalDepend(depends, lib->first.c_str(),
-                                  emitted, target);
+      this->AppendAnyGlobalDepend(depends, lib->first.c_str(), target);
       }
     }
 
@@ -927,7 +926,7 @@ cmGlobalUnixMakefileGenerator3
     if(emitted.insert(*util).second)
       {
       // Add this dependency.
-      this->AppendAnyGlobalDepend(depends, util->c_str(), emitted, target);
+      this->AppendAnyGlobalDepend(depends, util->c_str(), target);
       }
     }
 }
@@ -937,7 +936,7 @@ cmGlobalUnixMakefileGenerator3
 void
 cmGlobalUnixMakefileGenerator3
 ::AppendAnyGlobalDepend(std::vector<std::string>& depends, const char* name,
-                        std::set<cmStdString>& emitted, cmTarget &target)
+                        cmTarget &target)
 {
   cmTarget *result;
   cmLocalUnixMakefileGenerator3 *lg3;
