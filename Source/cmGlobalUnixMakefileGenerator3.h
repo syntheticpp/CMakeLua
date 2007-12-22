@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator3
   Module:    $RCSfile: cmGlobalUnixMakefileGenerator3.h,v $
   Language:  C++
-  Date:      $Date: 2007/12/21 23:32:22 $
-  Version:   $Revision: 1.51 $
+  Date:      $Date: 2007/12/22 18:08:26 $
+  Version:   $Revision: 1.52 $
 
   Copyright (c) 2005 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -179,6 +179,14 @@ protected:
 
   std::map<cmStdString, int > TargetSourceFileCount;
   bool ForceVerboseMakefiles;
+
+  bool AllowTargetDepends(cmTarget const* depender,
+                          cmTarget const* dependee);
+  bool FindDependency(cmTarget const* goal, cmTarget const* current,
+                      std::vector<cmTarget const*>& steps);
+  class TargetDependSet: public std::set<cmTarget const*> {};
+  typedef std::map<cmTarget const*, TargetDependSet> TargetDependMap;
+  TargetDependMap TargetDependencies;
 };
 
 #endif
