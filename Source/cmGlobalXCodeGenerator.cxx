@@ -3,8 +3,8 @@
 Program:   CMake - Cross-Platform Makefile Generator
 Module:    $RCSfile: cmGlobalXCodeGenerator.cxx,v $
 Language:  C++
-Date:      $Date: 2007/12/21 20:04:06 $
-Version:   $Revision: 1.172 $
+Date:      $Date: 2007/12/22 19:17:07 $
+Version:   $Revision: 1.173 $
 
 Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
 See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -2015,7 +2015,7 @@ void cmGlobalXCodeGenerator
 
   // Loop over all library dependencies.
   const cmTarget::LinkLibraryVectorType& tlibs = 
-    cmtarget->GetLinkLibraries();
+    cmtarget->GetOriginalLinkLibraries();
   for(cmTarget::LinkLibraryVectorType::const_iterator lib = tlibs.begin();
       lib != tlibs.end(); ++lib)
     {
