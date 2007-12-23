@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator3
   Module:    $RCSfile: cmGlobalUnixMakefileGenerator3.h,v $
   Language:  C++
-  Date:      $Date: 2007/12/22 18:08:26 $
-  Version:   $Revision: 1.52 $
+  Date:      $Date: 2007/12/23 20:03:42 $
+  Version:   $Revision: 1.53 $
 
   Copyright (c) 2005 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -114,7 +114,7 @@ public:
    const char* config, bool ignoreErrors, bool fast);
 
   // returns some progress informaiton
-  int GetTargetTotalNumberOfActions(cmTarget& target,
+  int GetTargetTotalNumberOfActions(cmTarget const& target,
                                     std::set<cmStdString> &emitted);
   unsigned long GetNumberOfProgressActionsInAll
   (cmLocalUnixMakefileGenerator3 *lg);
@@ -145,9 +145,6 @@ protected:
 
   void AppendGlobalTargetDepends(std::vector<std::string>& depends,
                                  cmTarget& target);
-  void AppendAnyGlobalDepend(std::vector<std::string>& depends, 
-                             const char* name, 
-                             cmTarget &target);
 
   // does this generator need a requires step for any of its targets
   bool NeedRequiresStep(cmTarget const&);
@@ -179,14 +176,6 @@ protected:
 
   std::map<cmStdString, int > TargetSourceFileCount;
   bool ForceVerboseMakefiles;
-
-  bool AllowTargetDepends(cmTarget const* depender,
-                          cmTarget const* dependee);
-  bool FindDependency(cmTarget const* goal, cmTarget const* current,
-                      std::vector<cmTarget const*>& steps);
-  class TargetDependSet: public std::set<cmTarget const*> {};
-  typedef std::map<cmTarget const*, TargetDependSet> TargetDependMap;
-  TargetDependMap TargetDependencies;
 };
 
 #endif

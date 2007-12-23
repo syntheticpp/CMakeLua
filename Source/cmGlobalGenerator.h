@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmGlobalGenerator.h,v $
   Language:  C++
-  Date:      $Date: 2007/12/21 17:22:12 $
-  Version:   $Revision: 1.100 $
+  Date:      $Date: 2007/12/23 20:03:42 $
+  Version:   $Revision: 1.101 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -223,8 +223,11 @@ public:
   virtual const char* GetRebuildCacheTargetName() { return 0; }
   virtual const char* GetCleanTargetName()        { return 0; }
 
+  // Class to track a set of dependencies.
+  class TargetDependSet: public std::set<cmTarget const*> {};
+
   // what targets does the specified target depend on
-  std::vector<cmTarget *>& GetTargetDepends(cmTarget& target);
+  TargetDependSet const& GetTargetDepends(cmTarget const& target);
 
   const std::map<cmStdString, std::vector<cmLocalGenerator*> >& GetProjectMap()
                                                const {return this->ProjectMap;}
@@ -260,7 +263,8 @@ protected:
   cmLocalGenerator* CurrentLocalGenerator;
   // map from project name to vector of local generators in that project
   std::map<cmStdString, std::vector<cmLocalGenerator*> > ProjectMap;
-  std::map<cmLocalGenerator*, std::set<cmTarget*> > LocalGeneratorToTargetMap;
+  std::map<cmLocalGenerator*, std::set<cmTarget const*> >
+  LocalGeneratorToTargetMap;
 
   // Set of named installation components requested by the project.
   std::set<cmStdString> InstallComponents;
@@ -286,13 +290,20 @@ private:
   // this is used to improve performance 
   std::map<cmStdString,cmTarget *> TotalTargets;
   std::map<cmStdString,cmTarget *> ImportedTotalTargets;
-  
-  std::map<cmStdString, std::vector<cmTarget *> > TargetDependencies;
 
   cmExternalMakefileProjectGenerator* ExtraGenerator;
 
   // track files replaced during a Generate
   std::vector<std::string> FilesReplacedDuringGenerate;
+
+  // Track inter-target dependencies.
+  bool ConsiderTargetDepends(cmTarget const* depender,
+                             TargetDependSet& depender_depends,
+                             const char* dependee_name);
+  bool FindDependency(cmTarget const* goal, cmTarget const* current,
+                      std::vector<cmTarget const*>& steps);
+  typedef std::map<cmTarget const*, TargetDependSet> TargetDependMap;
+  TargetDependMap TargetDependencies;
 };
 
 #endif

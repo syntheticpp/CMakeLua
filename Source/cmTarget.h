@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmTarget.h,v $
   Language:  C++
-  Date:      $Date: 2007/12/18 22:50:27 $
-  Version:   $Revision: 1.93 $
+  Date:      $Date: 2007/12/23 20:03:42 $
+  Version:   $Revision: 1.94 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -181,7 +181,7 @@ public:
    */
   void AddUtility(const char* u) { this->Utilities.insert(u);}
   ///! Get the utilities used by this target
-  std::set<cmStdString>const& GetUtilities() { return this->Utilities; }
+  std::set<cmStdString>const& GetUtilities() const { return this->Utilities; }
 
   void AnalyzeLibDependencies( const cmMakefile& mf );
 

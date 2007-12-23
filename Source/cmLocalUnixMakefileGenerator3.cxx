@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalUnixMakefileGenerator3.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/23 03:41:42 $
-  Version:   $Revision: 1.226 $
+  Date:      $Date: 2007/12/23 20:03:42 $
+  Version:   $Revision: 1.227 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -823,7 +823,8 @@ cmLocalUnixMakefileGenerator3
 
 //----------------------------------------------------------------------------
 std::string
-cmLocalUnixMakefileGenerator3::GetRelativeTargetDirectory(cmTarget& target)
+cmLocalUnixMakefileGenerator3
+::GetRelativeTargetDirectory(cmTarget const& target)
 {
   std::string dir = this->HomeRelativeOutputPath;
   dir += this->GetTargetDirectory(target);
