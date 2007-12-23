@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmDependsFortran.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/19 21:35:09 $
-  Version:   $Revision: 1.31 $
+  Date:      $Date: 2007/12/23 03:41:42 $
+  Version:   $Revision: 1.32 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -90,9 +90,8 @@ cmDependsFortran::cmDependsFortran():
 }
 
 //----------------------------------------------------------------------------
-cmDependsFortran::cmDependsFortran(std::vector<std::string> const& includes,
-                                   std::string const& targetDirectory):
-  IncludePath(&includes), TargetDirectory(targetDirectory)
+cmDependsFortran::cmDependsFortran(std::vector<std::string> const& includes):
+  IncludePath(&includes)
 {
 }
 

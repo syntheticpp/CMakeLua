@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmDependsFortran.h,v $
   Language:  C++
-  Date:      $Date: 2007/12/19 19:28:46 $
-  Version:   $Revision: 1.8 $
+  Date:      $Date: 2007/12/23 03:41:42 $
+  Version:   $Revision: 1.9 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -33,8 +33,7 @@ public:
       path from the build directory to the target file, the source
       file from which to start scanning, the include file search
       path, and the target directory.  */
-  cmDependsFortran(std::vector<std::string> const& includes,
-                   std::string const& targetDirectory);
+  cmDependsFortran(std::vector<std::string> const& includes);
 
   /** Virtual destructor to cleanup subclasses properly.  */
   virtual ~cmDependsFortran();
@@ -61,9 +60,6 @@ protected:
 
   // The include file search path.
   std::vector<std::string> const* IncludePath;
-
-  // The full path to the target's build directory.
-  std::string TargetDirectory;
 
 private:
   cmDependsFortran(cmDependsFortran const&); // Purposely not implemented.
