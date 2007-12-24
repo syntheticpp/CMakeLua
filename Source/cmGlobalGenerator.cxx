@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmGlobalGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/23 20:03:42 $
-  Version:   $Revision: 1.215 $
+  Date:      $Date: 2007/12/24 16:15:45 $
+  Version:   $Revision: 1.216 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1291,7 +1291,11 @@ void cmGlobalGenerator::FillLocalGeneratorToTargetMap()
         // target may still be included if it is a dependency of a
         // non-excluded target.
         TargetDependSet const& tgtdeps = this->GetTargetDepends(target);
-        targetSet.insert(tgtdeps.begin(), tgtdeps.end());
+        for(TargetDependSet::const_iterator ti = tgtdeps.begin();
+            ti != tgtdeps.end(); ++ti)
+          {
+          targetSet.insert(*ti);
+          }
         }
       }
     }
