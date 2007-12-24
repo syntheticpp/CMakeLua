@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLinkDirectoriesCommand.h,v $
   Language:  C++
-  Date:      $Date: 2007/10/10 15:47:43 $
-  Version:   $Revision: 1.11 $
+  Date:      $Date: 2007/12/24 00:03:22 $
+  Version:   $Revision: 1.12 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -54,7 +54,7 @@ public:
    */
   virtual const char* GetTerseDocumentation() 
     {
-    return "Specify directories in which to search for libraries.";
+    return "Specify directories in which the linker will look for libraries.";
     }
   
   /**
@@ -64,7 +64,8 @@ public:
     {
     return
       "  link_directories(directory1 directory2 ...)\n"
-      "Specify the paths in which the linker should search for libraries.";
+      "Specify the paths in which the linker should search for libraries. "
+      "The command will apply only to targets created after it is called.";
     }
   
   cmTypeMacro(cmLinkDirectoriesCommand, cmCommand);
