@@ -77,6 +77,11 @@ void cmLocalGenerator::Configure()
   // find & read the list file
   std::string currentStart = this->Makefile->GetStartDirectory();
   currentStart += "/CMakeLists.txt";
+  if (!cmSystemTools::FileExists(currentStart.c_str()))
+    {
+    currentStart = this->Makefile->GetStartDirectory();
+    currentStart += "/CMakeLists.lua";
+    }
   this->Makefile->ReadListFile(currentStart.c_str());
 
   // at the end of the ReadListFile handle any old style subdirs

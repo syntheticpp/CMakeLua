@@ -82,6 +82,8 @@ SET(SRCS
   cmBootstrapCommands.cxx
   cmCacheManager.cxx
   cmCacheManager.h
+  cmCommand.cxx
+  cmCommand.h
   cmCommands.cxx
   cmCommands.h
   cmCommandArgumentLexer.cxx
@@ -254,7 +256,8 @@ ENDIF (WIN32)
 ADD_LIBRARY(CMakeLib ${SRCS})
 TARGET_LINK_LIBRARIES(CMakeLib cmsys
   ${CMAKE_EXPAT_LIBRARIES} ${CMAKE_ZLIB_LIBRARIES}
-  ${CMAKE_TAR_LIBRARIES} ${CMAKE_COMPRESS_LIBRARIES})
+  ${CMAKE_TAR_LIBRARIES} ${CMAKE_COMPRESS_LIBRARIES} 
+  ${CMAKE_LUA_LIBRARIES})
 
 # On Apple we need Carbon
 IF(APPLE)
@@ -273,6 +276,7 @@ INCLUDE_DIRECTORIES(
   "${CMAKE_SOURCE_DIR}/Source/CTest"
   ${CMAKE_XMLRPC_INCLUDES}
   ${CMAKE_CURL_INCLUDES}
+  ${CMAKE_LUA_INCLUDES}
   )
 #
 # Sources for CTestLib

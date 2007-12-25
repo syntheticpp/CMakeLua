@@ -22,6 +22,8 @@
 class cmGetPropertyCommand : public cmCommand
 {
 public:
+  cmGetPropertyCommand();
+
   virtual cmCommand* Clone() 
     {
       return new cmGetPropertyCommand;
