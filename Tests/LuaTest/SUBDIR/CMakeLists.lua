@@ -13,6 +13,5 @@ cm_add_library ("simpleLibSub", "STATIC", unpack(sources));
 
 cm_target_link_libraries ("LuaTestSub", "simpleLibSub");
 
---print("The location of simpleLib is: " .. 
-  cm_get_property("TARGET", "simpleLibSub", "LOCATION"));
+--print("The location of simpleLib is: " .. cm_get_property("TARGET", "simpleLibSub", "LOCATION"));
 
