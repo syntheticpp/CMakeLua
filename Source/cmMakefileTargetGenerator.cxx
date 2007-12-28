@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefileTargetGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/21 17:22:12 $
-  Version:   $Revision: 1.78 $
+  Date:      $Date: 2007/12/28 16:49:46 $
+  Version:   $Revision: 1.79 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -791,6 +791,37 @@ void cmMakefileTargetGenerator::WriteTargetDependRules()
       }
     *this->InfoFileStream << "  )\n\n";
     }
+
+  // Store list of targets linked directly or transitively.
+  {
+  *this->InfoFileStream
+    << "\n"
+    << "# Targets to which this target links.\n"
+    << "SET(CMAKE_TARGET_LINKED_INFO_FILES\n";
+  cmGlobalGenerator* gg = this->GlobalGenerator;
+  std::set<cmTarget const*> emitted;
+  cmTarget::LinkLibraryVectorType const& libs =
+    this->Target->GetLinkLibraries();
+  for(cmTarget::LinkLibraryVectorType::const_iterator j = libs.begin();
+      j != libs.end(); ++j)
+    {
+    if(cmTarget const* linkee = gg->FindTarget(0, j->first.c_str(), false))
+      {
+      if(emitted.insert(linkee).second)
+        {
+        cmMakefile* mf = linkee->GetMakefile();
+        cmLocalGenerator* lg = mf->GetLocalGenerator();
+        std::string di = mf->GetStartOutputDirectory();
+        di += "/";
+        di += lg->GetTargetDirectory(*linkee);
+        di += "/DependInfo.cmake";
+        *this->InfoFileStream << "  \"" << di << "\"\n";
+        }
+      }
+    }
+  *this->InfoFileStream
+    << "  )\n";
+  }
 
   // and now write the rule to use it
   std::vector<std::string> depends;
