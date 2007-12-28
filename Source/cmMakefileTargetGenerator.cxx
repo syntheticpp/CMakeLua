@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefileTargetGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/28 16:49:46 $
-  Version:   $Revision: 1.79 $
+  Date:      $Date: 2007/12/28 19:59:06 $
+  Version:   $Revision: 1.80 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1390,4 +1390,36 @@ cmMakefileTargetGenerator
 {
   MultipleOutputPairsType::value_type p(depender, dependee);
   this->MultipleOutputPairs.insert(p);
+}
+
+//----------------------------------------------------------------------------
+void
+cmMakefileTargetGenerator
+::CreateLinkScript(const char* name,
+                   std::vector<std::string> const& link_commands,
+                   std::vector<std::string>& makefile_commands)
+{
+  // Create the link script file.
+  std::string linkScriptName = this->TargetBuildDirectoryFull;
+  linkScriptName += "/";
+  linkScriptName += name;
+  cmGeneratedFileStream linkScriptStream(linkScriptName.c_str());
+  for(std::vector<std::string>::const_iterator cmd = link_commands.begin();
+      cmd != link_commands.end(); ++cmd)
+    {
+    // Do not write out empty commands or commands beginning in the
+    // shell no-op ":".
+    if(!cmd->empty() && (*cmd)[0] != ':')
+      {
+      linkScriptStream << *cmd << "\n";
+      }
+    }
+
+  // Create the makefile command to invoke the link script.
+  std::string link_command = "$(CMAKE_COMMAND) -E cmake_link_script ";
+  link_command += this->Convert(linkScriptName.c_str(),
+                                cmLocalGenerator::START_OUTPUT,
+                                cmLocalGenerator::SHELL);
+  link_command += " --verbose=$(VERBOSE)";
+  makefile_commands.push_back(link_command);
 }

@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefileTargetGenerator.h,v $
   Language:  C++
-  Date:      $Date: 2007/12/21 17:22:12 $
-  Version:   $Revision: 1.17 $
+  Date:      $Date: 2007/12/28 19:59:06 $
+  Version:   $Revision: 1.18 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -127,6 +127,12 @@ protected:
       are regenerated properly.  This method is used by the local
       makefile generators to register such pairs.  */
   void AddMultipleOutputPair(const char* depender, const char* dependee);
+
+  /** Create a script to hold link rules and a command to invoke the
+      script at build time.  */
+  void CreateLinkScript(const char* name,
+                        std::vector<std::string> const& link_commands,
+                        std::vector<std::string>& makefile_commands);
 
   virtual void CloseFileStreams();
   void RemoveForbiddenFlags(const char* flagVar, const char* linkLang,
