@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmDependsFortran.h,v $
   Language:  C++
-  Date:      $Date: 2007/12/23 03:41:42 $
-  Version:   $Revision: 1.9 $
+  Date:      $Date: 2007/12/28 16:49:59 $
+  Version:   $Revision: 1.10 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -18,6 +18,9 @@
 #define cmDependsFortran_h
 
 #include "cmDepends.h"
+
+class cmDependsFortranInternals;
+class cmDependsFortranSourceInfo;
 
 /** \class cmDependsFortran
  * \brief Dependency scanner for Fortran object files.
@@ -50,16 +53,36 @@ public:
                        std::string& fileName);
 
 protected:
+  // Finalize the dependency information for the target.
+  virtual bool Finalize(std::ostream& makeDepends,
+                        std::ostream& internalDepends);
+
+  // Find all the modules required by the target.
+  void LocateModules();
+  void MatchLocalModules();
+  void MatchRemoteModules(std::istream& fin, const char* moduleDir);
+  void ConsiderModule(const char* name, const char* moduleDir);
+  bool FindModule(std::string const& name, std::string& module);
+
   // Implement writing/checking methods required by superclass.
   virtual bool WriteDependencies(
     const char *src, const char *file,
     std::ostream& makeDepends, std::ostream& internalDepends);
+
+  // Actually write the depenencies to the streams.
+  bool WriteDependenciesReal(const char *obj,
+                             cmDependsFortranSourceInfo const& info,
+                             std::ostream& makeDepends,
+                             std::ostream& internalDepends);
 
   // The source file from which to start scanning.
   std::string SourceFile;
 
   // The include file search path.
   std::vector<std::string> const* IncludePath;
+
+  // Internal implementation details.
+  cmDependsFortranInternals* Internal;
 
 private:
   cmDependsFortran(cmDependsFortran const&); // Purposely not implemented.

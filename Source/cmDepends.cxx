@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmDepends.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/23 03:41:42 $
-  Version:   $Revision: 1.16 $
+  Date:      $Date: 2007/12/28 16:49:59 $
+  Version:   $Revision: 1.17 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -75,6 +75,13 @@ bool cmDepends::Write(std::ostream &makeDepends,
       }
     }
 
+  return this->Finalize(makeDepends, internalDepends);
+}
+
+//----------------------------------------------------------------------------
+bool cmDepends::Finalize(std::ostream&,
+                         std::ostream&)
+{
   return true;
 }
 
