@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmDependsFortran.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/28 16:49:59 $
-  Version:   $Revision: 1.33 $
+  Date:      $Date: 2007/12/28 16:50:14 $
+  Version:   $Revision: 1.34 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -218,6 +218,27 @@ bool cmDependsFortran::Finalize(std::ostream& makeDepends,
       i != provides.end(); ++i)
     {
     fiStream << " " << *i << "\n";
+    }
+
+  // Create a script to clean the modules.
+  if(!provides.empty())
+    {
+    std::string fcName = this->TargetDirectory;
+    fcName += "/cmake_clean_Fortran.cmake";
+    cmGeneratedFileStream fcStream(fcName.c_str());
+    fcStream << "# Remove fortran modules provided by this target.\n";
+    fcStream << "FILE(REMOVE\n";
+    for(std::set<cmStdString>::const_iterator i = provides.begin();
+        i != provides.end(); ++i)
+      {
+      std::string mod_upper = cmSystemTools::UpperCase(*i);
+      std::string mod_lower = *i;
+      fcStream << " \"" << mod_lower << ".mod\""
+               << " \"" << mod_lower << ".mod.stamp\""
+               << " \"" << mod_upper << ".mod\""
+               << " \"" << mod_upper << ".mod.stamp\"\n";
+      }
+    fcStream << "  )\n";
     }
   return true;
 }

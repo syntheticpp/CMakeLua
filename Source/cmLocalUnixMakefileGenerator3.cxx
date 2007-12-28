@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalUnixMakefileGenerator3.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/23 20:03:42 $
-  Version:   $Revision: 1.227 $
+  Date:      $Date: 2007/12/28 16:50:14 $
+  Version:   $Revision: 1.228 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1048,6 +1048,26 @@ cmLocalUnixMakefileGenerator3
       }
     fout << ")\n";
     commands.push_back(remove);
+
+    // For the main clean rule add per-language cleaning.
+    if(!filename)
+      {
+      // Get the set of source languages in the target.
+      std::set<cmStdString> languages;
+      target.GetLanguages(languages);
+      fout << "\n"
+           << "# Per-language clean rules from dependency scanning.\n"
+           << "FOREACH(lang";
+      for(std::set<cmStdString>::const_iterator l = languages.begin();
+          l != languages.end(); ++l)
+        {
+        fout << " " << *l;
+        }
+      fout << ")\n"
+           << "  INCLUDE(" << this->GetTargetDirectory(target)
+           << "/cmake_clean_${lang}.cmake OPTIONAL)\n"
+           << "ENDFOREACH(lang)\n";
+      }
     }
 }
 
