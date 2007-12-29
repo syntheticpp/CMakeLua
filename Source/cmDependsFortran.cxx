@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmDependsFortran.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/28 16:50:14 $
-  Version:   $Revision: 1.34 $
+  Date:      $Date: 2007/12/29 03:29:19 $
+  Version:   $Revision: 1.35 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -148,7 +148,7 @@ cmDependsFortran::~cmDependsFortran()
 
 //----------------------------------------------------------------------------
 bool cmDependsFortran::WriteDependencies(const char *src, const char *obj,
-  std::ostream& makeDepends, std::ostream& internalDepends)
+                                         std::ostream&, std::ostream&)
 {
   // Make sure this is a scanning instance.
   if(!src || src[0] == '\0')
@@ -319,7 +319,7 @@ void cmDependsFortran::MatchRemoteModules(std::istream& fin,
                                           const char* moduleDir)
 {
   std::string line;
-  bool doing_provides;
+  bool doing_provides = false;
   while(cmSystemTools::GetLineFromStream(fin, line))
     {
     // Ignore comments and empty lines.
