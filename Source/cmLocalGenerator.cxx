@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/29 04:07:14 $
-  Version:   $Revision: 1.245 $
+  Date:      $Date: 2007/12/29 04:07:26 $
+  Version:   $Revision: 1.246 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -2753,11 +2753,14 @@ cmLocalGenerator
   // extension.
   if(!source.GetPropertyAsBool("KEEP_EXTENSION"))
     {
-    // Remove the original extension.
-    std::string::size_type dot_pos = objectName.rfind(".");
-    if(dot_pos != std::string::npos)
+    // Remove the original extension for CMake 2.4 compatibility.
+    if(this->NeedBackwardsCompatibility(2, 4))
       {
-      objectName = objectName.substr(0, dot_pos);
+      std::string::size_type dot_pos = objectName.rfind(".");
+      if(dot_pos != std::string::npos)
+        {
+        objectName = objectName.substr(0, dot_pos);
+        }
       }
 
     // Store the new extension.
