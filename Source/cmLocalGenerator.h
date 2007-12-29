@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalGenerator.h,v $
   Language:  C++
-  Date:      $Date: 2007/12/19 22:15:41 $
-  Version:   $Revision: 1.90 $
+  Date:      $Date: 2007/12/29 04:07:14 $
+  Version:   $Revision: 1.91 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -251,6 +251,24 @@ public:
   
   bool IsChrpathAvailable(const cmTarget& target);
 
+  /**
+   * Get the level of backwards compatibility requested by the project
+   * in this directory.  This is the value of the CMake variable
+   * CMAKE_BACKWARDS_COMPATIBILITY whose format is
+   * "major.minor[.patch]".  The returned integer is encoded as
+   *
+   *   CMake_VERSION_ENCODE(major, minor, patch)
+   *
+   * and is monotonically increasing with the CMake version.
+   */
+  unsigned int GetBackwardsCompatibility();
+
+  /**
+   * Test whether compatibility is set to a given version or lower.
+   */
+  bool NeedBackwardsCompatibility(unsigned int major,
+                                  unsigned int minor,
+                                  unsigned int patch = 0xFFu);
 protected:
 
   /** Construct a comment for a custom command.  */
@@ -343,6 +361,9 @@ protected:
   std::string RelativePathTopBinary;
   bool RelativePathsConfigured;
   bool PathConversionsSetup;
+
+  unsigned int BackwardsCompatibility;
+  bool BackwardsCompatibilityFinal;
 };
 
 #endif
