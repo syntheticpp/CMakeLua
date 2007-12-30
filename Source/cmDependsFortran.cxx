@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmDependsFortran.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/29 03:29:19 $
-  Version:   $Revision: 1.35 $
+  Date:      $Date: 2007/12/30 17:23:54 $
+  Version:   $Revision: 1.36 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -424,9 +424,6 @@ cmDependsFortran
 
       // since we require some things add them to our list of requirements
       makeDepends << obj << ".requires: " << proxy << std::endl;
-
-      // create an empty proxy in case no other source provides it
-      makeDepends << proxy << ":" << std::endl;
       }
 
     // The object file should depend on timestamped files for the
