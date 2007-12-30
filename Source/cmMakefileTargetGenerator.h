@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefileTargetGenerator.h,v $
   Language:  C++
-  Date:      $Date: 2007/12/28 19:59:06 $
-  Version:   $Revision: 1.18 $
+  Date:      $Date: 2007/12/30 21:11:38 $
+  Version:   $Revision: 1.19 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -183,6 +183,14 @@ protected:
 
   typedef std::map<cmStdString, cmStdString> MultipleOutputPairsType;
   MultipleOutputPairsType MultipleOutputPairs;
+
+  // Target-wide Fortran module output directory.
+  bool FortranModuleDirectoryComputed;
+  std::string FortranModuleDirectory;
+  const char* GetFortranModuleDirectory();
+
+  // Compute target-specific Fortran language flags.
+  void AddFortranFlags(std::string& flags);
 
   //==================================================================
   // Convenience routines that do nothing more than forward to
