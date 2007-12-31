@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmGlobalGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/24 16:15:45 $
-  Version:   $Revision: 1.216 $
+  Date:      $Date: 2007/12/31 22:29:20 $
+  Version:   $Revision: 1.217 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1420,6 +1420,15 @@ void cmGlobalGenerator::CreateDefaultGlobalTargets(cmTargets* targets)
   if ( this->GetPreinstallTargetName() )
     {
     depends.push_back("preinstall");
+    }
+  else
+    {
+    const char* noPackageAll =
+      mf->GetDefinition("CMAKE_SKIP_PACKAGE_ALL_DEPENDENCY");
+    if(!noPackageAll || cmSystemTools::IsOff(noPackageAll))
+      {
+      depends.push_back(this->GetAllTargetName());
+      }
     }
   if(cmSystemTools::FileExists(configFile.c_str()))
     {
