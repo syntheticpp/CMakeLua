@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmDependsFortran.h,v $
   Language:  C++
-  Date:      $Date: 2007/12/30 21:11:38 $
-  Version:   $Revision: 1.11 $
+  Date:      $Date: 2007/12/31 16:25:17 $
+  Version:   $Revision: 1.12 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -45,6 +45,10 @@ public:
       by a Fortran90 compiler to copy the .mod file to the
       corresponding stamp file.  */
   static bool CopyModule(const std::vector<std::string>& args);
+
+  /** Determine if a mod file and the corresponding mod.stamp file
+      are representing  different module information. */
+  static bool  ModulesDiffer(const char* modFile, const char* stampFile);
 
   /** Method to find an included file in the include path.  Fortran
       always searches the directory containing the including source
