@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmFindBase.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/19 16:06:47 $
-  Version:   $Revision: 1.28 $
+  Date:      $Date: 2007/12/28 17:01:37 $
+  Version:   $Revision: 1.29 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -602,6 +602,10 @@ void cmFindBase::AddFindPrefix(std::vector<std::string>& dest,
       dirWithSubdir = it->c_str();
       dirWithSubdir += "/sbin";
       dest.push_back(dirWithSubdir);
+      }
+    if(!subdir.empty())
+      {
+      dest.push_back(*it);
       }
     }
 }

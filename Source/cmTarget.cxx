@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmTarget.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/18 22:50:27 $
-  Version:   $Revision: 1.169 $
+  Date:      $Date: 2007/12/30 21:11:38 $
+  Version:   $Revision: 1.170 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -285,6 +285,15 @@ void cmTarget::DefineProperties(cmake *cm)
      "All Windows-based systems including Cygwin are DLL platforms.");
 
   cm->DefineProperty
+    ("Fortran_MODULE_DIRECTORY", cmProperty::TARGET,
+     "Specify output directory for Fortran modules provided by the target.",
+     "If the target contains Fortran source files that provide modules "
+     "and the compiler supports a module output directory this specifies "
+     "the directory in which the modules will be placed.  "
+     "When this property is not set the modules will be placed in the "
+     "build directory corresponding to the target's source directory.");
+
+  cm->DefineProperty
     ("XCODE_ATTRIBUTE_<an-attribute>", cmProperty::TARGET,
      "Set Xcode target attributes directly.",
      "Tell the Xcode generator to set '<an-attribute>' to a given value "
@@ -403,6 +412,7 @@ void cmTarget::SetMakefile(cmMakefile* mf)
   this->SetPropertyDefault("ARCHIVE_OUTPUT_DIRECTORY", 0);
   this->SetPropertyDefault("LIBRARY_OUTPUT_DIRECTORY", 0);
   this->SetPropertyDefault("RUNTIME_OUTPUT_DIRECTORY", 0);
+  this->SetPropertyDefault("Fortran_MODULE_DIRECTORY", 0);
 
   // Collect the set of configuration types.
   std::vector<std::string> configNames;

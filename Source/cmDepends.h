@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmDepends.h,v $
   Language:  C++
-  Date:      $Date: 2007/12/23 03:41:42 $
-  Version:   $Revision: 1.13 $
+  Date:      $Date: 2007/12/28 16:49:59 $
+  Version:   $Revision: 1.14 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -84,6 +84,10 @@ protected:
   // Return false if dependencies must be regenerated and true
   // otherwise.
   virtual bool CheckDependencies(std::istream& internalDepends);
+
+  // Finalize the dependency information for the target.
+  virtual bool Finalize(std::ostream& makeDepends,
+                        std::ostream& internalDepends);
 
   // The directory in which the build rule for the target file is executed.
   std::string CompileDirectory;

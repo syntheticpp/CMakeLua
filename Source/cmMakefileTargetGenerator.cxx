@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefileTargetGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/21 17:22:12 $
-  Version:   $Revision: 1.78 $
+  Date:      $Date: 2007/12/30 21:11:38 $
+  Version:   $Revision: 1.81 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -36,6 +36,7 @@ cmMakefileTargetGenerator::cmMakefileTargetGenerator()
   this->InfoFileStream = 0;
   this->FlagFileStream = 0;
   this->CustomCommandDriver = OnBuild;
+  this->FortranModuleDirectoryComputed = false;
 }
 
 cmMakefileTargetGenerator *
@@ -267,6 +268,12 @@ void cmMakefileTargetGenerator::WriteTargetLanguageFlags()
     this->LocalGenerator
       ->AddLanguageFlags(flags, lang,
                          this->LocalGenerator->ConfigurationName.c_str());
+
+    // Fortran-specific flags computed for this target.
+    if(*l == "Fortran")
+      {
+      this->AddFortranFlags(flags);
+      }
 
     // Add shared-library flags if needed.
     this->LocalGenerator->AddSharedFlags(flags, lang, shared);
@@ -790,6 +797,46 @@ void cmMakefileTargetGenerator::WriteTargetDependRules()
                             << pi->second << "\"\n";
       }
     *this->InfoFileStream << "  )\n\n";
+    }
+
+  // Store list of targets linked directly or transitively.
+  {
+  *this->InfoFileStream
+    << "\n"
+    << "# Targets to which this target links.\n"
+    << "SET(CMAKE_TARGET_LINKED_INFO_FILES\n";
+  cmGlobalGenerator* gg = this->GlobalGenerator;
+  std::set<cmTarget const*> emitted;
+  cmTarget::LinkLibraryVectorType const& libs =
+    this->Target->GetLinkLibraries();
+  for(cmTarget::LinkLibraryVectorType::const_iterator j = libs.begin();
+      j != libs.end(); ++j)
+    {
+    if(cmTarget const* linkee = gg->FindTarget(0, j->first.c_str(), false))
+      {
+      if(emitted.insert(linkee).second)
+        {
+        cmMakefile* mf = linkee->GetMakefile();
+        cmLocalGenerator* lg = mf->GetLocalGenerator();
+        std::string di = mf->GetStartOutputDirectory();
+        di += "/";
+        di += lg->GetTargetDirectory(*linkee);
+        di += "/DependInfo.cmake";
+        *this->InfoFileStream << "  \"" << di << "\"\n";
+        }
+      }
+    }
+  *this->InfoFileStream
+    << "  )\n";
+  }
+
+  // Check for a target-specific module output directory.
+  if(const char* mdir = this->GetFortranModuleDirectory())
+    {
+    *this->InfoFileStream
+      << "\n"
+      << "# Fortran module output directory.\n"
+      << "SET(CMAKE_Fortran_TARGET_MODULE_DIR \"" << mdir << "\")\n";
     }
 
   // and now write the rule to use it
@@ -1359,4 +1406,115 @@ cmMakefileTargetGenerator
 {
   MultipleOutputPairsType::value_type p(depender, dependee);
   this->MultipleOutputPairs.insert(p);
+}
+
+//----------------------------------------------------------------------------
+void
+cmMakefileTargetGenerator
+::CreateLinkScript(const char* name,
+                   std::vector<std::string> const& link_commands,
+                   std::vector<std::string>& makefile_commands)
+{
+  // Create the link script file.
+  std::string linkScriptName = this->TargetBuildDirectoryFull;
+  linkScriptName += "/";
+  linkScriptName += name;
+  cmGeneratedFileStream linkScriptStream(linkScriptName.c_str());
+  for(std::vector<std::string>::const_iterator cmd = link_commands.begin();
+      cmd != link_commands.end(); ++cmd)
+    {
+    // Do not write out empty commands or commands beginning in the
+    // shell no-op ":".
+    if(!cmd->empty() && (*cmd)[0] != ':')
+      {
+      linkScriptStream << *cmd << "\n";
+      }
+    }
+
+  // Create the makefile command to invoke the link script.
+  std::string link_command = "$(CMAKE_COMMAND) -E cmake_link_script ";
+  link_command += this->Convert(linkScriptName.c_str(),
+                                cmLocalGenerator::START_OUTPUT,
+                                cmLocalGenerator::SHELL);
+  link_command += " --verbose=$(VERBOSE)";
+  makefile_commands.push_back(link_command);
+}
+
+//----------------------------------------------------------------------------
+const char* cmMakefileTargetGenerator::GetFortranModuleDirectory()
+{
+  // Compute the module directory.
+  if(!this->FortranModuleDirectoryComputed)
+    {
+    const char* target_mod_dir =
+      this->Target->GetProperty("Fortran_MODULE_DIRECTORY");
+    const char* moddir_flag =
+      this->Makefile->GetDefinition("CMAKE_Fortran_MODDIR_FLAG");
+    if(target_mod_dir && moddir_flag)
+      {
+      // Compute the full path to the module directory.
+      if(cmSystemTools::FileIsFullPath(target_mod_dir))
+        {
+        // Already a full path.
+        this->FortranModuleDirectory = target_mod_dir;
+        }
+      else
+        {
+        // Interpret relative to the current output directory.
+        this->FortranModuleDirectory =
+          this->Makefile->GetCurrentOutputDirectory();
+        this->FortranModuleDirectory += "/";
+        this->FortranModuleDirectory += target_mod_dir;
+        }
+
+      // Make sure the module output directory exists.
+      cmSystemTools::MakeDirectory(this->FortranModuleDirectory.c_str());
+      }
+    this->FortranModuleDirectoryComputed = true;
+    }
+
+  // Return the computed directory.
+  if(this->FortranModuleDirectory.empty())
+    {
+    return 0;
+    }
+  else
+    {
+    return this->FortranModuleDirectory.c_str();
+    }
+}
+
+//----------------------------------------------------------------------------
+void cmMakefileTargetGenerator::AddFortranFlags(std::string& flags)
+{
+  // Add a module output directory flag if necessary.
+  if(const char* mod_dir = this->GetFortranModuleDirectory())
+    {
+    const char* moddir_flag =
+      this->Makefile->GetRequiredDefinition("CMAKE_Fortran_MODDIR_FLAG");
+    std::string modflag = moddir_flag;
+    modflag += this->Convert(mod_dir,
+                             cmLocalGenerator::START_OUTPUT,
+                             cmLocalGenerator::SHELL);
+    this->LocalGenerator->AppendFlags(flags, modflag.c_str());
+    }
+
+  // If there is a separate module path flag then duplicate the
+  // include path with it.  This compiler does not search the include
+  // path for modules.
+  if(const char* modpath_flag =
+     this->Makefile->GetDefinition("CMAKE_Fortran_MODPATH_FLAG"))
+    {
+    std::vector<std::string> includes;
+    this->LocalGenerator->GetIncludeDirectories(includes);
+    for(std::vector<std::string>::const_iterator idi = includes.begin();
+        idi != includes.end(); ++idi)
+      {
+      std::string flg = modpath_flag;
+      flg += this->Convert(idi->c_str(),
+                           cmLocalGenerator::NONE,
+                           cmLocalGenerator::SHELL);
+      this->LocalGenerator->AppendFlags(flags, flg.c_str());
+      }
+    }
 }

@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefileTargetGenerator.h,v $
   Language:  C++
-  Date:      $Date: 2007/12/21 17:22:12 $
-  Version:   $Revision: 1.17 $
+  Date:      $Date: 2007/12/30 21:11:38 $
+  Version:   $Revision: 1.19 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -128,6 +128,12 @@ protected:
       makefile generators to register such pairs.  */
   void AddMultipleOutputPair(const char* depender, const char* dependee);
 
+  /** Create a script to hold link rules and a command to invoke the
+      script at build time.  */
+  void CreateLinkScript(const char* name,
+                        std::vector<std::string> const& link_commands,
+                        std::vector<std::string>& makefile_commands);
+
   virtual void CloseFileStreams();
   void RemoveForbiddenFlags(const char* flagVar, const char* linkLang,
                             std::string& linkFlags);
@@ -177,6 +183,14 @@ protected:
 
   typedef std::map<cmStdString, cmStdString> MultipleOutputPairsType;
   MultipleOutputPairsType MultipleOutputPairs;
+
+  // Target-wide Fortran module output directory.
+  bool FortranModuleDirectoryComputed;
+  std::string FortranModuleDirectory;
+  const char* GetFortranModuleDirectory();
+
+  // Compute target-specific Fortran language flags.
+  void AddFortranFlags(std::string& flags);
 
   //==================================================================
   // Convenience routines that do nothing more than forward to

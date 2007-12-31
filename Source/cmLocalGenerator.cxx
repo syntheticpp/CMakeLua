@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/20 14:27:59 $
-  Version:   $Revision: 1.244 $
+  Date:      $Date: 2007/12/29 04:07:26 $
+  Version:   $Revision: 1.246 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -56,6 +56,8 @@ cmLocalGenerator::cmLocalGenerator()
   this->IsMakefileGenerator = false;
   this->RelativePathsConfigured = false;
   this->PathConversionsSetup = false;
+  this->BackwardsCompatibility = 0;
+  this->BackwardsCompatibilityFinal = false;
 }
 
 cmLocalGenerator::~cmLocalGenerator()
@@ -2756,11 +2758,14 @@ cmLocalGenerator
   // extension.
   if(!source.GetPropertyAsBool("KEEP_EXTENSION"))
     {
-    // Remove the original extension.
-    std::string::size_type dot_pos = objectName.rfind(".");
-    if(dot_pos != std::string::npos)
+    // Remove the original extension for CMake 2.4 compatibility.
+    if(this->NeedBackwardsCompatibility(2, 4))
       {
-      objectName = objectName.substr(0, dot_pos);
+      std::string::size_type dot_pos = objectName.rfind(".");
+      if(dot_pos != std::string::npos)
+        {
+        objectName = objectName.substr(0, dot_pos);
+        }
       }
 
     // Store the new extension.
@@ -2864,4 +2869,43 @@ cmLocalGenerator::GetTargetObjectFileDirectories(cmTarget* ,
 {
   cmSystemTools::Error("GetTargetObjectFileDirectories"
                        " called on cmLocalGenerator");
+}
+
+//----------------------------------------------------------------------------
+unsigned int cmLocalGenerator::GetBackwardsCompatibility()
+{
+  // The computed version may change until the project is fully
+  // configured.
+  if(!this->BackwardsCompatibilityFinal)
+    {
+    unsigned int major = 0;
+    unsigned int minor = 0;
+    unsigned int patch = 0;
+    if(const char* value
+       = this->Makefile->GetDefinition("CMAKE_BACKWARDS_COMPATIBILITY"))
+      {
+      switch(sscanf(value, "%u.%u.%u", &major, &minor, &patch))
+        {
+        case 2: patch = 0; break;
+        case 1: minor = 0; patch = 0; break;
+        default: break;
+        }
+      }
+    this->BackwardsCompatibility = CMake_VERSION_ENCODE(major, minor, patch);
+    this->BackwardsCompatibilityFinal = this->Configured;
+    }
+
+  return this->BackwardsCompatibility;
+}
+
+//----------------------------------------------------------------------------
+bool cmLocalGenerator::NeedBackwardsCompatibility(unsigned int major,
+                                                  unsigned int minor,
+                                                  unsigned int patch)
+{
+  // Compatibility is needed if CMAKE_BACKWARDS_COMPATIBILITY is set
+  // equal to or lower than the given version.
+  unsigned int actual_compat = this->GetBackwardsCompatibility();
+  return (actual_compat &&
+          actual_compat <= CMake_VERSION_ENCODE(major, minor, patch));
 }
