@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmake.h,v $
   Language:  C++
-  Date:      $Date: 2007/12/13 22:56:49 $
-  Version:   $Revision: 1.97 $
+  Date:      $Date: 2008/01/01 20:13:41 $
+  Version:   $Revision: 1.98 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -387,7 +387,20 @@ protected:
 
   static int ExecuteEchoColor(std::vector<std::string>& args);
   static int ExecuteLinkScript(std::vector<std::string>& args);
-  
+  static int VisualStudioLink(std::vector<std::string>& args, int type);
+  static int VisualStudioLinkIncremental(std::vector<std::string>& args,
+                                         int type, 
+                                         bool verbose);
+  static int VisualStudioLinkNonIncremental(std::vector<std::string>& args,
+                                            int type,
+                                            bool verbose);
+  static int ParseVisualStudioLinkCommand(std::vector<std::string>& args, 
+                                          std::vector<cmStdString>& command, 
+                                          std::string& targetName);
+  static bool RunCommand(const char* comment,
+                         std::vector<cmStdString>& command,
+                         bool verbose,
+                         int* retCodeOut = 0);
   cmVariableWatch* VariableWatch;
   
   ///! Find the full path to one of the cmake programs like ctest, cpack, etc.

@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefile.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/19 21:46:15 $
-  Version:   $Revision: 1.419 $
+  Date:      $Date: 2008/01/01 20:13:41 $
+  Version:   $Revision: 1.420 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1020,8 +1020,12 @@ void cmMakefile::AddLinkDirectory(const char* dir)
   // much bigger than 20.  We cannot use a set because of order
   // dependency of the link search path.
 
+  if(!dir)
+    {
+    return;
+    }
   // remove trailing slashes
-  if(dir && dir[strlen(dir)-1] == '/')
+  if(dir[strlen(dir)-1] == '/')
     {
     std::string newdir = dir;
     newdir = newdir.substr(0, newdir.size()-1);

@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmSystemTools.h,v $
   Language:  C++
-  Date:      $Date: 2007/12/20 14:35:14 $
-  Version:   $Revision: 1.145 $
+  Date:      $Date: 2008/01/01 20:13:41 $
+  Version:   $Revision: 1.146 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -206,6 +206,16 @@ public:
    * escaped for this to with spaces.  
    */
   static bool RunSingleCommand(const char* command, std::string* output = 0,
+                               int* retVal = 0, const char* dir = 0, 
+                               bool verbose = true,
+                               double timeout = 0.0);
+  /** 
+   * In this version of RunSingleCommand, command[0] should be
+   * the command to run, and each argument to the command should
+   * be in comand[1]...command[command.size()]
+   */
+  static bool RunSingleCommand(std::vector<cmStdString> const& command,
+                               std::string* output = 0,
                                int* retVal = 0, const char* dir = 0, 
                                bool verbose = true,
                                double timeout = 0.0);
