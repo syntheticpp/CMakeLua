@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmAuxSourceDirectoryCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/06/18 15:59:23 $
-  Version:   $Revision: 1.24 $
+  Date:      $Date: 2008/01/02 16:08:02 $
+  Version:   $Revision: 1.25 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -32,9 +32,17 @@ bool cmAuxSourceDirectoryCommand::InitialPass
   std::string sourceListValue;
   std::string templateDirectory = args[0];
   this->Makefile->AddExtraDirectory(templateDirectory.c_str());
-  std::string tdir = this->Makefile->GetCurrentDirectory();
-  tdir += "/";
-  tdir += templateDirectory;
+  std::string tdir;
+  if(!cmSystemTools::FileExists(templateDirectory.c_str()))
+    {
+    tdir = this->Makefile->GetCurrentDirectory();
+    tdir += "/";
+    tdir += templateDirectory;
+    }
+  else
+    {
+    tdir = templateDirectory;
+    }
 
   // was the list already populated
   const char *def = this->Makefile->GetDefinition(args[1].c_str());  
