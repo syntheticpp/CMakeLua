@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmInstallCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/17 20:20:06 $
-  Version:   $Revision: 1.37 $
+  Date:      $Date: 2008/01/02 20:17:56 $
+  Version:   $Revision: 1.38 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -870,6 +870,29 @@ cmInstallCommand::HandleDirectoryMode(std::vector<std::string> const& args)
       doing_configurations = false;
       doing_component = false;
       literal_args += " USE_SOURCE_PERMISSIONS";
+      }
+    else if(args[i] == "FILES_MATCHING")
+      {
+      if(in_match_mode)
+        {
+        cmOStringStream e;
+        e << args[0] << " does not allow \""
+          << args[i] << "\" after PATTERN or REGEX.";
+        this->SetError(e.str().c_str());
+        return false;
+        }
+
+      // Add this option literally.
+      doing_dirs = false;
+      doing_destination = false;
+      doing_pattern = false;
+      doing_regex = false;
+      doing_permissions_file = false;
+      doing_permissions_dir = false;
+      doing_permissions_match = false;
+      doing_configurations = false;
+      doing_component = false;
+      literal_args += " FILES_MATCHING";
       }
     else if(args[i] == "CONFIGURATIONS")
       {
