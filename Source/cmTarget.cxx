@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmTarget.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/30 21:11:38 $
-  Version:   $Revision: 1.170 $
+  Date:      $Date: 2008/01/02 21:53:10 $
+  Version:   $Revision: 1.171 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -2537,7 +2537,8 @@ void cmTarget::GetLanguages(std::set<cmStdString>& languages) const
 
 bool cmTarget::IsChrpathAvailable()
 {
-  //only return true if the flag is "-Wl,rpath," amd the separator is not empty
+  //only return true if chrpath has been found (happens only if the executable 
+  // format is ELF) and if the separator is not empty
   if (this->Makefile->IsSet("CMAKE_CHRPATH")==false)
     {
     return false;
@@ -2550,10 +2551,9 @@ bool cmTarget::IsChrpathAvailable()
     return false;
     }
 
-  std::string runTimeFlagVar = "CMAKE_SHARED_LIBRARY_RUNTIME_";
-  runTimeFlagVar += linkLanguage;
-  runTimeFlagVar += "_FLAG";
-  std::string runTimeFlagSepVar = runTimeFlagVar + "_SEP";
+  std::string runTimeFlagSepVar = "CMAKE_SHARED_LIBRARY_RUNTIME_";
+  runTimeFlagSepVar += linkLanguage;
+  runTimeFlagSepVar += "_FLAG_SEP";
 
   std::string runtimeSep = 
                   this->Makefile->GetSafeDefinition(runTimeFlagSepVar.c_str());
@@ -2561,14 +2561,6 @@ bool cmTarget::IsChrpathAvailable()
   if (runtimeSep.size()<=0)
     {
     return 0;
-    }
-
-  std::string runtimeFlag = 
-                     this->Makefile->GetSafeDefinition(runTimeFlagVar.c_str());
-
-  if (runtimeFlag!="-Wl,-rpath,")
-    {
-    return false;
     }
 
   return true;
