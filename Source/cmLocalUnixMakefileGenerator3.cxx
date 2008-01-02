@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalUnixMakefileGenerator3.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/28 16:50:14 $
-  Version:   $Revision: 1.228 $
+  Date:      $Date: 2008/01/02 16:04:52 $
+  Version:   $Revision: 1.229 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1780,6 +1780,18 @@ void cmLocalUnixMakefileGenerator3
       cmakefileStream << "\"" << pi->first << "\"\n";
       }
     cmakefileStream << "  )\n";
+
+    // Tell the dependency scanner what compiler is used.
+    std::string cidVar = "CMAKE_";
+    cidVar += l->first;
+    cidVar += "_COMPILER_ID";
+    const char* cid = this->Makefile->GetDefinition(cidVar.c_str());
+    if(cid && *cid)
+      {
+      cmakefileStream
+        << "SET(CMAKE_" << l->first.c_str() << "_COMPILER_ID \""
+        << cid << "\")\n";
+      }
     }
 }
 
