@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefile.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/01 20:13:41 $
-  Version:   $Revision: 1.420 $
+  Date:      $Date: 2008/01/02 22:49:16 $
+  Version:   $Revision: 1.421 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -2853,7 +2853,14 @@ void cmMakefile::RaiseScope(const char *var)
   // multiple scopes in this directory?
   if (this->DefinitionStack.size() > 1)
     {
-    this->DefinitionStack[this->DefinitionStack.size()-2][var] = varDef;
+    if(varDef)
+      {
+      this->DefinitionStack[this->DefinitionStack.size()-2][var] = varDef;
+      }
+    else
+      {
+      this->DefinitionStack[this->DefinitionStack.size()-2].erase(var);
+      }
     }
   // otherwise do the parent
   else
@@ -2861,7 +2868,14 @@ void cmMakefile::RaiseScope(const char *var)
     cmMakefile *parent = this->LocalGenerator->GetParent()->GetMakefile();
     if (parent)
       {
-      parent->AddDefinition(var,varDef);
+      if(varDef)
+        {
+        parent->AddDefinition(var,varDef);
+        }
+      else
+        {
+        parent->RemoveDefinition(var);
+        }
       }
     }
 }
