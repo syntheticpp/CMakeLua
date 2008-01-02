@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmGlobalVisualStudio8Generator.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/18 13:53:10 $
-  Version:   $Revision: 1.31 $
+  Date:      $Date: 2008/01/02 20:53:28 $
+  Version:   $Revision: 1.32 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -74,6 +74,19 @@ void cmGlobalVisualStudio8Generator::Configure()
 //----------------------------------------------------------------------------
 std::string cmGlobalVisualStudio8Generator::GetUserMacrosDirectory()
 {
+  // Some VS8 sp0 versions cannot run macros.
+  // See http://support.microsoft.com/kb/928209
+  const char* vc8sp1Registry =
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\8.0\\InstalledProducts\\KB926601;";
+  const char* vc8exSP1Registry =
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\8.0\\InstalledProducts\\KB926748;";
+  std::string vc8sp1;
+  if (!cmSystemTools::ReadRegistryValue(vc8sp1Registry, vc8sp1) &&
+      !cmSystemTools::ReadRegistryValue(vc8exSP1Registry, vc8sp1))
+    {
+    return "";
+    }
+
   std::string base;
   std::string path;
 
