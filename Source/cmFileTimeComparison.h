@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmFileTimeComparison.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/15 16:02:01 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2008/01/03 05:01:38 $
+  Version:   $Revision: 1.3 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -39,6 +39,12 @@ public:
    *  f1 older, same, or newer than f2.  
    */
   bool FileTimeCompare(const char* f1, const char* f2, int* result);
+
+  /**
+   *  Compare file modification times.  Return true unless both files
+   *  exist and have modification times less than 1 second apart.
+   */
+  bool FileTimesDiffer(const char* f1, const char* f2);
 
 protected:
   
