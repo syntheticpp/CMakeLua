@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmake.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/02 14:32:29 $
-  Version:   $Revision: 1.349 $
+  Date:      $Date: 2008/01/03 12:28:12 $
+  Version:   $Revision: 1.350 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -3835,7 +3835,7 @@ int cmake::VisualStudioLinkIncremental(std::vector<std::string>& args,
     }
   std::string manifestFile = targetName;
   manifestFile += ".embed.manifest";
-  std::string fullPath=manifestFile;
+  std::string fullPath= cmSystemTools::CollapseFullPath(manifestFile.c_str());
   fout << type << " /* CREATEPROCESS_MANIFEST_RESOURCE_ID "
     "*/ 24 /* RT_MANIFEST */ " << "\"" << fullPath.c_str() << "\"";
   fout.close();
