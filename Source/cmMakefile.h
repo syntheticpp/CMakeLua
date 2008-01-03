@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefile.h,v $
   Language:  C++
-  Date:      $Date: 2007/12/03 18:35:33 $
-  Version:   $Revision: 1.216 $
+  Date:      $Date: 2008/01/03 16:21:39 $
+  Version:   $Revision: 1.217 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -740,7 +740,7 @@ public:
   // push and pop variable scopes
   void PushScope();
   void PopScope();
-  void RaiseScope(const char *var);
+  void RaiseScope(const char *var, const char *value);
 
 protected:
   // add link libraries and directories to the target

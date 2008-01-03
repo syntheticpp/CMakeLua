@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefile.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/02 22:49:16 $
-  Version:   $Revision: 1.421 $
+  Date:      $Date: 2008/01/03 16:21:39 $
+  Version:   $Revision: 1.422 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -2846,9 +2846,12 @@ void cmMakefile::PopScope()
   this->DefinitionStack.pop_back();
 }
 
-void cmMakefile::RaiseScope(const char *var)
+void cmMakefile::RaiseScope(const char *var, const char *varDef)
 {
-  const char *varDef = this->GetDefinition(var);
+  if (!var || !strlen(var))
+    {
+    return;
+    }
 
   // multiple scopes in this directory?
   if (this->DefinitionStack.size() > 1)
