@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmFileCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/03 09:19:30 $
-  Version:   $Revision: 1.92 $
+  Date:      $Date: 2008/01/03 14:40:38 $
+  Version:   $Revision: 1.93 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -233,7 +233,7 @@ bool cmFileCommand::HandleReadCommand(std::vector<std::string> const& args)
   // Open the specified file.
 #if defined(_WIN32) || defined(__CYGWIN__)
   std::ifstream file(fileName.c_str(), std::ios::in | 
-                 (hexOutputArg.IsEnabled() ? std::ios::binary : std::ios::in));
+               (hexOutputArg.IsEnabled() ? std::ios::binary : std::ios::in));
 #else
   std::ifstream file(fileName.c_str(), std::ios::in);
 #endif
