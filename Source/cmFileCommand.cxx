@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmFileCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/03 14:40:38 $
-  Version:   $Revision: 1.93 $
+  Date:      $Date: 2008/01/04 19:22:57 $
+  Version:   $Revision: 1.94 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -949,11 +949,8 @@ bool cmFileInstaller::InstallFile(const char* fromFile, const char* toFile,
   bool copy = true;
   if(!always)
     {
-    // If both files exist and "fromFile" is not newer than "toFile"
-    // do not copy.
-    int timeResult;
-    if(this->FileTimes.FileTimeCompare(fromFile, toFile, &timeResult) &&
-       timeResult <= 0)
+    // If both files exist with the same time do not copy.
+    if(!this->FileTimes.FileTimesDiffer(fromFile, toFile))
       {
       copy = false;
       }
