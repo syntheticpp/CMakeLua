@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmFileCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/04 19:22:57 $
-  Version:   $Revision: 1.94 $
+  Date:      $Date: 2008/01/07 19:52:45 $
+  Version:   $Revision: 1.95 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1614,9 +1614,11 @@ bool cmFileCommand::ParseInstallArgs(std::vector<std::string> const& args,
     // now check and postprocess what has been parsed
     if ( files.size() == 0 )
       {
-      this->SetError(
-                     "called with inapropriate arguments. No FILES provided.");
-      return false;
+      // nothing to do, no files were listed.
+      // if this is handled as error, INSTALL_FILES() creates an invalid
+      // cmake_install.cmake script with no FILES() arguments if no files were
+      // given to INSTALL_FILES(). This was accepted with CMake 2.4.x.
+      return true;
       }
 
     // Check rename form.
