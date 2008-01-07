@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefileTargetGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/30 21:11:38 $
-  Version:   $Revision: 1.81 $
+  Date:      $Date: 2008/01/07 21:12:37 $
+  Version:   $Revision: 1.82 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -310,10 +310,12 @@ void cmMakefileTargetGenerator::WriteObjectRuleFiles(cmSourceFile& source)
     }
 
   // Get the full path name of the object file.
+  bool hasSourceExtension;
   std::string objNoTargetDir;
   std::string obj =
     this->LocalGenerator->GetObjectFileName(*this->Target, source,
-                                            &objNoTargetDir);
+                                            &objNoTargetDir,
+                                            &hasSourceExtension);
 
   // Avoid generating duplicate rules.
   if(this->ObjectFiles.find(obj) == this->ObjectFiles.end())
@@ -377,10 +379,12 @@ void cmMakefileTargetGenerator::WriteObjectRuleFiles(cmSourceFile& source)
     {
     objNoTargetDir = cmSystemTools::GetFilenameName(objNoTargetDir);
     }
-  this->LocalGenerator->LocalObjectFiles[objNoTargetDir].
-    push_back(
-      cmLocalUnixMakefileGenerator3::LocalObjectEntry(this->Target, lang)
-      );
+  cmLocalUnixMakefileGenerator3::LocalObjectInfo& info =
+    this->LocalGenerator->LocalObjectFiles[objNoTargetDir];
+  info.HasSourceExtension = hasSourceExtension;
+  info.push_back(
+    cmLocalUnixMakefileGenerator3::LocalObjectEntry(this->Target, lang)
+    );
 }
 
 //----------------------------------------------------------------------------

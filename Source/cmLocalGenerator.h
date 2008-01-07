@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalGenerator.h,v $
   Language:  C++
-  Date:      $Date: 2007/12/29 04:07:14 $
-  Version:   $Revision: 1.91 $
+  Date:      $Date: 2008/01/07 21:12:37 $
+  Version:   $Revision: 1.92 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -314,7 +314,8 @@ protected:
 
   // Compute object file names.
   std::string GetObjectFileNameWithoutTarget(const cmSourceFile& source,
-                                             std::string::size_type dir_len);
+                                             std::string::size_type dir_len,
+                                             bool* hasSourceExtension = 0);
   std::string& CreateSafeUniqueObjectFileName(const char* sin,
                                               std::string::size_type dir_len);
 
