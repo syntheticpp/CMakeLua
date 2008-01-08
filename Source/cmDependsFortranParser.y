@@ -4,8 +4,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmDependsFortranParser.y,v $
   Language:  C++
-  Date:      $Date: 2007/12/17 22:55:21 $
-  Version:   $Revision: 1.17 $
+  Date:      $Date: 2008/01/08 04:08:42 $
+  Version:   $Revision: 1.18 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -210,6 +210,12 @@ keyword_stmt:
     }
 | WORD STRING other EOSTMT /* Ignore */
     {
+    if (cmDependsFortranParserIsKeyword($1, "include"))
+      {
+      cmDependsFortranParser* parser =
+        cmDependsFortran_yyget_extra(yyscanner);
+      cmDependsFortranParser_RuleInclude(parser, $2);
+      }
     free($1);
     free($2);
     }
