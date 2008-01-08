@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmDependsFortran.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/07 16:36:17 $
-  Version:   $Revision: 1.41 $
+  Date:      $Date: 2008/01/08 13:25:07 $
+  Version:   $Revision: 1.42 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -761,7 +761,7 @@ bool cmDependsFortran::ModulesDiffer(const char* modFile,
    * source is compiled twice
    *   -SunPro
    */
-  if(std::strcmp(compilerId, "SunPro") == 0)
+  if(strcmp(compilerId, "SunPro") == 0)
     {
     return cmSystemTools::FilesDiffer(modFile, stampFile);
     }
@@ -787,7 +787,7 @@ bool cmDependsFortran::ModulesDiffer(const char* modFile,
    * Eat the stream content until all recompile only realated changes
    * are left bedind.
    */
-  if (std::strcmp(compilerId, "GNU") == 0 )
+  if (strcmp(compilerId, "GNU") == 0 )
     {
     const char seq[1] = {'\n'};
     const int seqlen = 1;
@@ -806,7 +806,7 @@ bool cmDependsFortran::ModulesDiffer(const char* modFile,
       return true;
       }
     }
-  else if(std::strcmp(compilerId, "Intel") == 0)
+  else if(strcmp(compilerId, "Intel") == 0)
     {
     const char seq[2] = {'\n', '\0'};
     const int seqlen = 2;
