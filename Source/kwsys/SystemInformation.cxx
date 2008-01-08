@@ -3,8 +3,8 @@
   Program:   BatchMake
   Module:    $RCSfile: SystemInformation.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/08 22:20:04 $
-  Version:   $Revision: 1.3 $
+  Date:      $Date: 2008/01/08 22:51:05 $
+  Version:   $Revision: 1.4 $
   Copyright (c) 2005 Insight Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
 
@@ -516,7 +516,7 @@ bool SystemInformation::RetrieveCPUIdentity()
 {
 #ifdef WIN32
   int localCPUVendor[3];
-  int locallocalCPUSignature;
+  int localCPUSignature;
 
   // Use assembly to detect CPUID information...
   __try 
@@ -1946,7 +1946,7 @@ unsigned long SystemInformation::GetAvailablePhysicalMemory()
 }
 
 /** Get Cycle differences */
-long long SystemInformation::GetCyclesDifference (DELAY_FUNC DelayFunction,
+LongLong SystemInformation::GetCyclesDifference (DELAY_FUNC DelayFunction,
                                                   unsigned int uiParameter)
 {
 #ifdef WIN32
