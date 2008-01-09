@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalUnixMakefileGenerator3.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/07 21:12:37 $
-  Version:   $Revision: 1.230 $
+  Date:      $Date: 2008/01/09 15:30:10 $
+  Version:   $Revision: 1.231 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1485,7 +1485,13 @@ cmLocalUnixMakefileGenerator3
 #ifdef CMAKE_BUILD_WITH_CMAKE
     else if(lang == "Fortran")
       {
-      scanner = new cmDependsFortran(includes);
+      std::vector<std::string> defines;
+      if(const char* c_defines = mf->GetDefinition("CMAKE_DEFINITIONS"))
+        {
+        cmSystemTools::ExpandListArgument(c_defines, defines);
+        }
+
+      scanner = new cmDependsFortran(includes, defines);
       }
     else if(lang == "Java")
       {
@@ -1845,6 +1851,14 @@ void cmLocalUnixMakefileGenerator3
         << cid << "\")\n";
       }
     }
+
+  cmakefileStream
+    << "\n"
+    << "# Preprocessor definitions for this directory.\n"
+    << "SET(CMAKE_DEFINITIONS\n"
+    << "  " << this->Makefile->GetDefineFlags() << "\n"
+    << "  )\n";
+
 }
 
 //----------------------------------------------------------------------------
