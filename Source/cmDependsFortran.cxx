@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmDependsFortran.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/09 15:30:10 $
-  Version:   $Revision: 1.43 $
+  Date:      $Date: 2008/01/10 14:46:04 $
+  Version:   $Revision: 1.44 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -91,7 +91,7 @@ struct cmDependsFortranParser_s
 
   int OldStartcond;
   std::set<std::string> PPDefinitions;
-  std::size_t InPPFalseBranch;
+  size_t InPPFalseBranch;
   std::stack<bool> SkipToEnd;
 
   // Information about the parsed source.
@@ -148,13 +148,13 @@ cmDependsFortran
   for(std::vector<std::string>::const_iterator
       it = definitions.begin(); it != definitions.end(); ++it)
     {
-    std::size_t match = it->find("-D");
+    std::string::size_type match = it->find("-D");
     if(match != std::string::npos)
       {
-      std::size_t assignment = it->find("=");
+      std::string::size_type assignment = it->find("=");
       if(assignment != std::string::npos)
         {
-        std::size_t length = assignment - (match+2);
+        std::string::size_type length = assignment - (match+2);
         def = it->substr(match+2, length);
         }
       else
