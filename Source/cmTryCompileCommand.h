@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmTryCompileCommand.h,v $
   Language:  C++
-  Date:      $Date: 2007/10/10 15:47:43 $
-  Version:   $Revision: 1.25 $
+  Date:      $Date: 2008/01/10 03:09:19 $
+  Version:   $Revision: 1.26 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -74,7 +74,7 @@ public:
       "              [COPY_FILE <filename> )\n"
       "Try compiling a srcfile.  In this case, the user need only supply a "
       "source file.  CMake will create the appropriate CMakeLists.txt file "
-      "to build the source. If COPY_FILE is used, the compiled file will be"
+      "to build the source. If COPY_FILE is used, the compiled file will be "
       "copied to the given file.\n"
       "In this version all files in bindir/CMakeFiles/CMakeTmp, "
       "will be cleaned automatically, for debugging a --debug-trycompile can "

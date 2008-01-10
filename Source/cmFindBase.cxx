@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmFindBase.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/06 22:18:15 $
-  Version:   $Revision: 1.30 $
+  Date:      $Date: 2008/01/10 03:09:19 $
+  Version:   $Revision: 1.31 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -44,7 +44,7 @@ cmFindBase::cmFindBase()
     "is sufficient in many cases.  It is the same "
     "as FIND_XXX(<VAR> name1 PATHS path2 path2 ...)\n"
     "   FIND_XXX(\n"
-    "             <VAR> \n"
+    "             <VAR>\n"
     "             name | NAMES name1 [name2 ...]\n"
     "             PATHS path1 [path2 ... ENV var]\n"
     "             [PATH_SUFFIXES suffix1 [suffix2 ...]]\n"

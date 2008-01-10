@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmAddExecutableCommand.h,v $
   Language:  C++
-  Date:      $Date: 2007/10/10 15:47:43 $
-  Version:   $Revision: 1.17 $
+  Date:      $Date: 2008/01/10 03:09:19 $
+  Version:   $Revision: 1.18 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -73,8 +73,8 @@ public:
       "(using main). The variable CMAKE_MFC_FLAG be used if the windows app "
       "uses MFC. This variable can be set to the following values:\n"
       " 0: Use Standard Windows Libraries\n"
-      " 1: Use MFC in a Static Library \n"
-      " 2: Use MFC in a Shared DLL \n"
+      " 1: Use MFC in a Static Library\n"
+      " 2: Use MFC in a Shared DLL\n"
       "MACOSX_BUNDLE indicates that when build on Mac OSX, executable should "
       "be in the bundle form. The MACOSX_BUNDLE also allows several "
       "variables to be specified:\n"

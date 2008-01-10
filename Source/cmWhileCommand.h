@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmWhileCommand.h,v $
   Language:  C++
-  Date:      $Date: 2007/10/15 18:50:18 $
-  Version:   $Revision: 1.7 $
+  Date:      $Date: 2008/01/10 03:09:19 $
+  Version:   $Revision: 1.8 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -103,7 +103,7 @@ public:
       "All commands between while and the matching endwhile are recorded "
       "without being invoked.  Once the endwhile is evaluated, the "
       "recorded list of commands is invoked as long as the condition "
-      "is true. The condition is evaulated using the same logic as the "
+      "is true. The condition is evaluated using the same logic as the "
       "if command.";
     }
   

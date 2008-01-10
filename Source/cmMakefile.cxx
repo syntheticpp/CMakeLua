@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefile.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/03 16:21:39 $
-  Version:   $Revision: 1.422 $
+  Date:      $Date: 2008/01/10 03:09:19 $
+  Version:   $Revision: 1.423 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -2889,7 +2889,7 @@ void cmMakefile::DefineProperties(cmake *cm)
 {
   cm->DefineProperty
     ("ADDITIONAL_MAKE_CLEAN_FILES", cmProperty::DIRECTORY,
-     "Addditional files to clean during the make clean stage.",
+     "Additional files to clean during the make clean stage.",
      "A list of files that will be cleaned as a part of the "
      "\"make clean\" stage. ");
 

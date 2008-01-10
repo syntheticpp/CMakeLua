@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmVariableWatchCommand.h,v $
   Language:  C++
-  Date:      $Date: 2007/10/10 15:47:43 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2008/01/10 03:09:19 $
+  Version:   $Revision: 1.3 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -76,7 +76,7 @@ public:
     return
       "  variable_watch(<variable name> [<command to execute>])\n"
       "If the specified variable changes, the message will be printed about "
-      "the variable being changed. If the command is spceified, the command "
+      "the variable being changed. If the command is specified, the command "
       "will be executed. The command will receive the following arguments:"
       " COMMAND(<variable> <access> <value> <current list file> <stack>)";
     }

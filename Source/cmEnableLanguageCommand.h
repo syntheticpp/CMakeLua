@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmEnableLanguageCommand.h,v $
   Language:  C++
-  Date:      $Date: 2007/10/10 15:47:43 $
-  Version:   $Revision: 1.6 $
+  Date:      $Date: 2008/01/10 03:09:19 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -66,7 +66,7 @@ public:
       "  enable_language(languageName [OPTIONAL] )\n"
       "This command enables support for the named language in CMake. "
       "This is the same as the project command but does not create "
-      "any of the extra varaibles that are created by the project command. "
+      "any of the extra variables that are created by the project command. "
       "Example languages are CXX, C, Fortran.\n"
       "If OPTIONAL is used, use the CMAKE_<languageName>_COMPILER_WORKS "
       "variable to check whether the language has been enabled successfully.";

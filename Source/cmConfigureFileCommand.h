@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmConfigureFileCommand.h,v $
   Language:  C++
-  Date:      $Date: 2007/10/10 15:47:43 $
-  Version:   $Revision: 1.20 $
+  Date:      $Date: 2008/01/10 03:09:19 $
+  Version:   $Revision: 1.21 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -61,7 +61,7 @@ public:
       return
         "  configure_file(InputFile OutputFile\n"
         "                 [COPYONLY] [ESCAPE_QUOTES] [@ONLY])\n"
-        "The Input and Ouput files have to have full paths.  "
+        "The Input and Output files have to have full paths.  "
         "This command replaces any variables in the input file referenced as "
         "${VAR} or @VAR@ with their values as determined by CMake.  If a "
         "variable is not defined, it will be replaced with nothing.  "
