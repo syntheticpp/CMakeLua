@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/07 21:12:37 $
-  Version:   $Revision: 1.247 $
+  Date:      $Date: 2008/01/11 18:00:29 $
+  Version:   $Revision: 1.248 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1182,7 +1182,10 @@ const char* cmLocalGenerator::GetIncludeFlags(const char* lang)
     {
     flags[flags.size()-1] = ' ';
     }
-  flags += this->Makefile->GetDefineFlags();
+  std::string defineFlags = this->Makefile->GetDefineFlags();
+  std::cout << defineFlags << "\n";
+  this->FixDefineFlags(defineFlags, lang);
+  flags += defineFlags;
   this->LanguageToIncludeFlags[lang] = flags;
 
   // Use this temorary variable for the return value to work-around a
@@ -1191,6 +1194,41 @@ const char* cmLocalGenerator::GetIncludeFlags(const char* lang)
   return ret;
 }
 
+//----------------------------------------------------------------------------
+void cmLocalGenerator::FixDefineFlags(std::string& flags, 
+                                      const char* lang)
+{
+  std::string defineFlagVar = "CMAKE_DEFINE_FLAG_";
+  defineFlagVar += lang;
+  std::string defineFlag = 
+    this->Makefile->GetSafeDefinition(defineFlagVar.c_str());
+  if(defineFlag.size() == 0)
+    {
+    return;
+    }
+  std::vector<std::string> args;
+  cmSystemTools::ParseWindowsCommandLine(flags.c_str(), args);
+  std::string fixedFlags;
+  const char* sep = 0;
+  for(std::vector<std::string>::iterator i = args.begin();
+      i != args.end(); ++i)
+    {
+    if(sep)
+      {
+      fixedFlags += sep;
+      }
+    else
+      {
+      sep = " ";
+      }
+    cmSystemTools::ReplaceString(*i, "-D", defineFlag.c_str());
+    fixedFlags += *i;
+    }
+  flags = fixedFlags;
+}
+
+                                             
+                                             
 //----------------------------------------------------------------------------
 void cmLocalGenerator::GetIncludeDirectories(std::vector<std::string>& dirs,
                                              bool filter_system_dirs)
