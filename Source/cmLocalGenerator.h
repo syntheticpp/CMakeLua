@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalGenerator.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/11 18:00:29 $
-  Version:   $Revision: 1.93 $
+  Date:      $Date: 2008/01/13 21:36:20 $
+  Version:   $Revision: 1.94 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -341,6 +341,7 @@ protected:
   bool WindowsVSIDE;
   bool WatcomWMake;
   bool MinGWMake;
+  bool NMake;
   bool ForceUnixPath;
   bool MSYSShell;
   bool UseRelativePaths;
