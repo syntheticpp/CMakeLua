@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/13 21:36:20 $
-  Version:   $Revision: 1.249 $
+  Date:      $Date: 2008/01/13 21:59:09 $
+  Version:   $Revision: 1.250 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1184,7 +1184,6 @@ const char* cmLocalGenerator::GetIncludeFlags(const char* lang)
     flags[flags.size()-1] = ' ';
     }
   std::string defineFlags = this->Makefile->GetDefineFlags();
-  std::cout << defineFlags << "\n";
   this->FixDefineFlags(defineFlags, lang);
   flags += defineFlags;
   this->LanguageToIncludeFlags[lang] = flags;
@@ -1228,8 +1227,6 @@ void cmLocalGenerator::FixDefineFlags(std::string& flags,
   flags = fixedFlags;
 }
 
-                                             
-                                             
 //----------------------------------------------------------------------------
 void cmLocalGenerator::GetIncludeDirectories(std::vector<std::string>& dirs,
                                              bool filter_system_dirs)
