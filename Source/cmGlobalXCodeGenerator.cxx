@@ -3,8 +3,8 @@
 Program:   CMake - Cross-Platform Makefile Generator
 Module:    $RCSfile: cmGlobalXCodeGenerator.cxx,v $
 Language:  C++
-Date:      $Date: 2008/01/14 14:20:57 $
-Version:   $Revision: 1.176 $
+Date:      $Date: 2008/01/14 16:07:05 $
+Version:   $Revision: 1.177 $
 
 Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
 See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -2920,7 +2920,7 @@ void cmGlobalXCodeGenerator::AppendDefines(std::string& defs,
   // We escape everything as follows:
   //   - Place each definition in single quotes ''
   //   - Escape a single quote as \\'
-  //   - Escape a backslash as \\\\
+  //   - Escape a backslash as \\\\ since it itself is an escape
   // Note that in the code below we need one more level of escapes for
   // C string syntax in this source file.
   const char* sep = defs.empty()? "" : " ";
