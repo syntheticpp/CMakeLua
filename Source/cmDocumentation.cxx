@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmDocumentation.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/10 03:09:19 $
-  Version:   $Revision: 1.64 $
+  Date:      $Date: 2008/01/14 22:05:09 $
+  Version:   $Revision: 1.65 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -346,6 +346,15 @@ bool cmDocumentation::PrintDocumentation(Type ht, std::ostream& os)
       this->PrintDocumentationList(os,"Compatibility Commands");
       return true;
     case cmDocumentation::ModuleList: 
+      // find the modules first, print the custom module docs only if 
+      // any custom modules have been found actually, Alex
+      this->CreateCustomModulesSection();
+      this->CreateModulesSection();
+      if (this->AllSections.find("Custom CMake Modules")
+         != this->AllSections.end())
+        {
+        this->PrintDocumentationList(os,"Custom CMake Modules");
+        }
       this->PrintDocumentationList(os,"Modules");
       return true;
     case cmDocumentation::PropertyList: 
