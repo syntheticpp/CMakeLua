@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalUnixMakefileGenerator3.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/09 15:30:10 $
-  Version:   $Revision: 1.231 $
+  Date:      $Date: 2008/01/14 14:20:57 $
+  Version:   $Revision: 1.232 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -338,17 +338,9 @@ cmLocalUnixMakefileGenerator3
     // Add a rule to drive the rule below.
     std::vector<std::string> depends;
     depends.push_back(output);
-    std::vector<std::string> commands;
-    cmGlobalUnixMakefileGenerator3* gg =
-      static_cast<cmGlobalUnixMakefileGenerator3*>(this->GlobalGenerator);
-    std::string emptyCommand = gg->GetEmptyRuleHackCommand();
-    if(!emptyCommand.empty())
-      {
-      commands.push_back(emptyCommand);
-      }
-
+    std::vector<std::string> no_commands;
     this->WriteMakeRule(ruleFileStream, 0,
-                        outNoExt.c_str(), depends, commands, true, true);
+                        outNoExt.c_str(), depends, no_commands, true, true);
     inHelp = false;
     }
 

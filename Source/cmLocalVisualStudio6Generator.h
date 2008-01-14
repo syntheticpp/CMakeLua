@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalVisualStudio6Generator.h,v $
   Language:  C++
-  Date:      $Date: 2007/08/10 17:02:59 $
-  Version:   $Revision: 1.21 $
+  Date:      $Date: 2008/01/14 14:20:57 $
+  Version:   $Revision: 1.22 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -103,6 +103,9 @@ private:
   std::vector<std::string> Configurations;
 
   std::string GetConfigName(std::string const& configuration) const;
+
+  // Special definition check for VS6.
+  virtual bool CheckDefinition(std::string const& define) const;
 };
 
 #endif
