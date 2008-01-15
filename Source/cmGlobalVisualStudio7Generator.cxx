@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmGlobalVisualStudio7Generator.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/11/19 18:44:51 $
-  Version:   $Revision: 1.94 $
+  Date:      $Date: 2008/01/15 19:00:52 $
+  Version:   $Revision: 1.95 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -283,6 +283,24 @@ void cmGlobalVisualStudio7Generator
   bool doneEditCache = false;
   bool doneRebuildCache = false;
   bool donePackage = false;
+  
+  
+  // 1.
+  // Collecte all targets in generators vector and the targets
+  // that they depend on
+  
+  // 2. loop over all targets and put .vcproj reference 
+  //   into .sln file. .vcproj files should already exist
+  //   from local generation step.  Do not add "pulled" in .vcproj
+  //   to ALL_BUILD.
+  // See: cmGlobalGenerator::GetTargetDepends
+  // cmGlobalGenerator::TargetDependSet myset;
+  // foreach t in all targets
+  //   cmGlobalGenerator::TargetDependSet const& tset = GetTargetDepends(t);
+  //    myset.insert(tset.begin(), tset.end());
+  //  foreach t in myset
+  //    t->GetMakefile()->GetLocalGenerator()->GetVCProjPath()
+  //  if t was not in original set of targets disable all for it
   
   // For each cmMakefile, create a VCProj for it, and
   // add it to this SLN file
