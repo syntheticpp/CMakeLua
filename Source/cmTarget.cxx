@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmTarget.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/14 14:20:57 $
-  Version:   $Revision: 1.173 $
+  Date:      $Date: 2008/01/15 15:49:22 $
+  Version:   $Revision: 1.174 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -93,6 +93,11 @@ void cmTarget::DefineProperties(cmake *cm)
      "Your work-around may break in a future version of CMake that "
      "has improved escape support.  Instead consider defining the macro "
      "in a (configured) header file.  Then report the limitation.");
+
+  cm->DefineProperty
+    ("<CONFIG>_COMPILE_DEFINITIONS", cmProperty::TARGET,
+     "Per-configuration preprocessor definitions on a target.",
+     "This is the configuration-specific version of COMPILE_DEFINITIONS.");
 
   cm->DefineProperty
     ("DEFINE_SYMBOL", cmProperty::TARGET,

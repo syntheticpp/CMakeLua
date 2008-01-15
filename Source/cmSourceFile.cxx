@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmSourceFile.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/14 14:20:57 $
-  Version:   $Revision: 1.41 $
+  Date:      $Date: 2008/01/15 15:49:22 $
+  Version:   $Revision: 1.42 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -367,6 +367,15 @@ void cmSourceFile::DefineProperties(cmake *cm)
      "Your work-around may break in a future version of CMake that "
      "has improved escape support.  Instead consider defining the macro "
      "in a (configured) header file.  Then report the limitation.");
+
+
+  cm->DefineProperty
+    ("<CONFIG>_COMPILE_DEFINITIONS", cmProperty::SOURCE_FILE,
+     "Per-configuration preprocessor definitions on a source file.",
+     "This is the configuration-specific version of "
+     "COMPILE_DEFINITIONS.  Note that Xcode does not support "
+     "per-configuration source file flags so this property will "
+     "be ignored by the Xcode generator."); 
 
   cm->DefineProperty
     ("EXTERNAL_OBJECT", cmProperty::SOURCE_FILE, 
