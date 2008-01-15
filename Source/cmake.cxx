@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmake.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/03 12:28:12 $
-  Version:   $Revision: 1.350 $
+  Date:      $Date: 2008/01/15 15:49:59 $
+  Version:   $Revision: 1.351 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -3324,6 +3324,15 @@ void cmake::ReportUndefinedPropertyAccesses(const char *filename)
   std::vector<std::string> enLangs;
   this->GlobalGenerator->GetEnabledLanguages(enLangs);
 
+  // Common configuration names.
+  // TODO: Compute current configuration(s).
+  std::vector<std::string> enConfigs;
+  enConfigs.push_back("");
+  enConfigs.push_back("DEBUG");
+  enConfigs.push_back("RELEASE");
+  enConfigs.push_back("MINSIZEREL");
+  enConfigs.push_back("RELWITHDEBINFO");
+
   // take all the defined properties and add definitions for all the enabled
   // languages
   std::set<std::pair<cmStdString,cmProperty::ScopeType> > aliasedProperties;
@@ -3334,7 +3343,20 @@ void cmake::ReportUndefinedPropertyAccesses(const char *filename)
     cmPropertyDefinitionMap::iterator j;
     for (j = i->second.begin(); j != i->second.end(); ++j)
       {
-      if (j->first.find("<LANG>"))
+      // TODO: What if both <LANG> and <CONFIG> appear?
+      if (j->first.find("<CONFIG>") != std::string::npos)
+        {
+        std::vector<std::string>::const_iterator k;
+        for (k = enConfigs.begin(); k != enConfigs.end(); ++k)
+          {
+          std::string tmp = j->first;
+          cmSystemTools::ReplaceString(tmp, "<CONFIG>", k->c_str());
+          // add alias
+          aliasedProperties.insert
+            (std::pair<cmStdString,cmProperty::ScopeType>(tmp,i->first));
+          }
+        }
+      if (j->first.find("<LANG>") != std::string::npos)
         {
         std::vector<std::string>::const_iterator k;
         for (k = enLangs.begin(); k != enLangs.end(); ++k)
