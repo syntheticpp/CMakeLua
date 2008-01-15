@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalVisualStudioGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/17 23:38:19 $
-  Version:   $Revision: 1.14 $
+  Date:      $Date: 2008/01/15 16:56:41 $
+  Version:   $Revision: 1.15 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -19,6 +19,7 @@
 #include "cmMakefile.h"
 #include "cmSourceFile.h"
 #include "cmSystemTools.h"
+#include "windows.h"
 
 //----------------------------------------------------------------------------
 cmLocalVisualStudioGenerator::cmLocalVisualStudioGenerator()
@@ -143,6 +144,13 @@ cmLocalVisualStudioGenerator
     script += newline;
     newline = newline_text;
     script += "cd ";
+    OSVERSIONINFO osv;
+    osv.dwOSVersionInfoSize = sizeof(osv);
+    GetVersionEx(&osv);
+    if(osv.dwPlatformId != VER_PLATFORM_WIN32_WINDOWS)
+      {
+      script += "/d ";
+      }
     script += this->Convert(workingDirectory, START_OUTPUT, SHELL);
 
     // Change the working drive.
