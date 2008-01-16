@@ -3,17 +3,17 @@
 "   Program:   CMake - Cross-Platform Makefile Generator
 "   Module:    $RCSfile: cmake-indent.vim,v $
 "   Language:  VIM
-"   Date:      $Date: 2008/01/15 00:20:42 $
-"   Version:   $Revision: 1.8 $
+"   Date:      $Date: 2008/01/16 16:53:53 $
+"   Version:   $Revision: 1.9 $
 " 
 " =============================================================================
 
 " Vim indent file
 " Language:     CMake (ft=cmake)
 " Author:       Andy Cedilnik <andy.cedilnik@kitware.com>
-" Maintainer:   Andy Cedilnik <andy.cedilnik@kitware.com>
-" Last Change:  $Date: 2008/01/15 00:20:42 $
-" Version:      $Revision: 1.8 $
+" Maintainer:   Karthik Krishnan <karthik.krishnan@kitware.com>
+" Last Change:  $Date: 2008/01/16 16:53:53 $
+" Version:      $Revision: 1.9 $
 "
 " Licence:      The CMake license applies to this file. See
 "               http://www.cmake.org/HTML/Copyright.html
@@ -66,8 +66,8 @@ fun! CMakeGetIndent(lnum)
                     \            ')\s*' .
                     \            '\(' . cmake_regex_comment . '\)\?$'
 
-  let cmake_indent_begin_regex = '^\s*\(IF\|MACRO\|FOREACH\|ELSE\|ELSEIF\|WHILE\)\s*('
-  let cmake_indent_end_regex = '^\s*\(ENDIF\|ENDFOREACH\|ENDMACRO\|ELSE\|ELSEIF\|ENDWHILE\)\s*('
+  let cmake_indent_begin_regex = '^\s*\(IF\|MACRO\|FOREACH\|ELSE\|ELSEIF\|WHILE\|FUNCTION\)\s*('
+  let cmake_indent_end_regex = '^\s*\(ENDIF\|ENDFOREACH\|ENDMACRO\|ELSE\|ELSEIF\|ENDWHILE\|ENDFUNCTION\)\s*('
 
   " Add
   if previous_line =~? cmake_indent_comment_line " Handle comments
