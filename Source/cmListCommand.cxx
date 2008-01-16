@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmListCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/08/15 14:26:50 $
-  Version:   $Revision: 1.15 $
+  Date:      $Date: 2008/01/16 16:24:41 $
+  Version:   $Revision: 1.16 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -179,10 +179,16 @@ bool cmListCommand::HandleGetCommand(std::vector<std::string> const& args)
 //----------------------------------------------------------------------------
 bool cmListCommand::HandleAppendCommand(std::vector<std::string> const& args)
 {
+  if(args.size() < 2)
+    {
+    this->SetError("sub-command APPEND requires at least one argument.");
+    return false;
+    }
+
+  // Skip if nothing to append.
   if(args.size() < 3)
     {
-    this->SetError("sub-command APPEND requires at least two arguments.");
-    return false;
+    return true;
     }
 
   const std::string& listName = args[1];
