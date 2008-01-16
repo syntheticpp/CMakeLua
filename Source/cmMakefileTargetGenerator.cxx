@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefileTargetGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/14 14:20:57 $
-  Version:   $Revision: 1.83 $
+  Date:      $Date: 2008/01/16 02:02:00 $
+  Version:   $Revision: 1.84 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -268,9 +268,9 @@ void cmMakefileTargetGenerator::WriteTargetLanguageFlags()
     // Add preprocessor definitions for this target and configuration.
     this->LocalGenerator->AppendDefines
       (defines, this->Target->GetProperty("COMPILE_DEFINITIONS"));
-    std::string defPropName =
+    std::string defPropName = "COMPILE_DEFINITIONS_";
+    defPropName +=
       cmSystemTools::UpperCase(this->LocalGenerator->ConfigurationName);
-    defPropName += "_COMPILE_DEFINITIONS";
     this->LocalGenerator->AppendDefines
       (defines, this->Target->GetProperty(defPropName.c_str()));
 
@@ -464,8 +464,8 @@ cmMakefileTargetGenerator
     }
   std::string configUpper =
     cmSystemTools::UpperCase(this->LocalGenerator->ConfigurationName);
-  std::string defPropName = configUpper;
-  defPropName += "_COMPILE_DEFINITIONS";
+  std::string defPropName = "COMPILE_DEFINITIONS_";
+  defPropName += configUpper;
   if(const char* config_compile_defs =
      source.GetProperty(defPropName.c_str()))
     {
