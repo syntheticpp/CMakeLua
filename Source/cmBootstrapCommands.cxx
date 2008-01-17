@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmBootstrapCommands.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/03 18:35:33 $
-  Version:   $Revision: 1.19 $
+  Date:      $Date: 2008/01/17 14:02:31 $
+  Version:   $Revision: 1.20 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -42,6 +42,7 @@
 #include "cmExecProgramCommand.cxx"
 #include "cmExternalMakefileProjectGenerator.cxx"
 #include "cmFindBase.cxx"
+#include "cmFindCommon.cxx"
 #include "cmFileCommand.cxx"
 #include "cmFindFileCommand.cxx"
 #include "cmFindLibraryCommand.cxx"

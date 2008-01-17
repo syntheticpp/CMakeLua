@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmFindLibraryCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/15 01:46:15 $
-  Version:   $Revision: 1.45 $
+  Date:      $Date: 2008/01/17 14:02:31 $
+  Version:   $Revision: 1.46 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -23,6 +23,12 @@ cmFindLibraryCommand::cmFindLibraryCommand()
                                "FIND_XXX", "find_library");
   cmSystemTools::ReplaceString(this->GenericDocumentation,
                                "CMAKE_XXX_PATH", "CMAKE_LIBRARY_PATH");
+  cmSystemTools::ReplaceString(this->GenericDocumentation,
+                               "CMAKE_XXX_MAC_PATH",
+                               "CMAKE_FRAMEWORK_PATH");
+  cmSystemTools::ReplaceString(this->GenericDocumentation,
+                               "CMAKE_SYSTEM_XXX_MAC_PATH",
+                               "CMAKE_SYSTEM_FRAMEWORK_PATH");
   cmSystemTools::ReplaceString(this->GenericDocumentation,
                                "XXX_SYSTEM", "LIB");
   cmSystemTools::ReplaceString(this->GenericDocumentation,

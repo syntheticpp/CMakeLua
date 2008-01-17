@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmFindPathCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/15 01:46:15 $
-  Version:   $Revision: 1.37 $
+  Date:      $Date: 2008/01/17 14:02:31 $
+  Version:   $Revision: 1.38 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -27,6 +27,12 @@ cmFindPathCommand::cmFindPathCommand()
                                "FIND_XXX", "find_path");
   cmSystemTools::ReplaceString(this->GenericDocumentation,
                                "CMAKE_XXX_PATH", "CMAKE_INCLUDE_PATH");
+  cmSystemTools::ReplaceString(this->GenericDocumentation,
+                               "CMAKE_XXX_MAC_PATH",
+                               "CMAKE_FRAMEWORK_PATH");
+  cmSystemTools::ReplaceString(this->GenericDocumentation,
+                               "CMAKE_SYSTEM_XXX_MAC_PATH",
+                               "CMAKE_SYSTEM_FRAMEWORK_PATH");
   cmSystemTools::ReplaceString(this->GenericDocumentation,
                                "XXX_SYSTEM", "INCLUDE");
   cmSystemTools::ReplaceString(this->GenericDocumentation,
