@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmPropertyMap.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/11/06 19:16:00 $
-  Version:   $Revision: 1.10 $
+  Date:      $Date: 2008/01/17 23:13:55 $
+  Version:   $Revision: 1.11 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -61,6 +61,32 @@ void cmPropertyMap::SetProperty(const char *name, const char *value,
 
   cmProperty *prop = this->GetOrCreateProperty(name);
   prop->Set(name,value);
+}
+
+void cmPropertyMap::AppendProperty(const char* name, const char* value,
+                                   cmProperty::ScopeType scope)
+{
+  // Skip if nothing to append.
+  if(!name || !value || !*value)
+    {
+    return;
+    }
+#ifdef CMAKE_STRICT
+  if (!this->CMakeInstance)
+    {
+    cmSystemTools::Error("CMakeInstance not set on a property map!");
+    abort();
+    }
+  else
+    {
+    this->CMakeInstance->RecordPropertyAccess(name,scope);
+    }
+#else
+  (void)scope;
+#endif
+
+  cmProperty *prop = this->GetOrCreateProperty(name);
+  prop->Append(name,value);
 }
 
 const char *cmPropertyMap

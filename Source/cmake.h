@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmake.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/01 20:13:41 $
-  Version:   $Revision: 1.98 $
+  Date:      $Date: 2008/01/17 23:13:55 $
+  Version:   $Revision: 1.99 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -258,6 +258,7 @@ class cmake
 
   ///! Set/Get a property of this target file
   void SetProperty(const char *prop, const char *value);
+  void AppendProperty(const char *prop, const char *value);
   const char *GetProperty(const char *prop);
   const char *GetProperty(const char *prop, cmProperty::ScopeType scope);
   bool GetPropertyAsBool(const char *prop);

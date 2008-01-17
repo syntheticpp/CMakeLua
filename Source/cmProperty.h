@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmProperty.h,v $
   Language:  C++
-  Date:      $Date: 2007/06/25 14:34:21 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2008/01/17 23:13:55 $
+  Version:   $Revision: 1.3 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -27,6 +27,9 @@ public:
 
   // set this property
   void Set(const char *name, const char *value);
+
+  // append to this property
+  void Append(const char *name, const char *value);
 
   // get the value
   const char *GetValue() const;

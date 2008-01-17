@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmSetPropertyCommand.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/17 20:54:49 $
-  Version:   $Revision: 1.1 $
+  Date:      $Date: 2008/01/17 23:13:55 $
+  Version:   $Revision: 1.2 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -92,9 +92,6 @@ private:
   std::string PropertyName;
   std::string PropertyValue;
   bool AppendMode;
-
-  // Implementation of value construction.
-  bool ConstructValue(std::string& value, const char* old);
 
   // Implementation of each property type.
   bool HandleGlobalMode();

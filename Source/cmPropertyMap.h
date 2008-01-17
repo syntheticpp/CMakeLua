@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmPropertyMap.h,v $
   Language:  C++
-  Date:      $Date: 2006/12/01 18:35:03 $
-  Version:   $Revision: 1.1 $
+  Date:      $Date: 2008/01/17 23:13:55 $
+  Version:   $Revision: 1.2 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -28,6 +28,9 @@ public:
 
   void SetProperty(const char *name, const char *value, 
                    cmProperty::ScopeType scope);
+
+  void AppendProperty(const char* name, const char* value,
+                      cmProperty::ScopeType scope);
 
   const char *GetPropertyValue(const char *name, 
                                cmProperty::ScopeType scope,

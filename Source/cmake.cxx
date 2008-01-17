@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmake.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/15 15:49:59 $
-  Version:   $Revision: 1.351 $
+  Date:      $Date: 2008/01/17 23:13:55 $
+  Version:   $Revision: 1.352 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -3433,6 +3433,15 @@ void cmake::SetProperty(const char* prop, const char* value)
     }
 
   this->Properties.SetProperty(prop, value, cmProperty::GLOBAL);
+}
+
+void cmake::AppendProperty(const char* prop, const char* value)
+{
+  if (!prop)
+    {
+    return;
+    }
+  this->Properties.AppendProperty(prop, value, cmProperty::GLOBAL);
 }
 
 const char *cmake::GetProperty(const char* prop)
