@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefileTargetGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/16 02:02:00 $
-  Version:   $Revision: 1.84 $
+  Date:      $Date: 2008/01/17 15:00:19 $
+  Version:   $Revision: 1.85 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -267,12 +267,12 @@ void cmMakefileTargetGenerator::WriteTargetLanguageFlags()
 
     // Add preprocessor definitions for this target and configuration.
     this->LocalGenerator->AppendDefines
-      (defines, this->Target->GetProperty("COMPILE_DEFINITIONS"));
+      (defines, this->Target->GetProperty("COMPILE_DEFINITIONS"), lang);
     std::string defPropName = "COMPILE_DEFINITIONS_";
     defPropName +=
       cmSystemTools::UpperCase(this->LocalGenerator->ConfigurationName);
     this->LocalGenerator->AppendDefines
-      (defines, this->Target->GetProperty(defPropName.c_str()));
+      (defines, this->Target->GetProperty(defPropName.c_str()), lang);
 
     // Add language-specific flags.
     this->LocalGenerator
@@ -456,7 +456,7 @@ cmMakefileTargetGenerator
   // Add source-sepcific preprocessor definitions.
   if(const char* compile_defs = source.GetProperty("COMPILE_DEFINITIONS"))
     {
-    this->LocalGenerator->AppendDefines(defines, compile_defs);
+    this->LocalGenerator->AppendDefines(defines, compile_defs, lang);
     *this->FlagFileStream << "# Custom defines: "
                           << relativeObj << "_DEFINES = "
                           << compile_defs << "\n"
@@ -469,7 +469,7 @@ cmMakefileTargetGenerator
   if(const char* config_compile_defs =
      source.GetProperty(defPropName.c_str()))
     {
-    this->LocalGenerator->AppendDefines(defines, config_compile_defs);
+    this->LocalGenerator->AppendDefines(defines, config_compile_defs, lang);
     *this->FlagFileStream
       << "# Custom defines: "
       << relativeObj << "_DEFINES_" << configUpper

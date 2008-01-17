@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalGenerator.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/14 14:20:57 $
-  Version:   $Revision: 1.95 $
+  Date:      $Date: 2008/01/17 15:00:19 $
+  Version:   $Revision: 1.96 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -143,7 +143,8 @@ public:
    * Encode a list of preprocessor definitions for the compiler
    * command line.
    */
-  void AppendDefines(std::string& defines, const char* defines_list);
+  void AppendDefines(std::string& defines, const char* defines_list,
+                     const char* lang);
 
   /** Translate a dependency as given in CMake code to the name to
       appear in a generated build file.  If the given name is that of
