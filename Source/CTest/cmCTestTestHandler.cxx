@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCTestTestHandler.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/11/08 18:03:37 $
-  Version:   $Revision: 1.60 $
+  Date:      $Date: 2008/01/17 17:44:59 $
+  Version:   $Revision: 1.61 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -98,14 +98,9 @@ bool cmCTestSubdirCommand::InitialPass(std::vector<std::string> const& args)
       // does the CTestTestfile.cmake exist ?
       testFilename = "CTestTestfile.cmake";
       }
-    else if( cmSystemTools::FileExists("DartTestfile.txt") )
-      {
-      // does the DartTestfile.txt exist ?
-      testFilename = "DartTestfile.txt";
-      }
     else
       {
-      // No DartTestfile.txt? Who cares...
+      // No CTestTestfile? Who cares...
       cmSystemTools::ChangeDirectory(cwd.c_str());
       continue;
       }
@@ -1281,11 +1276,6 @@ void cmCTestTestHandler::GetListOfTests()
     {
     // does the CTestTestfile.cmake exist ?
     testFilename = "CTestTestfile.cmake";
-    }
-  else if( cmSystemTools::FileExists("DartTestfile.txt") )
-    {
-    // does the DartTestfile.txt exist ?
-    testFilename = "DartTestfile.txt";
     }
   else
     {

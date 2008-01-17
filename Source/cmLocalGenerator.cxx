@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/17 15:00:19 $
-  Version:   $Revision: 1.252 $
+  Date:      $Date: 2008/01/17 17:44:59 $
+  Version:   $Revision: 1.253 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -174,14 +174,8 @@ void cmLocalGenerator::GenerateTestFiles()
     }
   std::string file = this->Makefile->GetStartOutputDirectory();
   file += "/";
-  if ( this->Makefile->IsSet("CTEST_NEW_FORMAT") )
-    {
-    file += "CTestTestfile.cmake";
-    }
-  else
-    {
-    file += "DartTestfile.txt";
-    }
+  file += "CTestTestfile.cmake";
+
   cmGeneratedFileStream fout(file.c_str());
   fout.SetCopyIfDifferent(true);
 
@@ -196,10 +190,7 @@ void cmLocalGenerator::GenerateTestFiles()
        << "# tree CMakeLists.txt file, skipping any SUBDIRS() or "
        << "ADD_TEST() commands" << std::endl
        << "# that are excluded by CMake control structures, i.e. IF() "
-       << "commands." << std::endl
-       << "#" << std::endl
-       << "# The next line is critical for Dart to work" << std::endl
-       << "# Duh :-)" << std::endl << std::endl;
+       << "commands." << std::endl;
   
   const char* testIncludeFile = 
     this->Makefile->GetProperty("TEST_INCLUDE_FILE");

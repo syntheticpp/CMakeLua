@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: ctest.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/13 22:56:49 $
-  Version:   $Revision: 1.100 $
+  Date:      $Date: 2008/01/17 17:44:59 $
+  Version:   $Revision: 1.101 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -179,7 +179,7 @@ static const char * cmDocumentationOptions[][3] =
   {"--ctest-config", "The configuration file used to initialize CTest state "
   "when submitting dashboards.",
    "This option tells CTest to use different initialization file instead of "
-   "DartConfiguration.tcl. This way multiple initialization files can be "
+   "CTestConfiguration.tcl. This way multiple initialization files can be "
    "used for example to submit to multiple dashboards." },
   {"--overwrite", "Overwrite CTest configuration option.",
    "By default ctest uses configuration options from configuration file. "
@@ -224,8 +224,7 @@ int main (int argc, char *argv[])
   // If there is a testing input file, check for documentation options
   // only if there are actually arguments.  We want running without
   // arguments to run tests.
-  if(argc > 1 || !cmSystemTools::FileExists("DartTestfile.txt") &&
-    !cmSystemTools::FileExists("CTestTestfile.cmake"))
+  if(argc > 1 || !cmSystemTools::FileExists("CTestTestfile.cmake"))
     {
     if(argc == 1)
       {
