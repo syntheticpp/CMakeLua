@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefile.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/18 01:34:10 $
-  Version:   $Revision: 1.427 $
+  Date:      $Date: 2008/01/18 22:11:50 $
+  Version:   $Revision: 1.428 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -2999,8 +2999,8 @@ void cmMakefile::RaiseScope(const char *var, const char *varDef)
       this->DefinitionStack[this->DefinitionStack.size()-2].erase(var);
       }
     }
-  // otherwise do the parent
-  else
+  // otherwise do the parent (if one exists)
+  else if (this->LocalGenerator->GetParent())
     {
     cmMakefile *parent = this->LocalGenerator->GetParent()->GetMakefile();
     if (parent)
