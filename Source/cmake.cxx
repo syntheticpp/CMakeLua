@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmake.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/17 23:13:55 $
-  Version:   $Revision: 1.352 $
+  Date:      $Date: 2008/01/18 15:25:25 $
+  Version:   $Revision: 1.353 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1185,7 +1185,19 @@ int cmake::ExecuteCMakeCommand(std::vector<std::string>& args)
       std::string dirName = args[2];
       dirName += "/Progress";
       cmSystemTools::RemoveADirectory(dirName.c_str());
-      int count = atoi(args[3].c_str());
+
+      // is the last argument a filename that exists?
+      FILE *countFile = fopen(args[3].c_str(),"r");
+      int count;
+      if (countFile)
+        {
+        fscanf(countFile,"%i",&count);
+        fclose(countFile);
+        }
+      else
+        {
+        count = atoi(args[3].c_str());
+        }
       if (count)
         {
         cmSystemTools::MakeDirectory(dirName.c_str());

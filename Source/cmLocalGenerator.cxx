@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/18 00:58:01 $
-  Version:   $Revision: 1.255 $
+  Date:      $Date: 2008/01/18 15:25:25 $
+  Version:   $Revision: 1.256 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -272,22 +272,19 @@ void cmLocalGenerator::GenerateTestFiles()
     }
   if ( this->Children.size())
     {
-    fout << "SUBDIRS(";
     size_t i;
-    std::string outDir = this->Makefile->GetStartOutputDirectory();
-    outDir += "/";
     for(i = 0; i < this->Children.size(); ++i)
       {
-      std::string binP = 
+      fout << "ADD_SUBDIRECTORY(";
+      std::string srcP = 
+        this->Children[i]->GetMakefile()->GetStartDirectory();
+      fout << this->Convert(srcP.c_str(),START);
+      fout << " ";
+      std::string outP = 
         this->Children[i]->GetMakefile()->GetStartOutputDirectory();
-      cmSystemTools::ReplaceString(binP, outDir.c_str(), "");
-      if ( i > 0 )
-        {
-        fout << " ";
-        }
-      fout << binP.c_str();
+      fout << this->Convert(outP.c_str(),START_OUTPUT);
+      fout << ")" << std::endl;
       }
-    fout << ")" << std::endl << std::endl;;
     }
 }
 
