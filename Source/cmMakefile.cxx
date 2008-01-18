@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefile.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/18 00:29:43 $
-  Version:   $Revision: 1.425 $
+  Date:      $Date: 2008/01/18 00:50:39 $
+  Version:   $Revision: 1.426 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1133,6 +1133,10 @@ void cmMakefile::InitializeFromParent()
 
   // define flags
   this->DefineFlags = parent->DefineFlags;
+
+  // compile definitions property
+  this->SetProperty("COMPILE_DEFINITIONS",
+                    parent->GetProperty("COMPILE_DEFINITIONS"));
 
   // link libraries
   this->LinkLibraries = parent->LinkLibraries;
