@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalVisualStudio7Generator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/16 02:02:00 $
-  Version:   $Revision: 1.212 $
+  Date:      $Date: 2008/01/18 00:29:43 $
+  Version:   $Revision: 1.213 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -532,7 +532,10 @@ void cmLocalVisualStudio7Generator::WriteConfiguration(std::ostream& fout,
   targetOptions.FixExceptionHandlingDefault();
   targetOptions.Parse(flags.c_str());
   targetOptions.Parse(defineFlags.c_str());
+  targetOptions.AddDefines
+    (this->Makefile->GetProperty("COMPILE_DEFINITIONS"));
   targetOptions.AddDefines(target.GetProperty("COMPILE_DEFINITIONS"));
+  targetOptions.AddDefines(this->Makefile->GetProperty(defPropName.c_str()));
   targetOptions.AddDefines(target.GetProperty(defPropName.c_str()));
   targetOptions.SetVerboseMakefile(
     this->Makefile->IsOn("CMAKE_VERBOSE_MAKEFILE"));

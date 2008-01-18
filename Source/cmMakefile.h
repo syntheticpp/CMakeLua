@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefile.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/17 23:13:55 $
-  Version:   $Revision: 1.218 $
+  Date:      $Date: 2008/01/18 00:29:43 $
+  Version:   $Revision: 1.219 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -800,6 +800,8 @@ protected:
   
 private:
   void Initialize();
+
+  bool ParseDefineFlag(std::string const& definition, bool remove);
 
   void ReadSources(std::ifstream& fin, bool t);
   friend class cmMakeDepend;    // make depend needs direct access

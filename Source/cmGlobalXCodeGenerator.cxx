@@ -3,8 +3,8 @@
 Program:   CMake - Cross-Platform Makefile Generator
 Module:    $RCSfile: cmGlobalXCodeGenerator.cxx,v $
 Language:  C++
-Date:      $Date: 2008/01/16 02:02:00 $
-Version:   $Revision: 1.178 $
+Date:      $Date: 2008/01/18 00:29:43 $
+Version:   $Revision: 1.179 $
 
 Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
 See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1300,11 +1300,15 @@ void cmGlobalXCodeGenerator::CreateBuildSettings(cmTarget& target,
     // Add the export symbol definition for shared library objects.
     this->AppendDefines(ppDefs, exportMacro);
     }
+  this->AppendDefines
+    (ppDefs, this->CurrentMakefile->GetProperty("COMPILE_DEFINITIONS"));
   this->AppendDefines(ppDefs, target.GetProperty("COMPILE_DEFINITIONS"));
   if(configName)
     {
     std::string defVarName = "COMPILE_DEFINITIONS_";
     defVarName += cmSystemTools::UpperCase(configName);
+    this->AppendDefines
+      (ppDefs, this->CurrentMakefile->GetProperty(defVarName.c_str()));
     this->AppendDefines(ppDefs, target.GetProperty(defVarName.c_str()));
     }
   buildSettings->AddAttribute

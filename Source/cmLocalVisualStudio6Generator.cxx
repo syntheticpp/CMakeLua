@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalVisualStudio6Generator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/17 15:00:19 $
-  Version:   $Revision: 1.136 $
+  Date:      $Date: 2008/01/18 00:29:43 $
+  Version:   $Revision: 1.137 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1503,14 +1503,28 @@ void cmLocalVisualStudio6Generator
       }
 
     // Add per-target and per-configuration preprocessor definitions.
+    this->AppendDefines
+      (flags, this->Makefile->GetProperty("COMPILE_DEFINITIONS"), 0);
     this->AppendDefines(flags, target.GetProperty("COMPILE_DEFINITIONS"), 0);
+    this->AppendDefines
+      (flagsDebug,
+       this->Makefile->GetProperty("COMPILE_DEFINITIONS_DEBUG"), 0);
     this->AppendDefines(flagsDebug,
                         target.GetProperty("COMPILE_DEFINITIONS_DEBUG"), 0);
+    this->AppendDefines
+      (flagsRelease,
+       this->Makefile->GetProperty("COMPILE_DEFINITIONS_RELEASE"), 0);
     this->AppendDefines(flagsRelease,
                         target.GetProperty("COMPILE_DEFINITIONS_RELEASE"), 0);
     this->AppendDefines
       (flagsMinSize,
+       this->Makefile->GetProperty("COMPILE_DEFINITIONS_MINSIZEREL"), 0);
+    this->AppendDefines
+      (flagsMinSize,
        target.GetProperty("COMPILE_DEFINITIONS_MINSIZEREL"), 0);
+    this->AppendDefines
+      (flagsDebugRel,
+       this->Makefile->GetProperty("COMPILE_DEFINITIONS_RELWITHDEBINFO"), 0);
     this->AppendDefines
       (flagsDebugRel,
        target.GetProperty("COMPILE_DEFINITIONS_RELWITHDEBINFO"), 0);

@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalGenerator.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/17 15:00:19 $
-  Version:   $Revision: 1.96 $
+  Date:      $Date: 2008/01/18 00:29:43 $
+  Version:   $Revision: 1.97 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -278,7 +278,6 @@ public:
                                   unsigned int minor,
                                   unsigned int patch = 0xFFu);
 protected:
-  void FixDefineFlags(std::string& defineFlags, const char* lang);
   /** Construct a comment for a custom command.  */
   std::string ConstructComment(const cmCustomCommand& cc,
                                const char* default_comment = "");
