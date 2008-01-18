@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmDependsFortran.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/18 00:58:01 $
-  Version:   $Revision: 1.45 $
+  Date:      $Date: 2008/01/18 23:40:05 $
+  Version:   $Revision: 1.46 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -453,7 +453,8 @@ cmDependsFortran
       i != info.Requires.end(); ++i)
     {
     // Require only modules not provided in the same source.
-    if(info.Provides.find(*i) != info.Provides.end())
+    if(std::set<cmStdString>::const_iterator(info.Provides.find(*i)) !=
+       info.Provides.end())
       {
       continue;
       }
