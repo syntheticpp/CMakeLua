@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalUnixMakefileGenerator3.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/18 00:58:01 $
-  Version:   $Revision: 1.233 $
+  Date:      $Date: 2008/01/18 13:35:37 $
+  Version:   $Revision: 1.234 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1849,7 +1849,7 @@ void cmLocalUnixMakefileGenerator3
   std::vector<std::string> defines;
   {
   std::string defPropName = "COMPILE_DEFINITIONS_";
-  defPropName += this->ConfigurationName;
+  defPropName += cmSystemTools::UpperCase(this->ConfigurationName);
   if(const char* ddefs = this->Makefile->GetProperty("COMPILE_DEFINITIONS"))
     {
     cmSystemTools::ExpandListArgument(ddefs, defines);
