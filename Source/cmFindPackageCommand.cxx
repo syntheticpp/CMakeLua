@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmFindPackageCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/18 01:59:57 $
-  Version:   $Revision: 1.29 $
+  Date:      $Date: 2008/01/18 13:19:37 $
+  Version:   $Revision: 1.30 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1237,7 +1237,8 @@ class cmFileListGeneratorCaseInsensitive: public cmFileListGeneratorBase
 public:
   cmFileListGeneratorCaseInsensitive(std::string const& str):
     cmFileListGeneratorBase(), String(str) {}
-  cmFileListGeneratorCaseInsensitive(cmFileListGeneratorCaseInsensitive const& r):
+  cmFileListGeneratorCaseInsensitive(
+    cmFileListGeneratorCaseInsensitive const& r):
     cmFileListGeneratorBase(), String(r.String) {}
 private:
   std::string String;
