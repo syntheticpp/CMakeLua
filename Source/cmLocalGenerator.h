@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalGenerator.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/18 00:29:43 $
-  Version:   $Revision: 1.97 $
+  Date:      $Date: 2008/01/18 00:58:01 $
+  Version:   $Revision: 1.98 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -227,7 +227,10 @@ public:
 
   /** Backwards-compatibility version of EscapeForShell.  */
   std::string EscapeForShellOldStyle(const char* str);
-  
+
+  /** Escape the given string as an argument in a CMake script.  */
+  std::string EscapeForCMake(const char* str);
+
   /** Return the directories into which object files will be put.
    *  There maybe more than one for fat binary systems like OSX.
    */

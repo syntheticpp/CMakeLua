@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/18 00:29:43 $
-  Version:   $Revision: 1.254 $
+  Date:      $Date: 2008/01/18 00:58:01 $
+  Version:   $Revision: 1.255 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -2945,6 +2945,38 @@ std::string cmLocalGenerator::EscapeForShell(const char* str, bool makeVars,
     cmsysSystem_Shell_GetArgumentForUnix(str, &arg[0], flags);
     }
   return std::string(&arg[0]);
+}
+
+//----------------------------------------------------------------------------
+std::string cmLocalGenerator::EscapeForCMake(const char* str)
+{
+  // Always double-quote the argument to take care of most escapes.
+  std::string result = "\"";
+  for(const char* c = str; *c; ++c)
+    {
+    if(*c == '"')
+      {
+      // Escape the double quote to avoid ending the argument.
+      result += "\\\"";
+      }
+    else if(*c == '$')
+      {
+      // Escape the dollar to avoid expanding variables.
+      result += "\\$";
+      }
+    else if(*c == '\\')
+      {
+      // Escape the backslash to avoid other escapes.
+      result += "\\\\";
+      }
+    else
+      {
+      // Other characters will be parsed correctly.
+      result += *c;
+      }
+    }
+  result += "\"";
+  return result;
 }
 
 //----------------------------------------------------------------------------
