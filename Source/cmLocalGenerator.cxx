@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/18 15:25:25 $
-  Version:   $Revision: 1.256 $
+  Date:      $Date: 2008/01/19 20:09:36 $
+  Version:   $Revision: 1.257 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -275,11 +275,7 @@ void cmLocalGenerator::GenerateTestFiles()
     size_t i;
     for(i = 0; i < this->Children.size(); ++i)
       {
-      fout << "ADD_SUBDIRECTORY(";
-      std::string srcP = 
-        this->Children[i]->GetMakefile()->GetStartDirectory();
-      fout << this->Convert(srcP.c_str(),START);
-      fout << " ";
+      fout << "SUBDIRS(";
       std::string outP = 
         this->Children[i]->GetMakefile()->GetStartOutputDirectory();
       fout << this->Convert(outP.c_str(),START_OUTPUT);
