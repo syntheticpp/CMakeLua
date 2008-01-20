@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmake.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/18 15:25:25 $
-  Version:   $Revision: 1.353 $
+  Date:      $Date: 2008/01/20 18:36:13 $
+  Version:   $Revision: 1.354 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -78,7 +78,7 @@
 #endif
 #include "cmGlobalUnixMakefileGenerator3.h"
 
-#if defined(_WIN32)
+#if defined(CMAKE_HAVE_VS_GENERATORS)
 #include "cmCallVisualStudioMacro.h"
 #endif
 
@@ -1337,7 +1337,7 @@ int cmake::ExecuteCMakeCommand(std::vector<std::string>& args)
       return result;
       }
 
-#if defined(_WIN32)
+#if defined(CMAKE_HAVE_VS_GENERATORS)
     // Internal CMake support for calling Visual Studio macros.
     else if (args[1] == "cmake_call_visual_studio_macro" && args.size() >= 4)
       {
