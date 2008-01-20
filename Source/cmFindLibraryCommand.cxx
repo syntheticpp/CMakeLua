@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmFindLibraryCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/17 14:02:31 $
-  Version:   $Revision: 1.46 $
+  Date:      $Date: 2008/01/20 22:41:14 $
+  Version:   $Revision: 1.47 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -181,6 +181,16 @@ std::string cmFindLibraryCommand::FindLibrary(const char* name)
   std::vector<std::string> suffixes;
   cmSystemTools::ExpandListArgument(prefixes_list, prefixes, true);
   cmSystemTools::ExpandListArgument(suffixes_list, suffixes, true);
+  // Add a trailing slash to all paths to aid the search process.
+  for(std::vector<std::string>::iterator i = this->SearchPaths.begin();
+      i != this->SearchPaths.end(); ++i)
+    {
+    std::string& p = *i;
+    if(p[p.size()-1] != '/')
+      {
+      p += "/";
+      }
+    }
   std::string tryPath;
   for(std::vector<std::string>::const_iterator p = this->SearchPaths.begin();
       p != this->SearchPaths.end(); ++p)
@@ -188,7 +198,6 @@ std::string cmFindLibraryCommand::FindLibrary(const char* name)
     if(supportFrameworks)
       {
       tryPath = *p;
-      tryPath += "/";
       tryPath += name;
       tryPath += ".framework";
       if(cmSystemTools::FileExists(tryPath.c_str())
@@ -209,7 +218,6 @@ std::string cmFindLibraryCommand::FindLibrary(const char* name)
             suffix != suffixes.end(); ++suffix)
           {
           tryPath = *p;
-          tryPath += "/";
           tryPath += *prefix;
           tryPath += name;
           tryPath += *suffix;
