@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmFindLibraryCommand.h,v $
   Language:  C++
-  Date:      $Date: 2007/10/10 15:47:43 $
-  Version:   $Revision: 1.22 $
+  Date:      $Date: 2008/01/21 23:30:36 $
+  Version:   $Revision: 1.23 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -65,7 +65,8 @@ public:
   cmTypeMacro(cmFindLibraryCommand, cmFindBase);
   
 protected:
-  void AddLib64Paths();\
+  void AddLib32Paths();
+  void AddLib64Paths();
   std::string FindLibrary(const char* name);
 };
 
