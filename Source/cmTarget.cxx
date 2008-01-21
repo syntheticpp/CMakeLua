@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmTarget.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/17 23:13:55 $
-  Version:   $Revision: 1.176 $
+  Date:      $Date: 2008/01/21 18:59:10 $
+  Version:   $Revision: 1.177 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -191,6 +191,11 @@ void cmTarget::DefineProperties(cmake *cm)
      "link step of a target. LINK_FLAGS_<CONFIG> will add to the "
      "configuration <CONFIG>, "
      "for example, DEBUG, RELEASE, MINSIZEREL, RELWITHDEBINFO. ");
+
+  cm->DefineProperty
+    ("LINK_FLAGS_<CONFIG>", cmProperty::TARGET,
+     "Per-configuration linker flags for a target.",
+     "This is the configuration-specific version of LINK_FLAGS.");
 
   cm->DefineProperty
     ("LINKER_LANGUAGE", cmProperty::TARGET,
@@ -393,7 +398,6 @@ void cmTarget::DefineProperties(cmake *cm)
   // define some properties without documentation
   cm->DefineProperty("DEBUG_OUTPUT_NAME", cmProperty::TARGET,0,0);
   cm->DefineProperty("RELEASE_OUTPUT_NAME", cmProperty::TARGET,0,0);
-  cm->DefineProperty("LINK_FLAGS_DEBUG", cmProperty::TARGET,0,0);
 }
 
 void cmTarget::SetType(TargetType type, const char* name)
