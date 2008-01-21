@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmFindPackageCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/21 13:48:33 $
-  Version:   $Revision: 1.31 $
+  Date:      $Date: 2008/01/21 18:04:08 $
+  Version:   $Revision: 1.32 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -466,17 +466,17 @@ bool cmFindPackageCommand::FindModule(bool& found)
         {
         case 3:
           {
-          snprintf(buf, 64, "%u", this->VersionPatch);
+          sprintf(buf, "%u", this->VersionPatch);
           this->Makefile->AddDefinition((ver+"_PATCH").c_str(), buf);
           } // no break
         case 2:
           {
-          snprintf(buf, 64, "%u", this->VersionMinor);
+          sprintf(buf, "%u", this->VersionMinor);
           this->Makefile->AddDefinition((ver+"_MINOR").c_str(), buf);
           } // no break
         case 1:
           {
-          snprintf(buf, 64, "%u", this->VersionMajor);
+          sprintf(buf, "%u", this->VersionMajor);
           this->Makefile->AddDefinition((ver+"_MAJOR").c_str(), buf);
           } // no break
         default: break;
