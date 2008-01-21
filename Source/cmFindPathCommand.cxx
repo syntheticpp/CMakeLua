@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmFindPathCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/20 22:24:46 $
-  Version:   $Revision: 1.39 $
+  Date:      $Date: 2008/01/21 00:29:12 $
+  Version:   $Revision: 1.40 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -106,7 +106,7 @@ bool cmFindPathCommand::InitialPass(std::vector<std::string> const& argsIn)
       i != this->SearchPaths.end(); ++i)
     {
     std::string& p = *i;
-    if(p[p.size()-1] != '/')
+    if(p.empty() || p[p.size()-1] != '/')
       {
       p += "/";
       }
