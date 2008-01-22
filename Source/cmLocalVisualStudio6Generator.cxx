@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalVisualStudio6Generator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/18 00:29:43 $
-  Version:   $Revision: 1.137 $
+  Date:      $Date: 2008/01/22 14:13:03 $
+  Version:   $Revision: 1.138 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -21,6 +21,8 @@
 #include "cmSourceFile.h"
 #include "cmCacheManager.h"
 #include "cmake.h"
+
+#include "cmComputeLinkInformation.h"
 
 #include <cmsys/RegularExpression.hxx>
 
@@ -1569,12 +1571,17 @@ void cmLocalVisualStudio6Generator
                      std::string& options)
 {
   // Compute the link information for this configuration.
-  std::vector<cmStdString> linkLibs;
-  std::vector<cmStdString> linkDirs;
-  this->ComputeLinkInformation(target, configName, linkLibs, linkDirs);
+  cmComputeLinkInformation cli(&target, configName);
+  if(!cli.Compute())
+    {
+    return;
+    }
+  typedef cmComputeLinkInformation::ItemVector ItemVector;
+  ItemVector const& linkLibs = cli.GetItems();
+  std::vector<std::string> const& linkDirs = cli.GetDirectories();
 
   // Build the link options code.
-  for(std::vector<cmStdString>::const_iterator d = linkDirs.begin();
+  for(std::vector<std::string>::const_iterator d = linkDirs.begin();
       d != linkDirs.end(); ++d)
     {
     std::string dir = *d;
@@ -1592,11 +1599,19 @@ void cmLocalVisualStudio6Generator
       options += "\n";
       }
     }
-  for(std::vector<cmStdString>::const_iterator l = linkLibs.begin();
+  for(ItemVector::const_iterator l = linkLibs.begin();
       l != linkLibs.end(); ++l)
     {
     options += "# ADD LINK32 ";
-    options += this->ConvertToOptionallyRelativeOutputPath(l->c_str());
+    if(l->IsPath)
+      {
+      options +=
+        this->ConvertToOptionallyRelativeOutputPath(l->Value.c_str());
+      }
+    else
+      {
+      options += l->Value;
+      }
     options += "\n";
     }
 

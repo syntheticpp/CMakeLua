@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmTarget.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/17 23:13:55 $
-  Version:   $Revision: 1.95 $
+  Date:      $Date: 2008/01/22 14:13:03 $
+  Version:   $Revision: 1.96 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -271,6 +271,9 @@ public:
                                std::string& impName,
                                std::string& pdbName, const char* config);
 
+  /** Add the target output files to the global generator manifest.  */
+  void GenerateTargetManifest(const char* config);
+
   /**
    * Compute whether this target must be relinked before installing.
    */
@@ -414,10 +417,9 @@ private:
   LinkLibraryVectorType LinkLibraries;
   LinkLibraryVectorType PrevLinkedLibraries;
   bool LinkLibrariesAnalyzed;
-  bool LinkDirectoriesComputed;
   std::vector<std::string> Frameworks;
   std::vector<std::string> LinkDirectories;
-  std::vector<std::string> ExplicitLinkDirectories;
+  std::set<cmStdString> LinkDirectoriesEmmitted;
   bool HaveInstallRule;
   std::string InstallNameFixupPath;
   std::string InstallPath;

@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalGenerator.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/18 00:58:01 $
-  Version:   $Revision: 1.98 $
+  Date:      $Date: 2008/01/22 14:13:03 $
+  Version:   $Revision: 1.99 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -75,7 +75,7 @@ public:
   /**
    * Generate a manifest of target files that will be built.
    */
-  virtual void GenerateTargetManifest(cmTargetManifest&);
+  virtual void GenerateTargetManifest();
 
   ///! Get the makefile for this generator
   cmMakefile *GetMakefile() {
@@ -173,13 +173,6 @@ public:
                                   bool /*verbose*/,
                                   bool /*color*/)
     { return true; }
-
-  /** Compute the list of link libraries and directories for the given
-      target and configuration.  */
-  void ComputeLinkInformation(cmTarget& target, const char* config,
-                              std::vector<cmStdString>& outLibs,
-                              std::vector<cmStdString>& outDirs,
-                              std::vector<cmStdString>* fullPathLibs=0);
 
   /** Get the include flags for the current makefile and language.  */
   void GetIncludeDirectories(std::vector<std::string>& dirs,

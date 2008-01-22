@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalVisualStudio7Generator.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/14 14:20:57 $
-  Version:   $Revision: 1.47 $
+  Date:      $Date: 2008/01/22 14:13:03 $
+  Version:   $Revision: 1.48 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -27,6 +27,7 @@ struct cmVS7FlagTable;
 
 class cmLocalVisualStudio7GeneratorOptions;
 class cmLocalVisualStudio7GeneratorFCInfo;
+class cmLocalVisualStudio7GeneratorInternals;
 
 /** \class cmLocalVisualStudio7Generator
  * \brief Write Visual Studio .NET project files.
@@ -96,10 +97,8 @@ private:
                          cmTarget &target, const char *libName);
   void OutputBuildTool(std::ostream& fout, const char* configName,
                        cmTarget& t);
-  void OutputLibraries(std::ostream& fout,
-                       std::vector<cmStdString> const& libs);
   void OutputLibraryDirectories(std::ostream& fout,
-                                std::vector<cmStdString> const& dirs);
+                                std::vector<std::string> const& dirs);
   void OutputModuleDefinitionFile(std::ostream& fout, cmTarget &target);
   void WriteProjectStart(std::ostream& fout, const char *libName,
                          cmTarget &tgt, std::vector<cmSourceGroup> &sgs);
@@ -120,11 +119,13 @@ private:
   virtual std::string GetTargetDirectory(cmTarget const&) const;
 
   friend class cmLocalVisualStudio7GeneratorFCInfo;
+  friend class cmLocalVisualStudio7GeneratorInternals;
 
   cmVS7FlagTable const* ExtraFlagTable;
   std::string ModuleDefinitionFile;
   int Version;
   std::string PlatformName; // Win32 or x64 
+  cmLocalVisualStudio7GeneratorInternals* Internal;
 };
 
 // This is a table mapping XML tag IDE names to command line options
