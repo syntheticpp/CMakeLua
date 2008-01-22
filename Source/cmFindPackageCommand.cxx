@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmFindPackageCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/21 18:04:08 $
-  Version:   $Revision: 1.32 $
+  Date:      $Date: 2008/01/22 03:48:07 $
+  Version:   $Revision: 1.33 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -68,6 +68,38 @@ cmFindPackageCommand::cmFindPackageCommand()
   this->VersionPatch = 0;
   this->VersionCount = 0;
   this->CommandDocumentation =
+    "  find_package(<package> [major[.minor[.patch]]] [QUIET]\n"
+    "               [[REQUIRED|COMPONENTS] [components...]])\n"
+    "Finds and loads settings from an external project.  "
+    "<package>_FOUND will be set to indicate whether the package was found.  "
+    "When the package is found package-specific information is provided "
+    "through variables documented by the package itself.  "
+    "The QUIET option disables messages if the package cannot be found.  "
+    "The REQUIRED option stops processing with an error message if the "
+    "package cannot be found.  "
+    "A package-specific list of components may be listed after the "
+    "REQUIRED option or after the COMPONENTS option if no REQUIRED "
+    "option is given.  "
+    "The \"[major[.minor[.patch]]]\" version argument specifies a desired "
+    "version with which the package found should be compatible.  "
+    "Version support is currently provided only on a package-by-package "
+    "basis and is not enforced by the command.\n"
+    "User code should generally look for packages using the above simple "
+    "signature.  The remainder of this command documentation specifies the "
+    "full command signature and details of the search process.  Project "
+    "maintainers wishing to provide a package to be found by this command "
+    "are encouraged to read on.\n"
+    "The command has two modes by which it searches for packages: "
+    "\"Module\" mode and \"Config\" mode.  "
+    "Module mode is available when the command is invoked with the above "
+    "reduced signature.  "
+    "CMake searches for a file called \"Find<package>.cmake\" in "
+    "the CMAKE_MODULE_PATH followed by the CMake installation.  "
+    "If the file is found, it is read and processed by CMake.  "
+    "It is responsible for finding the package or producing an error message "
+    "if package content cannot be found.  "
+    "Otherwise the command proceeds to Config mode.\n"
+    "The complete Config mode command signature is:\n"
     "  find_package(<package> [major[.minor[.patch]]] [QUIET] [NO_MODULE]\n"
     "               [[REQUIRED|COMPONENTS] [components...]]\n"
     "               [NAMES name1 [name2 ...]]\n"
@@ -83,29 +115,9 @@ cmFindPackageCommand::cmFindPackageCommand()
     "               [CMAKE_FIND_ROOT_PATH_BOTH |\n"
     "                ONLY_CMAKE_FIND_ROOT_PATH |\n"
     "                NO_CMAKE_FIND_ROOT_PATH])\n"
-    "Finds and loads settings from an external project.  <package>_FOUND "
-    "will be set to indicate whether the package was found.  Settings that "
-    "can be used when <package>_FOUND is true are package-specific.  "
-    "A package-specific list of components may be listed after the "
-    "REQUIRED option, or after the COMPONENTS option if no REQUIRED "
-    "option is given.  The \"[major[.minor[.patch]]]\" version argument "
-    "specifies a desired version with which the package found should be "
-    "compatible.  Version support is currently provided only on a "
-    "package-by-package basis and is not enforced by the command.  "
-    "The command has two modes by which it searches for packages: "
-    "\"Module\" mode and \"Config\" mode."
-    "\n"
-    "Module mode has a reduced signature:\n"
-    "  find_package(<package> [major[.minor[.patch]]] [QUIET]\n"
-    "               [[REQUIRED|COMPONENTS] [components...]])\n"
-    "CMake searches for a file called \"Find<package>.cmake\" in "
-    "the CMAKE_MODULE_PATH followed by the CMake installation.  "
-    "If the file is found, it is read and processed by CMake.  "
-    "It is responsible for finding the package "
-    "or producing an error message if package content cannot be found.  "
-    "Otherwise the command proceeds to Config mode.  The NO_MODULE "
-    "option may be used to skip Module mode explicitly, but the option "
-    "is implied by use of options not specified in the reduced signature."
+    "The NO_MODULE option may be used to skip Module mode explicitly.  "
+    "It is also implied by use of options not specified in the reduced "
+    "signature.  "
     "\n"
     "Config mode attempts to locate a configuration file provided by the "
     "package to be found.  A cache entry called <package>_DIR is created to "
