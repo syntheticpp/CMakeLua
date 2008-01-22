@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmComputeLinkInformation.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/22 14:13:03 $
-  Version:   $Revision: 1.1 $
+  Date:      $Date: 2008/01/22 15:05:27 $
+  Version:   $Revision: 1.2 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -102,6 +102,8 @@ private:
   std::string NoCaseExpression(const char* str);
 
   // Handling of link items that are not targets or full file paths.
+  void AddTargetItem(std::string const& item, cmTarget* target);
+  void AddFullItem(std::string const& item);
   void AddUserItem(std::string const& item);
   void AddDirectoryItem(std::string const& item);
   void AddFrameworkItem(std::string const& item);
