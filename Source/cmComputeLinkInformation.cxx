@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmComputeLinkInformation.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/22 15:05:27 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2008/01/23 15:21:08 $
+  Version:   $Revision: 1.3 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1083,13 +1083,10 @@ void cmComputeLinkInformation::FindDirectoriesForLib(unsigned int lri)
         (this->GlobalGenerator
          ->GetDirectoryContent(this->RuntimeDirectories[i], true));
 
-      // Get the extension which should appear in the soname.
-      std::string ext =
-        cmSystemTools::GetFilenameLastExtension(re.FileName);
-
-      // Get the set of files that might conflict.
-      std::string base =
-        cmSystemTools::GetFilenameWithoutLastExtension(re.FileName);
+      // Get the set of files that might conflict.  Since we do not
+      // know the soname just look at all files that start with the
+      // file name.  Usually the soname starts with the library name.
+      std::string base = re.FileName;
       std::set<cmStdString>::const_iterator first = files.lower_bound(base);
       ++base[base.size()-1];
       std::set<cmStdString>::const_iterator last = files.upper_bound(base);
@@ -1097,13 +1094,7 @@ void cmComputeLinkInformation::FindDirectoriesForLib(unsigned int lri)
       for(std::set<cmStdString>::const_iterator fi = first;
           !found && fi != last; ++fi)
         {
-        // This file name starts with the name of the library file.
-        // If the name also contains the extension then this is
-        // possibly an soname of the library.
-        if(fi->find(ext, base.size()) != fi->npos)
-          {
-          found = true;
-          }
+        found = true;
         }
 
       if(found)
