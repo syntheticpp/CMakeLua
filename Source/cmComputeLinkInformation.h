@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmComputeLinkInformation.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/23 20:22:38 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2008/01/23 20:56:17 $
+  Version:   $Revision: 1.5 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -146,7 +146,7 @@ private:
   std::set<cmStdString> LibraryRuntimeInfoEmmitted;
   std::vector<std::string> RuntimeDirectories;
   std::map<cmStdString, int> RuntimeDirectoryIndex;
-  std::vector<char> RuntimeDirectoryVisited;
+  std::vector<int> RuntimeDirectoryVisited;
   void AddLibraryRuntimeInfo(std::string const& fullPath, cmTarget* target);
   void AddLibraryRuntimeInfo(std::string const& fullPath,
                              const char* soname = 0);
@@ -155,9 +155,10 @@ private:
   void FindConflictingLibraries();
   void FindDirectoriesForLib(unsigned int lri);
   void OrderRuntimeSearchPath();
-  void VisitRuntimeDirectory(unsigned int i, bool top);
+  void VisitRuntimeDirectory(unsigned int i);
   void DiagnoseCycle();
   bool CycleDiagnosed;
+  int WalkId;
 
   // Adjacency-list representation of runtime path ordering graph.
   // This maps from directory to those that must come *before* it.
