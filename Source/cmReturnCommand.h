@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmReturnCommand.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/23 15:28:26 $
-  Version:   $Revision: 1.1 $
+  Date:      $Date: 2008/01/23 23:34:19 $
+  Version:   $Revision: 1.2 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -71,7 +71,7 @@ public:
       "encountered, it caused process of the current function or "
       "directory to stop and control is return to the caller of the "
       "function, or the parent directory if any. Note that a macro "
-      "is not a function and does not handle return liek a function does.";
+      "is not a function and does not handle return like a function does.";
     }
   
   cmTypeMacro(cmReturnCommand, cmCommand);
