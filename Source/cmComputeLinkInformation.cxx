@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmComputeLinkInformation.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/23 18:30:55 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2008/01/23 18:37:28 $
+  Version:   $Revision: 1.5 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1079,7 +1079,8 @@ void cmComputeLinkInformation::FindDirectoriesForLib(unsigned int lri)
       std::set<cmStdString> const& files =
         (this->GlobalGenerator
          ->GetDirectoryContent(this->RuntimeDirectories[i], false));
-      if(files.find(re.SOName) != files.end() ||
+      if((std::set<cmStdString>::const_iterator(files.find(re.SOName)) !=
+          files.end()) ||
          cmSystemTools::FileExists(file.c_str(), true))
         {
         // The library will be found in this directory but this is not
