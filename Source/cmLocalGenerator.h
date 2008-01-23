@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalGenerator.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/22 14:13:03 $
-  Version:   $Revision: 1.99 $
+  Date:      $Date: 2008/01/23 18:03:03 $
+  Version:   $Revision: 1.100 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -326,6 +326,8 @@ protected:
   std::string FindRelativePathTopSource();
   std::string FindRelativePathTopBinary();
   void SetupPathConversions();
+
+  std::string ConvertToLinkReference(std::string const& lib);
 
   /** Check whether the native build system supports the given
       definition.  Issues a warning.  */

@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/22 14:13:03 $
-  Version:   $Revision: 1.258 $
+  Date:      $Date: 2008/01/23 18:03:03 $
+  Version:   $Revision: 1.259 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1451,6 +1451,39 @@ void cmLocalGenerator::GetTargetFlags(std::string& linkLibs,
     }
 }
 
+std::string cmLocalGenerator::ConvertToLinkReference(std::string const& lib)
+{
+#if defined(_WIN32) && !defined(__CYGWIN__)
+  // Work-ardound MSVC 6 command line bug.  This block is only needed
+  // on windows when we are really using the MSVC 6.0 compiler command
+  // line.
+  if(this->Makefile->IsOn("MSVC60"))
+    {
+    // Search for the last space.
+    std::string::size_type pos = lib.rfind(' ');
+    if(pos != lib.npos)
+      {
+      // Find the slash after the last space, if any.
+      pos = lib.find('/', pos);
+
+      // Convert the portion of the path with a space to a short path.
+      std::string sp;
+      if(cmSystemTools::GetShortPath(lib.substr(0, pos).c_str(), sp))
+        {
+        // Append the rest of the path with no space.
+        sp += lib.substr(pos);
+
+        // Convert to an output path.
+        return this->Convert(sp.c_str(), NONE, SHELL);
+        }
+      }
+    }
+#endif
+
+  // Normal behavior.
+  return this->Convert(lib.c_str(), START_OUTPUT, SHELL);
+}
+
 bool cmLocalGenerator::GetLinkerArgs(std::string& rpath, 
                                      std::string& linkLibs,
                                      cmTarget& tgt,
@@ -1554,7 +1587,7 @@ bool cmLocalGenerator::GetLinkerArgs(std::string& rpath,
     {
     if(li->IsPath)
       {
-      linkLibs += this->Convert(li->Value.c_str(), START_OUTPUT, SHELL);
+      linkLibs += this->ConvertToLinkReference(li->Value);
       }
     else
       {
