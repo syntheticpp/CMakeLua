@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmUtilitySourceCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/08/10 19:02:38 $
-  Version:   $Revision: 1.24 $
+  Date:      $Date: 2008/01/23 15:27:59 $
+  Version:   $Revision: 1.25 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -17,7 +17,8 @@
 #include "cmUtilitySourceCommand.h"
 
 // cmUtilitySourceCommand
-bool cmUtilitySourceCommand::InitialPass(std::vector<std::string> const& args)
+bool cmUtilitySourceCommand
+::InitialPass(std::vector<std::string> const& args, cmExecutionStatus &)
 {
   if(args.size() < 3)
     {

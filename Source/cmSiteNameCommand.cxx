@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmSiteNameCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/05/12 17:53:21 $
-  Version:   $Revision: 1.23 $
+  Date:      $Date: 2008/01/23 15:27:59 $
+  Version:   $Revision: 1.24 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -19,7 +19,8 @@
 #include <cmsys/RegularExpression.hxx>
 
 // cmSiteNameCommand
-bool cmSiteNameCommand::InitialPass(std::vector<std::string> const& args)
+bool cmSiteNameCommand
+::InitialPass(std::vector<std::string> const& args, cmExecutionStatus &)
 {
   if(args.size() != 1 )
     {

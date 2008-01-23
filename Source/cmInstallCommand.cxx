@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmInstallCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/02 20:17:56 $
-  Version:   $Revision: 1.38 $
+  Date:      $Date: 2008/01/23 15:27:59 $
+  Version:   $Revision: 1.39 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -46,7 +46,8 @@ static cmInstallFilesGenerator* CreateInstallFilesGenerator(
 
 
 // cmInstallCommand
-bool cmInstallCommand::InitialPass(std::vector<std::string> const& args)
+bool cmInstallCommand::InitialPass(std::vector<std::string> const& args, 
+                                   cmExecutionStatus &)
 {
   // Allow calling with no arguments so that arguments may be built up
   // using a variable that may be left empty.

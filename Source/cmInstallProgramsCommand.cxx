@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmInstallProgramsCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/05/25 15:01:20 $
-  Version:   $Revision: 1.19 $
+  Date:      $Date: 2008/01/23 15:27:59 $
+  Version:   $Revision: 1.20 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -18,7 +18,7 @@
 
 // cmExecutableCommand
 bool cmInstallProgramsCommand
-::InitialPass(std::vector<std::string> const& args)
+::InitialPass(std::vector<std::string> const& args, cmExecutionStatus &)
 {
   if(args.size() < 2)
     {

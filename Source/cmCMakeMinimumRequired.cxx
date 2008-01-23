@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCMakeMinimumRequired.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/11/29 20:59:15 $
-  Version:   $Revision: 1.12 $
+  Date:      $Date: 2008/01/23 15:27:59 $
+  Version:   $Revision: 1.13 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -19,7 +19,8 @@
 #include "cmVersion.h"
 
 // cmCMakeMinimumRequired
-bool cmCMakeMinimumRequired::InitialPass(std::vector<std::string> const& args)
+bool cmCMakeMinimumRequired
+::InitialPass(std::vector<std::string> const& args, cmExecutionStatus &)
 {
   // Process arguments.
   std::string version_string;

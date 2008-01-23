@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmTargetLinkLibrariesCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/11/29 16:00:17 $
-  Version:   $Revision: 1.24 $
+  Date:      $Date: 2008/01/23 15:27:59 $
+  Version:   $Revision: 1.25 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -17,8 +17,8 @@
 #include "cmTargetLinkLibrariesCommand.h"
 
 // cmTargetLinkLibrariesCommand
-bool cmTargetLinkLibrariesCommand::InitialPass(std::vector<std::string> 
-                                               const& args)
+bool cmTargetLinkLibrariesCommand
+::InitialPass(std::vector<std::string> const& args, cmExecutionStatus &)
 {
   // must have one argument
   if(args.size() < 1)

@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmGetTargetPropertyCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/05/31 16:03:52 $
-  Version:   $Revision: 1.9 $
+  Date:      $Date: 2008/01/23 15:27:59 $
+  Version:   $Revision: 1.10 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -17,8 +17,8 @@
 #include "cmGetTargetPropertyCommand.h"
 
 // cmSetTargetPropertyCommand
-bool cmGetTargetPropertyCommand::InitialPass(
-  std::vector<std::string> const& args)
+bool cmGetTargetPropertyCommand
+::InitialPass(std::vector<std::string> const& args, cmExecutionStatus &)
 {
   if(args.size() != 3 )
     {

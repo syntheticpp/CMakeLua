@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmWhileCommand.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/10 03:09:19 $
-  Version:   $Revision: 1.8 $
+  Date:      $Date: 2008/01/23 15:27:59 $
+  Version:   $Revision: 1.9 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -32,7 +32,8 @@ public:
   cmWhileFunctionBlocker() {Executing = false; Depth=0;}
   virtual ~cmWhileFunctionBlocker() {}
   virtual bool IsFunctionBlocked(const cmListFileFunction& lff,
-                                 cmMakefile &mf);
+                                 cmMakefile &mf,
+                                 cmExecutionStatus &);
   virtual bool ShouldRemove(const cmListFileFunction& lff, cmMakefile &mf);
   virtual void ScopeEnded(cmMakefile &mf);
   
@@ -63,13 +64,15 @@ public:
    * This overrides the default InvokeInitialPass implementation.
    * It records the arguments before expansion.
    */
-  virtual bool InvokeInitialPass(const std::vector<cmListFileArgument>& args);
+  virtual bool InvokeInitialPass(const std::vector<cmListFileArgument>& args,
+                                 cmExecutionStatus &);
     
   /**
    * This is called when the command is first encountered in
    * the CMakeLists.txt file.
    */
-  virtual bool InitialPass(std::vector<std::string> const&) { return false; }
+  virtual bool InitialPass(std::vector<std::string> const&,
+                           cmExecutionStatus &) { return false; }
 
   /**
    * This determines if the command is invoked when in script mode.

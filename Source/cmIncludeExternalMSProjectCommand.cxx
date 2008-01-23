@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmIncludeExternalMSProjectCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/07/20 12:36:16 $
-  Version:   $Revision: 1.21 $
+  Date:      $Date: 2008/01/23 15:27:59 $
+  Version:   $Revision: 1.22 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -18,7 +18,7 @@
 
 // cmIncludeExternalMSProjectCommand
 bool cmIncludeExternalMSProjectCommand
-::InitialPass(std::vector<std::string> const& args)
+::InitialPass(std::vector<std::string> const& args, cmExecutionStatus &)
 {
   if(args.size() < 2) 
   {

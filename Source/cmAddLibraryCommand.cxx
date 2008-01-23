@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmAddLibraryCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/07/13 16:03:13 $
-  Version:   $Revision: 1.32 $
+  Date:      $Date: 2008/01/23 15:27:59 $
+  Version:   $Revision: 1.33 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -19,7 +19,8 @@
 #include "cmake.h"
 
 // cmLibraryCommand
-bool cmAddLibraryCommand::InitialPass(std::vector<std::string> const& args)
+bool cmAddLibraryCommand
+::InitialPass(std::vector<std::string> const& args, cmExecutionStatus &)
 {
   if(args.size() < 1 )
     {

@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmFunctionCommand.h,v $
   Language:  C++
-  Date:      $Date: 2007/12/04 15:43:33 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2008/01/23 15:27:59 $
+  Version:   $Revision: 1.3 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -30,7 +30,9 @@ class cmFunctionFunctionBlocker : public cmFunctionBlocker
 public:
   cmFunctionFunctionBlocker() {this->Depth=0;}
   virtual ~cmFunctionFunctionBlocker() {}
-  virtual bool IsFunctionBlocked(const cmListFileFunction&, cmMakefile &mf);
+  virtual bool IsFunctionBlocked(const cmListFileFunction&, 
+                                 cmMakefile &mf,
+                                 cmExecutionStatus &);
   virtual bool ShouldRemove(const cmListFileFunction&, cmMakefile &mf);
   virtual void ScopeEnded(cmMakefile &mf);
   
@@ -59,7 +61,8 @@ public:
    * This is called when the command is first encountered in
    * the CMakeLists.txt file.
    */
-  virtual bool InitialPass(std::vector<std::string> const& args);
+  virtual bool InitialPass(std::vector<std::string> const& args,
+                           cmExecutionStatus &status);
 
   /**
    * This determines if the command is invoked when in script mode.

@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmFindLibraryCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/23 14:53:33 $
-  Version:   $Revision: 1.50 $
+  Date:      $Date: 2008/01/23 15:27:59 $
+  Version:   $Revision: 1.51 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -55,7 +55,8 @@ cmFindLibraryCommand::cmFindLibraryCommand()
 }
 
 // cmFindLibraryCommand
-bool cmFindLibraryCommand::InitialPass(std::vector<std::string> const& argsIn)
+bool cmFindLibraryCommand
+::InitialPass(std::vector<std::string> const& argsIn, cmExecutionStatus &)
 {
   this->VariableDocumentation = "Path to a library.";
   this->CMakePathName = "LIBRARY";

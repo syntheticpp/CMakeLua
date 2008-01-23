@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefile.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/18 00:29:43 $
-  Version:   $Revision: 1.219 $
+  Date:      $Date: 2008/01/23 15:27:59 $
+  Version:   $Revision: 1.220 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -17,12 +17,13 @@
 #ifndef cmMakefile_h
 #define cmMakefile_h
 
+#include "cmCacheManager.h"
 #include "cmData.h"
+#include "cmExecutionStatus.h"
+#include "cmListFileCache.h"
+#include "cmPropertyMap.h"
 #include "cmSystemTools.h"
 #include "cmTarget.h"
-#include "cmListFileCache.h"
-#include "cmCacheManager.h"
-#include "cmPropertyMap.h"
 
 #if defined(CMAKE_BUILD_WITH_CMAKE)
 #include "cmSourceGroup.h"
@@ -630,8 +631,9 @@ public:
    * Execute a single CMake command.  Returns true if the command
    * succeeded or false if it failed.
    */
-  bool ExecuteCommand(const cmListFileFunction& lff);
-  
+  bool ExecuteCommand(const cmListFileFunction& lff, 
+                      cmExecutionStatus &status);
+
   /** Check if a command exists. */
   bool CommandExists(const char* name) const;
     
@@ -796,7 +798,8 @@ protected:
   std::vector<DefinitionMap> DefinitionStack;
   std::vector<cmCommand*> UsedCommands;
   cmLocalGenerator* LocalGenerator;
-  bool IsFunctionBlocked(const cmListFileFunction& lff);
+  bool IsFunctionBlocked(const cmListFileFunction& lff, 
+                         cmExecutionStatus &status);
   
 private:
   void Initialize();

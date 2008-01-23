@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmTryRunCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/09/17 14:53:20 $
-  Version:   $Revision: 1.40 $
+  Date:      $Date: 2008/01/23 15:27:59 $
+  Version:   $Revision: 1.41 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -19,14 +19,15 @@
 #include "cmTryCompileCommand.h"
 
 // cmTryRunCommand
-bool cmTryRunCommand::InitialPass(std::vector<std::string> const& argv)
+bool cmTryRunCommand
+::InitialPass(std::vector<std::string> const& argv, cmExecutionStatus &)
 {
   if(argv.size() < 4)
     {
     return false;
     }
 
-  // build an arg list for TryCompile and extract the runArgs
+  // build an arg list for TryCompile and extract the runArgs,
   std::vector<std::string> tryCompile;
 
   this->CompileResultVariable = "";

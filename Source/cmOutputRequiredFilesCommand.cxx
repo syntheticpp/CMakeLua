@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmOutputRequiredFilesCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/06/18 15:59:23 $
-  Version:   $Revision: 1.15 $
+  Date:      $Date: 2008/01/23 15:27:59 $
+  Version:   $Revision: 1.16 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -177,7 +177,7 @@ void cmLBDepend::DependWalk(cmDependInformation* info)
 
 // cmOutputRequiredFilesCommand
 bool cmOutputRequiredFilesCommand
-::InitialPass(std::vector<std::string> const& args)
+::InitialPass(std::vector<std::string> const& args, cmExecutionStatus &)
 {
   if(args.size() != 2 )
     {
@@ -189,6 +189,21 @@ bool cmOutputRequiredFilesCommand
   this->File = args[0];
   this->OutputFile = args[1];
   
+  // compute the list of files
+  cmLBDepend md;
+  md.SetMakefile(this->Makefile);
+  md.AddSearchPath(this->Makefile->GetStartDirectory());
+  // find the depends for a file
+  const cmDependInformation *info = md.FindDependencies(this->File.c_str());
+  if (info)
+    {
+    // write them out
+    FILE *fout = fopen(this->OutputFile.c_str(),"w");
+    std::set<cmDependInformation const*> visited;
+    this->ListDependencies(info,fout, &visited);
+    fclose(fout);
+    }
+
   return true;
 }
 
@@ -221,20 +236,3 @@ ListDependencies(cmDependInformation const *info,
     }
 }
 
-void cmOutputRequiredFilesCommand::FinalPass()
-{
-  // compute the list of files
-  cmLBDepend md;
-  md.SetMakefile(this->Makefile);
-  md.AddSearchPath(this->Makefile->GetStartDirectory());
-  // find the depends for a file
-  const cmDependInformation *info = md.FindDependencies(this->File.c_str());
-  if (info)
-    {
-    // write them out
-    FILE *fout = fopen(this->OutputFile.c_str(),"w");
-    std::set<cmDependInformation const*> visited;
-    this->ListDependencies(info,fout, &visited);
-    fclose(fout);
-    }
-}

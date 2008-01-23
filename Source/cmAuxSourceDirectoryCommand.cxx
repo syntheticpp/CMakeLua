@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmAuxSourceDirectoryCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/02 16:08:02 $
-  Version:   $Revision: 1.25 $
+  Date:      $Date: 2008/01/23 15:27:59 $
+  Version:   $Revision: 1.26 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -21,7 +21,7 @@
 
 // cmAuxSourceDirectoryCommand
 bool cmAuxSourceDirectoryCommand::InitialPass
-(std::vector<std::string> const& args)
+(std::vector<std::string> const& args, cmExecutionStatus &)
 {
   if(args.size() < 2 || args.size() > 2)
     {

@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmListCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/16 16:24:41 $
-  Version:   $Revision: 1.16 $
+  Date:      $Date: 2008/01/23 15:27:59 $
+  Version:   $Revision: 1.17 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -21,7 +21,8 @@
 #include <stdlib.h> // required for atoi
 #include <ctype.h>
 //----------------------------------------------------------------------------
-bool cmListCommand::InitialPass(std::vector<std::string> const& args)
+bool cmListCommand
+::InitialPass(std::vector<std::string> const& args, cmExecutionStatus &)
 {
   if(args.size() < 1)
     {

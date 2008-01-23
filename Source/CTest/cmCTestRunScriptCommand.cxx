@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCTestRunScriptCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/04/04 17:04:28 $
-  Version:   $Revision: 1.6 $
+  Date:      $Date: 2008/01/23 15:28:01 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -18,8 +18,8 @@
 
 #include "cmCTestScriptHandler.h"
 
-bool cmCTestRunScriptCommand::InitialPass(
-  std::vector<std::string> const& args)
+bool cmCTestRunScriptCommand
+::InitialPass(std::vector<std::string> const& args, cmExecutionStatus &)
 {
   if(args.size() < 1 )
     {

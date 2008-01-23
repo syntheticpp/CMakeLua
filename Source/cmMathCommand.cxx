@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMathCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/03/15 16:02:06 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2008/01/23 15:27:59 $
+  Version:   $Revision: 1.3 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -19,7 +19,8 @@
 #include "cmExprParserHelper.h"
 
 //----------------------------------------------------------------------------
-bool cmMathCommand::InitialPass(std::vector<std::string> const& args)
+bool cmMathCommand
+::InitialPass(std::vector<std::string> const& args, cmExecutionStatus &)
 {
   if ( args.size() < 1 )
     {

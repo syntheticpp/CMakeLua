@@ -1,10 +1,10 @@
 /*=========================================================================
 
   Program:   CMake - Cross-Platform Makefile Generator
-  Module:    $RCSfile: cmCMakeMinimumRequired.h,v $
+  Module:    $RCSfile: cmReturnCommand.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/23 15:27:59 $
-  Version:   $Revision: 1.10 $
+  Date:      $Date: 2008/01/23 15:28:26 $
+  Version:   $Revision: 1.1 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -14,17 +14,17 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef cmCMakeMinimumRequired_h
-#define cmCMakeMinimumRequired_h
+#ifndef cmReturnCommand_h
+#define cmReturnCommand_h
 
 #include "cmCommand.h"
 
-/** \class cmCMakeMinimumRequired
- * \brief Build a CMAKE variable
+/** \class cmReturnCommand
+ * \brief Return from a directory or function
  *
- * cmCMakeMinimumRequired sets a variable to a value with expansion.  
+ * cmReturnCommand returns from a directory or function
  */
-class cmCMakeMinimumRequired : public cmCommand
+class cmReturnCommand : public cmCommand
 {
 public:
   /**
@@ -32,7 +32,7 @@ public:
    */
   virtual cmCommand* Clone() 
     {
-    return new cmCMakeMinimumRequired;
+    return new cmReturnCommand;
     }
 
   /**
@@ -50,14 +50,14 @@ public:
   /**
    * The name of the command as specified in CMakeList.txt.
    */
-  virtual const char* GetName() {return "cmake_minimum_required";}
+  virtual const char* GetName() {return "return";}
   
   /**
    * Succinct documentation.
    */
   virtual const char* GetTerseDocumentation() 
     {
-    return "Set the minimum required version of cmake for a project.";
+    return "Return from a directory or function.";
     }
   
   /**
@@ -66,15 +66,15 @@ public:
   virtual const char* GetFullDocumentation()
     {
     return
-      "  cmake_minimum_required(VERSION versionNumber [FATAL_ERROR])\n"
-      "Let cmake know that the project requires a certain version of a "
-      "cmake, or newer.  CMake will also try to be backwards compatible to "
-      "the version of cmake specified, if a newer version of cmake is "
-      "running.  If FATAL_ERROR is given then failure to meet the "
-      "requirements will be considered an error instead of a warning.";
+      "  return()\n"
+      "Returns from a directory or function. When this command is "
+      "encountered, it caused process of the current function or "
+      "directory to stop and control is return to the caller of the "
+      "function, or the parent directory if any. Note that a macro "
+      "is not a function and does not handle return liek a function does.";
     }
   
-  cmTypeMacro(cmCMakeMinimumRequired, cmCommand);
+  cmTypeMacro(cmReturnCommand, cmCommand);
 };
 
 

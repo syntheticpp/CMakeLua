@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmExecuteProcessCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/10/15 21:38:10 $
-  Version:   $Revision: 1.9 $
+  Date:      $Date: 2008/01/23 15:27:59 $
+  Version:   $Revision: 1.10 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -33,7 +33,7 @@ void cmExecuteProcessCommandAppend(std::vector<char>& output,
 
 // cmExecuteProcessCommand
 bool cmExecuteProcessCommand
-::InitialPass(std::vector<std::string> const& args)
+::InitialPass(std::vector<std::string> const& args, cmExecutionStatus &)
 {
   if(args.size() < 1 )
     {

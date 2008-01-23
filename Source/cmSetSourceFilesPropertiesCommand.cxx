@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmSetSourceFilesPropertiesCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/12/11 15:26:10 $
-  Version:   $Revision: 1.17 $
+  Date:      $Date: 2008/01/23 15:27:59 $
+  Version:   $Revision: 1.18 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -19,8 +19,8 @@
 #include "cmSourceFile.h"
 
 // cmSetSourceFilesPropertiesCommand
-bool cmSetSourceFilesPropertiesCommand::InitialPass(
-  std::vector<std::string> const& args)
+bool cmSetSourceFilesPropertiesCommand
+::InitialPass(std::vector<std::string> const& args, cmExecutionStatus &)
 {
   if(args.size() < 2 )
     {

@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCTestScriptHandler.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/13 22:56:49 $
-  Version:   $Revision: 1.42 $
+  Date:      $Date: 2008/01/23 15:28:01 $
+  Version:   $Revision: 1.43 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -65,7 +65,8 @@ public:
   cmCTestScriptFunctionBlocker() {}
   virtual ~cmCTestScriptFunctionBlocker() {}
   virtual bool IsFunctionBlocked(const cmListFileFunction& lff,
-                                 cmMakefile &mf);
+                                 cmMakefile &mf,
+                                 cmExecutionStatus &);
   //virtual bool ShouldRemove(const cmListFileFunction& lff, cmMakefile &mf);
   //virtual void ScopeEnded(cmMakefile &mf);
 
@@ -74,7 +75,8 @@ public:
 
 // simply update the time and don't block anything
 bool cmCTestScriptFunctionBlocker::
-IsFunctionBlocked(const cmListFileFunction& , cmMakefile &)
+IsFunctionBlocked(const cmListFileFunction& , cmMakefile &,
+                  cmExecutionStatus &)
 {
   this->CTestScriptHandler->UpdateElapsedTime();
   return false;

@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCTestHandlerCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/07/27 13:40:21 $
-  Version:   $Revision: 1.10 $
+  Date:      $Date: 2008/01/23 15:28:01 $
+  Version:   $Revision: 1.11 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -35,8 +35,8 @@ cmCTestHandlerCommand::cmCTestHandlerCommand()
   this->Last = ct_LAST;
 }
 
-bool cmCTestHandlerCommand::InitialPass(
-  std::vector<std::string> const& args)
+bool cmCTestHandlerCommand
+::InitialPass(std::vector<std::string> const& args, cmExecutionStatus &)
 {
   if ( !this->ProcessArguments(args, (unsigned int)this->Last, 
                                &*this->Arguments.begin(),this->Values) )

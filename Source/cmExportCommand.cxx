@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmExportCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/10/14 12:15:22 $
-  Version:   $Revision: 1.6 $
+  Date:      $Date: 2008/01/23 15:27:59 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -39,7 +39,7 @@ cmExportCommand::cmExportCommand()
 
 // cmExportCommand
 bool cmExportCommand
-::InitialPass(std::vector<std::string> const& args)
+::InitialPass(std::vector<std::string> const& args, cmExecutionStatus &)
 {
   if(args.size() < 2 )
     {

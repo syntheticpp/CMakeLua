@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmFindProgramCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/17 14:02:31 $
-  Version:   $Revision: 1.41 $
+  Date:      $Date: 2008/01/23 15:27:59 $
+  Version:   $Revision: 1.42 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -51,7 +51,8 @@ cmFindProgramCommand::cmFindProgramCommand()
 }
 
 // cmFindProgramCommand
-bool cmFindProgramCommand::InitialPass(std::vector<std::string> const& argsIn)
+bool cmFindProgramCommand
+::InitialPass(std::vector<std::string> const& argsIn, cmExecutionStatus &)
 {
   this->VariableDocumentation = "Path to a program.";
   this->CMakePathName = "PROGRAM";
