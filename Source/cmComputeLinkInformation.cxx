@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmComputeLinkInformation.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/23 15:21:08 $
-  Version:   $Revision: 1.3 $
+  Date:      $Date: 2008/01/23 18:30:55 $
+  Version:   $Revision: 1.4 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -187,6 +187,8 @@ cmComputeLinkInformation
   // Get options needed to link libraries.
   this->LibLinkFlag =
     this->Makefile->GetSafeDefinition("CMAKE_LINK_LIBRARY_FLAG");
+  this->LibLinkFileFlag =
+    this->Makefile->GetSafeDefinition("CMAKE_LINK_LIBRARY_FILE_FLAG");
   this->LibLinkSuffix =
     this->Makefile->GetSafeDefinition("CMAKE_LINK_LIBRARY_SUFFIX");
 
@@ -622,6 +624,12 @@ void cmComputeLinkInformation::AddTargetItem(std::string const& item,
     this->SetCurrentLinkType(LinkShared);
     }
 
+  // If this platform wants a flag before the full path, add it.
+  if(!this->LibLinkFileFlag.empty())
+    {
+    this->Items.push_back(Item(this->LibLinkFileFlag, false));
+    }
+
   // Now add the full path to the library.
   this->Items.push_back(Item(item, true));
 }
@@ -648,6 +656,12 @@ void cmComputeLinkInformation::AddFullItem(std::string const& item)
       // default type.
       this->SetCurrentLinkType(this->StartLinkType);
       }
+    }
+
+  // If this platform wants a flag before the full path, add it.
+  if(!this->LibLinkFileFlag.empty())
+    {
+    this->Items.push_back(Item(this->LibLinkFileFlag, false));
     }
 
   // Now add the full path to the library.

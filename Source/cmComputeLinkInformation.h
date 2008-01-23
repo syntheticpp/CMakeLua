@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmComputeLinkInformation.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/22 15:05:27 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2008/01/23 18:30:55 $
+  Version:   $Revision: 1.3 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -74,6 +74,7 @@ private:
   bool UseImportLibrary;
   const char* LoaderFlag;
   std::string LibLinkFlag;
+  std::string LibLinkFileFlag;
   std::string LibLinkSuffix;
 
   // Link type adjustment.

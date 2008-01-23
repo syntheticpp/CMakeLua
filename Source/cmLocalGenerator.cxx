@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/23 18:03:03 $
-  Version:   $Revision: 1.259 $
+  Date:      $Date: 2008/01/23 18:30:55 $
+  Version:   $Revision: 1.260 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1454,10 +1454,9 @@ void cmLocalGenerator::GetTargetFlags(std::string& linkLibs,
 std::string cmLocalGenerator::ConvertToLinkReference(std::string const& lib)
 {
 #if defined(_WIN32) && !defined(__CYGWIN__)
-  // Work-ardound MSVC 6 command line bug.  This block is only needed
-  // on windows when we are really using the MSVC 6.0 compiler command
-  // line.
-  if(this->Makefile->IsOn("MSVC60"))
+  // Work-ardound command line parsing limitations in MSVC 6.0 and
+  // Watcom.
+  if(this->Makefile->IsOn("MSVC60") || this->Makefile->IsOn("WATCOM"))
     {
     // Search for the last space.
     std::string::size_type pos = lib.rfind(' ');
