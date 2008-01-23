@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmFindLibraryCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/23 21:21:49 $
-  Version:   $Revision: 1.52 $
+  Date:      $Date: 2008/01/23 22:53:18 $
+  Version:   $Revision: 1.53 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -97,11 +97,6 @@ bool cmFindLibraryCommand
       {
       // Convert lib to lib32.
       this->AddArchitecturePaths("32");
-      }
-    else if(abi.find("SPARCV9") != abi.npos)
-      {
-      // Convert lib to lib/sparcv9.
-      this->AddArchitecturePaths("/sparcv9");
       }
     }
 
