@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/13 22:56:49 $
-  Version:   $Revision: 1.330 $
+  Date:      $Date: 2008/01/23 17:51:24 $
+  Version:   $Revision: 1.331 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -521,10 +521,10 @@ bool cmCTest::UpdateCTestConfiguration()
   std::string fileName = this->CTestConfigFile;
   if ( fileName.empty() )
     {
-    fileName = this->BinaryDir + "/DartConfiguration.tcl";
+    fileName = this->BinaryDir + "/CTestConfiguration.ini";
     if ( !cmSystemTools::FileExists(fileName.c_str()) )
       {
-      fileName = this->BinaryDir + "/CTestConfiguration.ini";
+      fileName = this->BinaryDir + "/DartConfiguration.tcl";
       }
     }
   cmCTestLog(this, HANDLER_VERBOSE_OUTPUT, "UpdateCTestConfiguration  from :"
