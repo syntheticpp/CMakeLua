@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefile.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/23 15:27:59 $
-  Version:   $Revision: 1.220 $
+  Date:      $Date: 2008/01/24 12:37:08 $
+  Version:   $Revision: 1.221 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -58,6 +58,10 @@ public:
    */
   unsigned int GetCacheMajorVersion();
   unsigned int GetCacheMinorVersion();
+
+  /** Return whether compatibility features needed for a version of
+      the cache or lower should be enabled.  */
+  bool NeedCacheCompatibility(int major, int minor);
   
   /**
    * Construct an empty makefile.

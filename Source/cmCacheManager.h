@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCacheManager.h,v $
   Language:  C++
-  Date:      $Date: 2007/04/10 20:03:10 $
-  Version:   $Revision: 1.46 $
+  Date:      $Date: 2008/01/24 12:37:08 $
+  Version:   $Revision: 1.47 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -142,6 +142,11 @@ public:
   ///! Get a value from the cache given a key
   const char* GetCacheValue(const char* key) const;
 
+  /** Get the version of CMake that wrote the cache.  */
+  unsigned int GetCacheMajorVersion() { return this->CacheMajorVersion; }
+  unsigned int GetCacheMinorVersion() { return this->CacheMinorVersion; }
+  bool NeedCacheCompatibility(int major, int minor);
+
 protected:
   ///! Add an entry into the cache
   void AddCacheEntry(const char* key, const char* value, 
@@ -154,7 +159,10 @@ protected:
   CacheEntry *GetCacheEntry(const char *key);
   ///! Clean out the CMakeFiles directory if no CMakeCache.txt
   void CleanCMakeFiles(const char* path);
-  
+
+  // Cache version info
+  unsigned int CacheMajorVersion;
+  unsigned int CacheMinorVersion;
 private:
   typedef  std::map<cmStdString, CacheEntry> CacheEntryMap;
   static void OutputHelpString(std::ofstream& fout, 

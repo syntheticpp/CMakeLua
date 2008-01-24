@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefile.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/23 15:27:59 $
-  Version:   $Revision: 1.429 $
+  Date:      $Date: 2008/01/24 12:37:08 $
+  Version:   $Revision: 1.430 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -145,32 +145,18 @@ void cmMakefile::Initialize()
 
 unsigned int cmMakefile::GetCacheMajorVersion()
 {
-  if(const char* vstr =
-     this->GetCacheManager()->GetCacheValue("CMAKE_CACHE_MAJOR_VERSION"))
-    {
-    unsigned int v=0;
-    if(sscanf(vstr, "%u", &v) == 1)
-      {
-      return v;
-      }
-    }
-  return 0;
+  return this->GetCacheManager()->GetCacheMajorVersion();
 }
 
 unsigned int cmMakefile::GetCacheMinorVersion()
 {
-  if(const char* vstr =
-     this->GetCacheManager()->GetCacheValue("CMAKE_CACHE_MINOR_VERSION"))
-    {
-    unsigned int v=0;
-    if(sscanf(vstr, "%u", &v) == 1)
-      {
-      return v;
-      }
-    }
-  return 0;
+  return this->GetCacheManager()->GetCacheMinorVersion();
 }
 
+bool cmMakefile::NeedCacheCompatibility(int major, int minor)
+{
+  return this->GetCacheManager()->NeedCacheCompatibility(major, minor);
+}
 
 cmMakefile::~cmMakefile()
 {
