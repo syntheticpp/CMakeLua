@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmSystemTools.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/01 20:13:41 $
-  Version:   $Revision: 1.146 $
+  Date:      $Date: 2008/01/24 19:41:18 $
+  Version:   $Revision: 1.147 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -167,6 +167,9 @@ public:
 
   ///! Compute the md5sum of a file
   static bool ComputeFileMD5(const char* source, char* md5out);
+
+  /** Compute the md5sum of a string.  */
+  static std::string ComputeStringMD5(const char* input);
 
   /**
    * Run an executable command and put the stdout in output.
