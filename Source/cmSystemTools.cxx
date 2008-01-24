@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmSystemTools.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/24 19:41:18 $
-  Version:   $Revision: 1.359 $
+  Date:      $Date: 2008/01/24 21:11:06 $
+  Version:   $Revision: 1.360 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1131,6 +1131,7 @@ bool cmSystemTools::ComputeFileMD5(const char* source, char* md5out)
 
 std::string cmSystemTools::ComputeStringMD5(const char* input)
 {
+#if defined(CMAKE_BUILD_WITH_CMAKE)
   char md5out[32];
   cmsysMD5* md5 = cmsysMD5_New();
   cmsysMD5_Initialize(md5);
@@ -1138,6 +1139,10 @@ std::string cmSystemTools::ComputeStringMD5(const char* input)
   cmsysMD5_FinalizeHex(md5, md5out);
   cmsysMD5_Delete(md5);
   return std::string(md5out, 32);
+#else
+  (void)input;
+  cmSystemTools::Message("md5sum not supported in bootstrapping mode","Error");
+#endif
 }
 
 void cmSystemTools::Glob(const char *directory, const char *regexp,
