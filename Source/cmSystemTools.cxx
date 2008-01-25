@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmSystemTools.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/24 21:11:06 $
-  Version:   $Revision: 1.360 $
+  Date:      $Date: 2008/01/25 13:11:04 $
+  Version:   $Revision: 1.361 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1142,6 +1142,7 @@ std::string cmSystemTools::ComputeStringMD5(const char* input)
 #else
   (void)input;
   cmSystemTools::Message("md5sum not supported in bootstrapping mode","Error");
+  return "";
 #endif
 }
 
