@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmComputeLinkInformation.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/23 20:56:17 $
-  Version:   $Revision: 1.5 $
+  Date:      $Date: 2008/01/27 18:42:49 $
+  Version:   $Revision: 1.6 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -51,7 +51,7 @@ public:
   const char* GetLinkLanguage() const { return this->LinkLanguage; }
   std::vector<std::string> const& GetRuntimeSearchPath();
 private:
-  void AddItem(std::string const& item);
+  void AddItem(std::string const& item, cmTarget* tgt);
 
   // Output information.
   ItemVector Items;
