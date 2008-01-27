@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmComputeLinkDepends.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/27 18:42:49 $
-  Version:   $Revision: 1.1 $
+  Date:      $Date: 2008/01/27 20:09:58 $
+  Version:   $Revision: 1.2 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -21,7 +21,7 @@
 #include "cmMakefile.h"
 #include "cmTarget.h"
 
-#include <algorithm>
+#include <cmsys/stl/algorithm>
 
 /*
 
@@ -397,9 +397,9 @@ void cmComputeLinkDepends::InferDependencies()
     for(++i; i != sets->end(); ++i)
       {
       DependSet intersection;
-      set_intersection(common.begin(), common.end(),
-                       i->begin(), i->end(),
-                       std::inserter(intersection, intersection.begin()));
+      cmsys_stl::set_intersection
+        (common.begin(), common.end(), i->begin(), i->end(),
+         std::inserter(intersection, intersection.begin()));
       common = intersection;
       }
 
