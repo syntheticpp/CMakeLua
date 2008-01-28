@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmExportBuildFileGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/28 19:46:16 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2008/01/28 20:22:07 $
+  Version:   $Revision: 1.3 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -61,6 +61,8 @@ cmExportBuildFileGenerator
                                       target, properties);
 
       // TOOD: PUBLIC_HEADER_LOCATION
+      // This should wait until the build feature propagation stuff
+      // is done.  Then this can be a propagated include directory.
       // this->GenerateImportProperty(config, te->HeaderGenerator,
       //                              properties);
 
