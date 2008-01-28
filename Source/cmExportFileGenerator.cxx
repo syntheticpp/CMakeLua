@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmExportFileGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/28 18:05:58 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2008/01/28 18:21:42 $
+  Version:   $Revision: 1.3 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -20,6 +20,14 @@
 #include "cmMakefile.h"
 #include "cmSystemTools.h"
 #include "cmTarget.h"
+
+#include <cmsys/auto_ptr.hxx>
+
+//----------------------------------------------------------------------------
+cmExportFileGenerator::cmExportFileGenerator()
+{
+  this->AppendMode = false;
+}
 
 //----------------------------------------------------------------------------
 void cmExportFileGenerator::AddConfiguration(const char* config)
@@ -43,8 +51,23 @@ void cmExportFileGenerator::SetExportFile(const char* mainFile)
 bool cmExportFileGenerator::GenerateImportFile()
 {
   // Open the output file to generate it.
-  cmGeneratedFileStream exportFileStream(this->MainImportFile.c_str(), true);
-  if(!exportFileStream)
+  cmsys::auto_ptr<std::ofstream> foutPtr;
+  if(this->AppendMode)
+    {
+    // Open for append.
+    cmsys::auto_ptr<std::ofstream>
+      ap(new std::ofstream(this->MainImportFile.c_str(), std::ios::app));
+    foutPtr = ap;
+    }
+  else
+    {
+    // Generate atomically and with copy-if-different.
+    cmsys::auto_ptr<cmGeneratedFileStream>
+      ap(new cmGeneratedFileStream(this->MainImportFile.c_str(), true));
+    ap->SetCopyIfDifferent(true);
+    foutPtr = ap;
+    }
+  if(!foutPtr.get() || !*foutPtr)
     {
     std::string se = cmSystemTools::GetLastSystemError();
     cmOStringStream e;
@@ -53,7 +76,7 @@ bool cmExportFileGenerator::GenerateImportFile()
     cmSystemTools::Error(e.str().c_str());
     return false;
     }
-  std::ostream& os = exportFileStream;
+  std::ostream& os = *foutPtr;
 
   // Start with the import file header.
   this->GenerateImportHeaderCode(os);

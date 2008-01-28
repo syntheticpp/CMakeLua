@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmExportFileGenerator.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/28 14:53:21 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2008/01/28 18:21:42 $
+  Version:   $Revision: 1.3 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -30,6 +30,7 @@
 class cmExportFileGenerator
 {
 public:
+  cmExportFileGenerator();
   virtual ~cmExportFileGenerator() {}
 
   /** Set the full path to the export file to generate.  */
@@ -90,6 +91,7 @@ protected:
   std::string FileDir;
   std::string FileBase;
   std::string FileExt;
+  bool AppendMode;
 
   // The set of targets included in the export.
   std::set<cmTarget*> ExportedTargets;

@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmExportBuildFileGenerator.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/28 13:38:35 $
-  Version:   $Revision: 1.1 $
+  Date:      $Date: 2008/01/28 18:21:42 $
+  Version:   $Revision: 1.2 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -35,6 +35,8 @@ public:
   void SetExports(std::vector<cmTarget*> const* exports)
     { this->Exports = exports; }
 
+  /** Set whether to append generated code to the output file.  */
+  void SetAppendMode(bool append) { this->AppendMode = append; }
 protected:
   // Implement virtual methods from the superclass.
   virtual bool GenerateMainFile(std::ostream& os);
