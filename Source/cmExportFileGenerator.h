@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmExportFileGenerator.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/28 18:21:42 $
-  Version:   $Revision: 1.3 $
+  Date:      $Date: 2008/01/28 18:37:59 $
+  Version:   $Revision: 1.4 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -67,6 +67,9 @@ protected:
   void SetImportDetailProperties(const char* config,
                                  std::string const& suffix, cmTarget* target,
                                  ImportPropertyMap& properties);
+  void SetImportLinkProperties(const char* config,
+                               std::string const& suffix, cmTarget* target,
+                               ImportPropertyMap& properties);
 
   /** Each subclass knows how to generate its kind of export file.  */
   virtual bool GenerateMainFile(std::ostream& os) = 0;

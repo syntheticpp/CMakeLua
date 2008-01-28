@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmExportFileGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/28 18:21:42 $
-  Version:   $Revision: 1.3 $
+  Date:      $Date: 2008/01/28 18:37:59 $
+  Version:   $Revision: 1.4 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -135,7 +135,22 @@ cmExportFileGenerator
     }
 
   // Add the transitive link dependencies for this configuration.
-  {
+  if(target->GetType() == cmTarget::STATIC_LIBRARY ||
+     target->GetType() == cmTarget::SHARED_LIBRARY)
+    {
+    this->SetImportLinkProperties(config, suffix, target, properties);
+    }
+}
+
+//----------------------------------------------------------------------------
+void
+cmExportFileGenerator
+::SetImportLinkProperties(const char* config, std::string const& suffix,
+                          cmTarget* target, ImportPropertyMap& properties)
+{
+  // Get the makefile in which to lookup target information.
+  cmMakefile* mf = target->GetMakefile();
+
   // Compute which library configuration to link.
   cmTarget::LinkLibraryType linkType = cmTarget::OPTIMIZED;
   if(config && cmSystemTools::UpperCase(config) == "DEBUG")
@@ -193,7 +208,6 @@ cmExportFileGenerator
   std::string prop = "IMPORTED_LINK_LIBRARIES";
   prop += suffix;
   properties[prop] = link_libs;
-  }
 }
 
 //----------------------------------------------------------------------------
