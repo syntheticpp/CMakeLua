@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmTarget.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/28 18:05:58 $
-  Version:   $Revision: 1.98 $
+  Date:      $Date: 2008/01/28 19:46:16 $
+  Version:   $Revision: 1.99 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -323,6 +323,9 @@ public:
   /** Return whether this target is a shared library Framework on
       Apple.  */
   bool IsFrameworkOnApple();
+
+  /** Return whether this target is an executable Bundle on Apple.  */
+  bool IsAppBundleOnApple();
 
 private:
   /**

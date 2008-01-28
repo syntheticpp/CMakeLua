@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmInstallCommand.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/28 18:05:58 $
-  Version:   $Revision: 1.26 $
+  Date:      $Date: 2008/01/28 19:46:16 $
+  Version:   $Revision: 1.27 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -99,7 +99,7 @@ public:
       "\n"
       "The TARGETS signature:\n"
       "  install(TARGETS targets... [EXPORT <export-name>]\n"
-      "          [[ARCHIVE|LIBRARY|RUNTIME|FRAMEWORK]\n"
+      "          [[ARCHIVE|LIBRARY|RUNTIME|FRAMEWORK|BUNDLE]\n"
       "           [DESTINATION <dir>]\n"
       "           [PERMISSIONS permissions...]\n"
       "           [CONFIGURATIONS [Debug|Release|...]]\n"
@@ -107,10 +107,12 @@ public:
       "           [OPTIONAL]\n"
       "          ] [...])\n"
       "The TARGETS form specifies rules for installing targets from a "
-      "project.  There are four kinds of target files that may be "
-      "installed: archive, library, runtime, and framework.  "
+      "project.  There are five kinds of target files that may be "
+      "installed: archive, library, runtime, framework, and bundle.  "
 
-      "Executables are always treated as runtime targets. "
+      "Executables are treated as runtime targets, except that those "
+      "marked with the MACOSX_BUNDLE property are treated as bundle "
+      "targets on OS X. "
       "Static libraries are always treated as archive targets. "
       "Module libraries are always treated as library targets. "
       "For non-DLL platforms shared libraries are treated as library "

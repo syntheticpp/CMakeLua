@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmTarget.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/28 18:05:58 $
-  Version:   $Revision: 1.181 $
+  Date:      $Date: 2008/01/28 19:46:16 $
+  Version:   $Revision: 1.182 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -205,6 +205,8 @@ void cmTarget::DefineProperties(cmake *cm)
      "Full path to the main file on disk for an IMPORTED target.",
      "Specifies the location of an IMPORTED target file on disk.  "
      "For executables this is the location of the executable file.  "
+     "For bundles on OS X this is the location of the executable file "
+     "inside Contents/MacOS under the application bundle folder.  "
      "For static libraries and modules this is the location of the "
      "library or module.  "
      "For shared libraries on non-DLL platforms this is the location of "
@@ -603,6 +605,14 @@ bool cmTarget::IsFrameworkOnApple()
   return (this->GetType() == cmTarget::SHARED_LIBRARY &&
           this->Makefile->IsOn("APPLE") &&
           this->GetPropertyAsBool("FRAMEWORK"));
+}
+
+//----------------------------------------------------------------------------
+bool cmTarget::IsAppBundleOnApple()
+{
+  return (this->GetType() == cmTarget::EXECUTABLE &&
+          this->Makefile->IsOn("APPLE") &&
+          this->GetPropertyAsBool("MACOSX_BUNDLE"));
 }
 
 //----------------------------------------------------------------------------

@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmInstallTargetGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/28 18:05:58 $
-  Version:   $Revision: 1.52 $
+  Date:      $Date: 2008/01/28 19:46:16 $
+  Version:   $Revision: 1.53 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -176,8 +176,7 @@ cmInstallTargetGenerator
       from1 += targetName;
 
       // Handle OSX Bundles.
-      if(this->Target->GetMakefile()->IsOn("APPLE") &&
-         this->Target->GetPropertyAsBool("MACOSX_BUNDLE"))
+      if(this->Target->IsAppBundleOnApple())
         {
         // Compute the source locations of the bundle executable and
         // Info.plist file.

@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmExportFileGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/28 18:37:59 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2008/01/28 19:46:16 $
+  Version:   $Revision: 1.5 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -282,13 +282,18 @@ cmExportFileGenerator
        << " PROPERTY ENABLE_EXPORTS 1)\n";
     }
 
-  // Mark the imported framework.  This is done even on non-Apple
-  // platforms for reference and consistency purposes.
-  if(target->GetType() == cmTarget::SHARED_LIBRARY &&
-     target->GetPropertyAsBool("FRAMEWORK"))
+  // Mark the imported library if it is a framework.
+  if(target->IsFrameworkOnApple())
     {
     os << "SET_PROPERTY(TARGET " << targetName
        << " PROPERTY FRAMEWORK 1)\n";
+    }
+
+  // Mark the imported executable if it is an application bundle.
+  if(target->IsAppBundleOnApple())
+    {
+    os << "SET_PROPERTY(TARGET " << targetName
+       << " PROPERTY MACOSX_BUNDLE 1)\n";
     }
   os << "\n";
 }

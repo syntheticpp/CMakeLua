@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmExportInstallFileGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/28 18:05:58 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2008/01/28 19:46:16 $
+  Version:   $Revision: 1.3 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -160,8 +160,8 @@ cmExportInstallFileGenerator
                                     te->RuntimeGenerator, properties);
     this->SetImportLocationProperty(config, suffix,
                                     te->FrameworkGenerator, properties);
-
-    // TODO: Bundles?
+    this->SetImportLocationProperty(config, suffix,
+                                    te->BundleGenerator, properties);
 
     // If any file location was set for the target add it to the
     // import file.
@@ -227,10 +227,15 @@ cmExportInstallFileGenerator
   std::string fname = itgen->GetInstallFilename(config);
   value += fname;
 
-  // Fix name for frameworks.
+  // Fix name for frameworks and bundles.
   if(itgen->GetTarget()->IsFrameworkOnApple())
     {
     value += ".framework/";
+    value += fname;
+    }
+  else if(itgen->GetTarget()->IsAppBundleOnApple())
+    {
+    value += ".app/Contents/MacOS/";
     value += fname;
     }
 
