@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmInstallTargetGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/28 13:38:35 $
-  Version:   $Revision: 1.51 $
+  Date:      $Date: 2008/01/28 18:05:58 $
+  Version:   $Revision: 1.52 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -222,8 +222,7 @@ cmInstallTargetGenerator
       // An import library looks like a static library.
       type = cmTarget::STATIC_LIBRARY;
       }
-    else if(this->Target->GetMakefile()->IsOn("APPLE") &&
-            this->Target->GetPropertyAsBool("FRAMEWORK"))
+    else if(this->Target->IsFrameworkOnApple())
       {
       // Compute the build tree location of the framework directory
       std::string from1 = fromDirConfig;

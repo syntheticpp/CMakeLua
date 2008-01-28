@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmInstallCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/28 13:38:35 $
-  Version:   $Revision: 1.40 $
+  Date:      $Date: 2008/01/28 18:05:58 $
+  Version:   $Revision: 1.41 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -376,7 +376,7 @@ bool cmInstallCommand::HandleTargetsMode(std::vector<std::string> const& args)
           // This is a non-DLL platform.
           // If it is marked with FRAMEWORK property use the FRAMEWORK set of
           // INSTALL properties. Otherwise, use the LIBRARY properties.
-          if(target.GetPropertyAsBool("FRAMEWORK"))
+          if(target.IsFrameworkOnApple())
             {
             // Use the FRAMEWORK properties.
             if (!frameworkArgs.GetDestination().empty())
@@ -512,9 +512,7 @@ bool cmInstallCommand::HandleTargetsMode(std::vector<std::string> const& args)
   //
   bool createInstallGeneratorsForTargetFileSets = true;
 
-  if(cmTarget::SHARED_LIBRARY == target.GetType() &&
-    target.GetPropertyAsBool("FRAMEWORK") &&
-    this->Makefile->IsOn("APPLE"))
+  if(target.IsFrameworkOnApple())
     {
     createInstallGeneratorsForTargetFileSets = false;
     }

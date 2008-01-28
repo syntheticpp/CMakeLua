@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmGlobalGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/28 13:38:35 $
-  Version:   $Revision: 1.219 $
+  Date:      $Date: 2008/01/28 18:05:58 $
+  Version:   $Revision: 1.220 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1359,8 +1359,7 @@ bool cmGlobalGenerator::NameResolvesToFramework(const std::string& libname)
 
   if(cmTarget* tgt = this->FindTarget(0, libname.c_str()))
     {
-    if(tgt->GetType() == cmTarget::SHARED_LIBRARY &&
-       tgt->GetPropertyAsBool("FRAMEWORK"))
+    if(tgt->IsFrameworkOnApple())
        {
        return true;
        }

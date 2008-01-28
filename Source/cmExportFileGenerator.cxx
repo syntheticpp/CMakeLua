@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmExportFileGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/28 13:38:35 $
-  Version:   $Revision: 1.1 $
+  Date:      $Date: 2008/01/28 18:05:58 $
+  Version:   $Revision: 1.2 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -237,10 +237,21 @@ cmExportFileGenerator
     default:  // should never happen
       break;
     }
+
+  // Mark the imported executable if it has exports.
   if(target->IsExecutableWithExports())
     {
     os << "SET_PROPERTY(TARGET " << targetName
-       << " PROPERTY IMPORTED_ENABLE_EXPORTS 1)\n";
+       << " PROPERTY ENABLE_EXPORTS 1)\n";
+    }
+
+  // Mark the imported framework.  This is done even on non-Apple
+  // platforms for reference and consistency purposes.
+  if(target->GetType() == cmTarget::SHARED_LIBRARY &&
+     target->GetPropertyAsBool("FRAMEWORK"))
+    {
+    os << "SET_PROPERTY(TARGET " << targetName
+       << " PROPERTY FRAMEWORK 1)\n";
     }
   os << "\n";
 }
