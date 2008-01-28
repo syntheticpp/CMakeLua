@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmInstallCommand.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/28 19:46:16 $
-  Version:   $Revision: 1.27 $
+  Date:      $Date: 2008/01/28 20:12:12 $
+  Version:   $Revision: 1.28 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -99,7 +99,8 @@ public:
       "\n"
       "The TARGETS signature:\n"
       "  install(TARGETS targets... [EXPORT <export-name>]\n"
-      "          [[ARCHIVE|LIBRARY|RUNTIME|FRAMEWORK|BUNDLE]\n"
+      "          [[ARCHIVE|LIBRARY|RUNTIME|FRAMEWORK|BUNDLE|\n"
+      "            PRIVATE_HEADER|PUBLIC_HEADER|RESOURCE]\n"
       "           [DESTINATION <dir>]\n"
       "           [PERMISSIONS permissions...]\n"
       "           [CONFIGURATIONS [Debug|Release|...]]\n"
@@ -129,6 +130,15 @@ public:
       "all target types.  If only one is given then only targets of that "
       "type will be installed (which can be used to install just a DLL or "
       "just an import library)."
+      "\n"
+      "The PRIVATE_HEADER, PUBLIC_HEADER, and RESOURCE arguments cause "
+      "subsequent properties to be applied to installing a FRAMEWORK "
+      "shared library target's associated files on non-Apple platforms.  "
+      "Rules defined by these arguments are ignored on Apple platforms "
+      "because the associated files are installed into the appropriate "
+      "locations inside the framework folder.  "
+      "See documentation of the PRIVATE_HEADER, PUBLIC_HEADER, and RESOURCE "
+      "target properties for details."
       "\n"
       "One or more groups of properties may be specified in a single call "
       "to the TARGETS form of this command.  A target may be installed more "

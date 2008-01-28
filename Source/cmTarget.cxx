@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmTarget.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/28 19:46:16 $
-  Version:   $Revision: 1.182 $
+  Date:      $Date: 2008/01/28 20:12:12 $
+  Version:   $Revision: 1.183 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -356,6 +356,36 @@ void cmTarget::DefineProperties(cmake *cm)
      "installing a target.  They are used only when the old "
      "INSTALL_TARGETS command is used to install the target.  Use the "
      "INSTALL command instead.");
+
+  cm->DefineProperty
+    ("PRIVATE_HEADER", cmProperty::TARGET,
+     "Specify private header files in a FRAMEWORK shared library target.",
+     "Shared library targets marked with the FRAMEWORK property generate "
+     "frameworks on OS X and normal shared libraries on other platforms.  "
+     "This property may be set to a list of header files to be placed "
+     "in the PrivateHeaders directory inside the framework folder.  "
+     "On non-Apple platforms these headers may be installed using the "
+     "PRIVATE_HEADER option to the install(TARGETS) command.");
+
+  cm->DefineProperty
+    ("PUBLIC_HEADER", cmProperty::TARGET,
+     "Specify public header files in a FRAMEWORK shared library target.",
+     "Shared library targets marked with the FRAMEWORK property generate "
+     "frameworks on OS X and normal shared libraries on other platforms.  "
+     "This property may be set to a list of header files to be placed "
+     "in the Headers directory inside the framework folder.  "
+     "On non-Apple platforms these headers may be installed using the "
+     "PUBLIC_HEADER option to the install(TARGETS) command.");
+
+  cm->DefineProperty
+    ("RESOURCE", cmProperty::TARGET,
+     "Specify resource files in a FRAMEWORK shared library target.",
+     "Shared library targets marked with the FRAMEWORK property generate "
+     "frameworks on OS X and normal shared libraries on other platforms.  "
+     "This property may be set to a list of files to be placed "
+     "in the Resources directory inside the framework folder.  "
+     "On non-Apple platforms these files may be installed using the "
+     "RESOURCE option to the install(TARGETS) command.");
 
   cm->DefineProperty
     ("SKIP_BUILD_RPATH", cmProperty::TARGET,
