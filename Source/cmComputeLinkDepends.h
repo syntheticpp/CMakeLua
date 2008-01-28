@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmComputeLinkDepends.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/27 18:42:49 $
-  Version:   $Revision: 1.1 $
+  Date:      $Date: 2008/01/28 13:38:35 $
+  Version:   $Revision: 1.2 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -66,9 +66,12 @@ private:
   typedef cmTarget::LinkLibraryVectorType LinkLibraryVectorType;
 
   int AddLinkEntry(std::string const& item);
+  void AddImportedLinkEntries(int depender_index, cmTarget* target);
   void AddVarLinkEntries(int depender_index, const char* value);
+  void AddTargetLinkEntries(int depender_index,
+                            LinkLibraryVectorType const& libs);
   void AddLinkEntries(int depender_index,
-                      LinkLibraryVectorType const& libs);
+                      std::vector<std::string> const& libs);
 
   // One entry for each unique item.
   std::vector<LinkEntry> EntryList;

@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/23 18:30:55 $
-  Version:   $Revision: 1.260 $
+  Date:      $Date: 2008/01/28 13:38:35 $
+  Version:   $Revision: 1.261 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1809,7 +1809,7 @@ std::string cmLocalGenerator::GetRealDependency(const char* inName,
     }
 
   // Look for a CMake target with the given name.
-  if(cmTarget* target = this->GlobalGenerator->FindTarget(0,name.c_str(),true))
+  if(cmTarget* target = this->Makefile->FindTargetToUse(name.c_str()))
     {
     // make sure it is not just a coincidence that the target name
     // found is part of the inName
@@ -1876,7 +1876,7 @@ std::string cmLocalGenerator::GetRealLocation(const char* inName,
   std::string outName=inName;
   // Look for a CMake target with the given name, which is an executable 
   // and which can be run
-  cmTarget* target = this->GlobalGenerator->FindTarget(0, inName, true);
+  cmTarget* target = this->Makefile->FindTargetToUse(inName);
   if ((target != 0)
        && (target->GetType() == cmTarget::EXECUTABLE)
        && ((this->Makefile->IsOn("CMAKE_CROSSCOMPILING") == false) 
@@ -2348,8 +2348,8 @@ cmLocalGenerator
       {
       // Compute the full install destination.  Note that converting
       // to unix slashes also removes any trailing slash.
-      std::string destination = "${CMAKE_INSTALL_PREFIX}";
-      destination += l->second.GetInstallPath();
+      // We also skip over the leading slash given by the user.
+      std::string destination = l->second.GetInstallPath().substr(1);
       cmSystemTools::ConvertToUnixSlashes(destination);
 
       // Generate the proper install generator for this target type.
@@ -2372,8 +2372,8 @@ cmLocalGenerator
           // destination.
           cmInstallTargetGenerator g1(l->second, destination.c_str(), true);
           g1.Generate(os, config, configurationTypes);
-          destination = "${CMAKE_INSTALL_PREFIX}";
-          destination += l->second.GetRuntimeInstallPath();
+          // We also skip over the leading slash given by the user.
+          destination = l->second.GetRuntimeInstallPath().substr(1);
           cmSystemTools::ConvertToUnixSlashes(destination);
           cmInstallTargetGenerator g2(l->second, destination.c_str(), false);
           g2.Generate(os, config, configurationTypes);

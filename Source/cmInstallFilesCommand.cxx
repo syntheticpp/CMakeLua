@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmInstallFilesCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/23 15:27:59 $
-  Version:   $Revision: 1.28 $
+  Date:      $Date: 2008/01/28 13:38:35 $
+  Version:   $Revision: 1.29 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -119,9 +119,8 @@ void cmInstallFilesCommand::FinalPass()
 void cmInstallFilesCommand::CreateInstallGenerator() const
 {
   // Construct the destination.  This command always installs under
-  // the prefix.
-  std::string destination = "${CMAKE_INSTALL_PREFIX}";
-  destination += this->Destination;
+  // the prefix.  We skip the leading slash given by the user.
+  std::string destination = this->Destination.substr(1);
   cmSystemTools::ConvertToUnixSlashes(destination);
 
   // Use a file install generator.

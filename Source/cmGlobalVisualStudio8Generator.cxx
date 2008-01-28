@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmGlobalVisualStudio8Generator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/02 20:55:18 $
-  Version:   $Revision: 1.33 $
+  Date:      $Date: 2008/01/28 13:38:35 $
+  Version:   $Revision: 1.34 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -138,7 +138,7 @@ void cmGlobalVisualStudio8Generator::Generate()
       mf->AddUtilityCommand(CMAKE_CHECK_BUILD_SYSTEM_TARGET, false,
                             no_working_directory, no_depends,
                             noCommandLines);
-      cmTarget* tgt = mf->FindTarget(CMAKE_CHECK_BUILD_SYSTEM_TARGET, false);
+      cmTarget* tgt = mf->FindTarget(CMAKE_CHECK_BUILD_SYSTEM_TARGET);
       if(!tgt)
         {
         cmSystemTools::Error("Error adding target " 

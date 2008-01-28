@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmGetTargetPropertyCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/23 15:27:59 $
-  Version:   $Revision: 1.10 $
+  Date:      $Date: 2008/01/28 13:38:35 $
+  Version:   $Revision: 1.11 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -28,9 +28,7 @@ bool cmGetTargetPropertyCommand
   std::string var = args[0].c_str();
   const char* targetName = args[1].c_str();
 
-  cmTarget *tgt = this->Makefile->GetLocalGenerator()->GetGlobalGenerator()
-    ->FindTarget(0, targetName, true);
-  if (tgt)
+  if(cmTarget* tgt = this->Makefile->FindTargetToUse(targetName))
     {
     cmTarget& target = *tgt;
     const char *prop = target.GetProperty(args[2].c_str());

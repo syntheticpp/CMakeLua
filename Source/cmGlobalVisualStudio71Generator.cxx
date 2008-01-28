@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmGlobalVisualStudio71Generator.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/23 18:13:44 $
-  Version:   $Revision: 1.45 $
+  Date:      $Date: 2008/01/28 13:38:35 $
+  Version:   $Revision: 1.46 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -338,8 +338,7 @@ cmGlobalVisualStudio71Generator
       if(j->first != dspname)
         {
         // is the library part of this SLN ? If so add dependency
-        if(this->FindTarget(this->CurrentProject.c_str(), 
-                            j->first.c_str(), false))
+        if(this->FindTarget(this->CurrentProject.c_str(), j->first.c_str()))
           {
           fout << "\t\t{" << this->GetGUID(j->first.c_str()) << "} = {"
                << this->GetGUID(j->first.c_str()) << "}\n";

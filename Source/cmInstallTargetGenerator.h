@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmInstallTargetGenerator.h,v $
   Language:  C++
-  Date:      $Date: 2007/12/19 08:56:13 $
-  Version:   $Revision: 1.20 $
+  Date:      $Date: 2008/01/28 13:38:35 $
+  Version:   $Revision: 1.21 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -39,6 +39,9 @@ public:
   std::string GetInstallFilename(const char* config) const;
   static std::string GetInstallFilename(cmTarget*target, const char* config, 
                                         bool implib, bool useSOName);
+
+  cmTarget* GetTarget() const { return this->Target; }
+  bool IsImportLibrary() const { return this->ImportLibrary; }
 
 protected:
   typedef cmInstallGeneratorIndent Indent;

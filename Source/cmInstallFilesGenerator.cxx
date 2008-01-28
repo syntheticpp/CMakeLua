@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmInstallFilesGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/07/02 18:56:57 $
-  Version:   $Revision: 1.9 $
+  Date:      $Date: 2008/01/28 13:38:35 $
+  Version:   $Revision: 1.10 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -47,7 +47,7 @@ void cmInstallFilesGenerator::GenerateScriptActions(std::ostream& os,
   // Write code to install the files.
   const char* no_properties = 0;
   const char* no_dir_permissions = 0;
-  this->AddInstallRule(os, this->Destination.c_str(),
+  this->AddInstallRule(os,
                        (this->Programs
                         ? cmTarget::INSTALL_PROGRAMS
                         : cmTarget::INSTALL_FILES),

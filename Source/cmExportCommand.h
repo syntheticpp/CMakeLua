@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmExportCommand.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/23 15:27:59 $
-  Version:   $Revision: 1.6 $
+  Date:      $Date: 2008/01/28 13:38:35 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -55,7 +55,7 @@ public:
   virtual const char* GetTerseDocumentation()
     {
     return
-      "Write out the dependency information for all targets of a project.";
+      "Export targets from the build tree for use by outside projects.";
     }
 
   /**
@@ -64,15 +64,23 @@ public:
   virtual const char* GetFullDocumentation()
     {
     return
-      "  export(TARGETS tgt1 ... tgtN [PREFIX <prefix>] FILE <filename> "
-      "[APPEND])\n"
-      "Create a file that can be included into a CMake listfile with the "
-      "INCLUDE command.  The file will contain a number of SET commands "
-      "that will set all the variables needed for library dependency "
-      "information.  This should be the last command in the top level "
-      "CMakeLists.txt file of the project.  If the APPEND option is "
-      "specified, the SET commands will be appended to the given file "
-      "instead of replacing it.";
+      "  export(TARGETS [target1 [target2 [...]]] [NAMESPACE <namespace>]\n"
+      "         FILE <filename>)\n"
+      "Create a file <filename> that may be included by outside projects to "
+      "import targets from the current project's build tree.  "
+      "This is useful during cross-compiling to build utility executables "
+      "that can run on the host platform in one project and then import "
+      "them into another project being compiled for the target platform.  "
+      "If the NAMESPACE option is given the <namespace> string will be "
+      "prepended to all target names written to the file.  "
+      "If a library target is included in the export but "
+      "a target to which it links is not included the behavior is "
+      "unspecified."
+      "\n"
+      "The file created by this command is specific to the build tree and "
+      "should never be installed.  "
+      "See the install(EXPORT) command to export targets from an "
+      "installation tree.";
     }
 
   cmTypeMacro(cmExportCommand, cmCommand);
@@ -80,8 +88,7 @@ public:
 private:
   cmCommandArgumentGroup ArgumentGroup;
   cmCAStringVector Targets;
-  cmCAEnabler Append;
-  cmCAString Prefix;
+  cmCAString Namespace;
   cmCAString Filename;
 };
 

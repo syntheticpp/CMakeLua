@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmAddExecutableCommand.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/23 15:27:59 $
-  Version:   $Revision: 1.19 $
+  Date:      $Date: 2008/01/28 13:38:35 $
+  Version:   $Revision: 1.20 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -90,6 +90,24 @@ public:
       "If EXCLUDE_FROM_ALL is given the target will not be built by default. "
       "It will be built only if the user explicitly builds the target or "
       "another target that requires the target depends on it."
+      "\n"
+      "The add_executable command can also create IMPORTED executable "
+      "targets using this signature:\n"
+      "  add_executable(<name> IMPORTED)\n"
+      "An IMPORTED executable target references an executable file located "
+      "outside the project.  "
+      "No rules are generated to build it.  "
+      "The target name has scope in the directory in which it is created "
+      "and below.  "
+      "It may be referenced like any target built within the project.  "
+      "IMPORTED executables are useful for convenient reference from "
+      "commands like add_custom_command.  "
+      "Details about the imported executable are specified by setting "
+      "properties whose names begin in \"IMPORTED_\".  "
+      "The most important such property is IMPORTED_LOCATION "
+      "(and its per-configuration version IMPORTED_LOCATION_<CONFIG>) "
+      "which specifies the location of the main executable file on disk.  "
+      "See documentation of the IMPORTED_* properties for more information."
       ;
     }
 

@@ -3,8 +3,8 @@
 Program:   CMake - Cross-Platform Makefile Generator
 Module:    $RCSfile: cmGlobalXCodeGenerator.cxx,v $
 Language:  C++
-Date:      $Date: 2008/01/22 14:13:03 $
-Version:   $Revision: 1.180 $
+Date:      $Date: 2008/01/28 13:38:35 $
+Version:   $Revision: 1.181 $
 
 Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
 See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -279,7 +279,7 @@ cmGlobalXCodeGenerator::AddExtraTargets(cmLocalGenerator* root,
   mf->AddUtilityCommand("ALL_BUILD", true, no_depends,
                         no_working_directory,
                         "echo", "Build all projects");
-  cmTarget* allbuild = mf->FindTarget("ALL_BUILD", false);
+  cmTarget* allbuild = mf->FindTarget("ALL_BUILD");
 
   // Add XCODE depend helper 
   std::string dir = mf->GetCurrentOutputDirectory();
@@ -1346,7 +1346,7 @@ void cmGlobalXCodeGenerator::CreateBuildSettings(cmTarget& target,
   std::string pnprefix;
   std::string pnbase;
   std::string pnsuffix;
-  target.GetFullName(pnprefix, pnbase, pnsuffix, configName);
+  target.GetFullNameComponents(pnprefix, pnbase, pnsuffix, configName);
 
   // Store the product name for all target types.
   buildSettings->AddAttribute("PRODUCT_NAME",
@@ -2046,7 +2046,7 @@ void cmGlobalXCodeGenerator
       {
       // Add this dependency.
       cmTarget* t = this->FindTarget(this->CurrentProject.c_str(),
-                                     lib->first.c_str(), false);
+                                     lib->first.c_str());
       cmXCodeObject* dptarget = this->FindXCodeTarget(t);
       if(dptarget)
         {
@@ -2062,7 +2062,7 @@ void cmGlobalXCodeGenerator
       i != cmtarget->GetUtilities().end(); ++i)
     {
     cmTarget* t = this->FindTarget(this->CurrentProject.c_str(),
-                                   i->c_str(), false);
+                                   i->c_str());
     // if the target is in this project then make target depend
     // on it.  It may not be in this project if this is a sub
     // project from the top.
