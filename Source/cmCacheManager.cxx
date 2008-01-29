@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCacheManager.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/24 12:37:08 $
-  Version:   $Revision: 1.99 $
+  Date:      $Date: 2008/01/29 22:30:48 $
+  Version:   $Revision: 1.100 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -41,6 +41,12 @@ const char* cmCacheManagerTypes[] =
   "UNINITIALIZED",
   0
 };
+
+cmCacheManager::cmCacheManager()
+{
+  this->CacheMajorVersion = 0;
+  this->CacheMinorVersion = 0;
+}
 
 const char* cmCacheManager::TypeToString(cmCacheManager::CacheEntryType type)
 {

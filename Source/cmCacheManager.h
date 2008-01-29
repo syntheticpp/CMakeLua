@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCacheManager.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/24 12:37:08 $
-  Version:   $Revision: 1.47 $
+  Date:      $Date: 2008/01/29 22:30:48 $
+  Version:   $Revision: 1.48 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -30,6 +30,7 @@ class cmMarkAsAdvancedCommand;
 class cmCacheManager
 {
 public:
+  cmCacheManager();
   class CacheIterator;
   friend class cmCacheManager::CacheIterator;
   enum CacheEntryType{ BOOL=0, PATH, FILEPATH, STRING, INTERNAL,STATIC, 
