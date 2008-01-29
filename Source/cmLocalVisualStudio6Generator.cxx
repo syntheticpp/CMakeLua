@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalVisualStudio6Generator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/29 20:07:33 $
-  Version:   $Revision: 1.140 $
+  Date:      $Date: 2008/01/29 22:30:34 $
+  Version:   $Revision: 1.141 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -351,7 +351,7 @@ void cmLocalVisualStudio6Generator::WriteDSPFile(std::ostream& fout,
 }
 
 void cmLocalVisualStudio6Generator
-::WriteGroup(const cmSourceGroup *sg, cmTarget target, 
+::WriteGroup(const cmSourceGroup *sg, cmTarget& target,
              std::ostream &fout, const char *libName)
 {
   const std::vector<const cmSourceFile *> &sourceFiles = 

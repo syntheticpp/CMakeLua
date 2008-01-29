@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmTarget.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/29 20:07:33 $
-  Version:   $Revision: 1.100 $
+  Date:      $Date: 2008/01/29 22:30:34 $
+  Version:   $Revision: 1.101 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -26,6 +26,15 @@ class cmSourceFile;
 class cmGlobalGenerator;
 class cmComputeLinkInformation;
 
+struct cmTargetLinkInformationMap:
+  public std::map<cmStdString, cmComputeLinkInformation*>
+{
+  typedef std::map<cmStdString, cmComputeLinkInformation*> derived;
+  cmTargetLinkInformationMap() {}
+  cmTargetLinkInformationMap(cmTargetLinkInformationMap const& r);
+  ~cmTargetLinkInformationMap();
+};
+
 /** \class cmTarget
  * \brief Represent a library or executable target loaded from a makefile.
  *
@@ -36,7 +45,6 @@ class cmTarget
 {
 public:
   cmTarget();
-  ~cmTarget();
   enum TargetType { EXECUTABLE, STATIC_LIBRARY,
                     SHARED_LIBRARY, MODULE_LIBRARY, UTILITY, GLOBAL_TARGET,
                     INSTALL_FILES, INSTALL_PROGRAMS, INSTALL_DIRECTORY};
@@ -466,7 +474,7 @@ private:
   ImportInfo const* GetImportInfo(const char* config);
   void ComputeImportInfo(std::string const& desired_config, ImportInfo& info);
 
-  std::map<cmStdString, cmComputeLinkInformation*> LinkInformation;
+  cmTargetLinkInformationMap LinkInformation;
 
   // The cmMakefile instance that owns this target.  This should
   // always be set.

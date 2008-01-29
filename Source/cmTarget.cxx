@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmTarget.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/29 20:07:33 $
-  Version:   $Revision: 1.184 $
+  Date:      $Date: 2008/01/29 22:30:34 $
+  Version:   $Revision: 1.185 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -25,6 +25,7 @@
 #include <set>
 #include <queue>
 #include <stdlib.h> // required for atof
+#include <assert.h>
 const char* cmTarget::TargetTypeNames[] = {
   "EXECUTABLE", "STATIC_LIBRARY",
   "SHARED_LIBRARY", "MODULE_LIBRARY", "UTILITY", "GLOBAL_TARGET",
@@ -39,17 +40,6 @@ cmTarget::cmTarget()
   this->HaveInstallRule = false;
   this->DLLPlatform = false;
   this->IsImportedTarget = false;
-}
-
-//----------------------------------------------------------------------------
-cmTarget::~cmTarget()
-{
-  for(std::map<cmStdString, cmComputeLinkInformation*>::iterator
-        i = this->LinkInformation.begin();
-      i != this->LinkInformation.end(); ++i)
-    {
-    delete i->second;
-    }
 }
 
 //----------------------------------------------------------------------------
@@ -3074,4 +3064,27 @@ cmTarget::GetLinkInformation(const char* config)
     i = this->LinkInformation.insert(entry).first;
     }
   return i->second;
+}
+
+//----------------------------------------------------------------------------
+cmTargetLinkInformationMap
+::cmTargetLinkInformationMap(cmTargetLinkInformationMap const& r): derived()
+{
+  // Ideally cmTarget instances should never be copied.  However until
+  // we can make a sweep to remove that, this copy constructor avoids
+  // allowing the resources (LinkInformation) from getting copied.  In
+  // the worst case this will lead to extra cmComputeLinkInformation
+  // instances.  We also enforce in debug mode that the map be emptied
+  // when copied.
+  static_cast<void>(r);
+  assert(r.empty());
+}
+
+//----------------------------------------------------------------------------
+cmTargetLinkInformationMap::~cmTargetLinkInformationMap()
+{
+  for(derived::iterator i = this->begin(); i != this->end(); ++i)
+    {
+    delete i->second;
+    }
 }

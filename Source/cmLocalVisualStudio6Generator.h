@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalVisualStudio6Generator.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/14 14:20:57 $
-  Version:   $Revision: 1.22 $
+  Date:      $Date: 2008/01/29 22:30:34 $
+  Version:   $Revision: 1.23 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -91,7 +91,7 @@ private:
   void AddUtilityCommandHack(cmTarget& target, int count,
                              std::vector<std::string>& depends,
                              const cmCustomCommand& origCommand);
-  void WriteGroup(const cmSourceGroup *sg, cmTarget target,
+  void WriteGroup(const cmSourceGroup *sg, cmTarget& target,
                   std::ostream &fout, const char *libName);
   std::string CreateTargetRules(cmTarget &target, 
                                 const char* configName, 

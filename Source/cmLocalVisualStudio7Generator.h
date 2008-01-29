@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalVisualStudio7Generator.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/22 14:13:03 $
-  Version:   $Revision: 1.48 $
+  Date:      $Date: 2008/01/29 22:30:34 $
+  Version:   $Revision: 1.49 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -114,7 +114,7 @@ private:
   void WriteTargetVersionAttribute(std::ostream& fout, cmTarget& target);
 
   void WriteGroup(const cmSourceGroup *sg, 
-                  cmTarget target, std::ostream &fout, 
+                  cmTarget& target, std::ostream &fout,
                   const char *libName, std::vector<std::string> *configs);
   virtual std::string GetTargetDirectory(cmTarget const&) const;
 
