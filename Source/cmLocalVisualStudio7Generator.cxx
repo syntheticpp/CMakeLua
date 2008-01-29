@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalVisualStudio7Generator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/22 14:13:03 $
-  Version:   $Revision: 1.214 $
+  Date:      $Date: 2008/01/29 20:07:33 $
+  Version:   $Revision: 1.215 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -762,11 +762,12 @@ void cmLocalVisualStudio7Generator::OutputBuildTool(std::ostream& fout,
                            targetNameImport, targetNamePDB, configName);
 
     // Compute the link library and directory information.
-    cmComputeLinkInformation cli(&target, configName);
-    if(!cli.Compute())
+    cmComputeLinkInformation* pcli = target.GetLinkInformation(configName);
+    if(!pcli)
       {
       return;
       }
+    cmComputeLinkInformation& cli = *pcli;
     const char* linkLanguage = cli.GetLinkLanguage();
 
     // Compute the variable name to lookup standard libraries for this
@@ -831,11 +832,12 @@ void cmLocalVisualStudio7Generator::OutputBuildTool(std::ostream& fout,
                               targetNameImport, targetNamePDB, configName);
 
     // Compute the link library and directory information.
-    cmComputeLinkInformation cli(&target, configName);
-    if(!cli.Compute())
+    cmComputeLinkInformation* pcli = target.GetLinkInformation(configName);
+    if(!pcli)
       {
       return;
       }
+    cmComputeLinkInformation& cli = *pcli;
     const char* linkLanguage = cli.GetLinkLanguage();
 
     // Compute the variable name to lookup standard libraries for this

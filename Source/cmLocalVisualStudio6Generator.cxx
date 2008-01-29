@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalVisualStudio6Generator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/28 13:38:35 $
-  Version:   $Revision: 1.139 $
+  Date:      $Date: 2008/01/29 20:07:33 $
+  Version:   $Revision: 1.140 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1570,11 +1570,12 @@ void cmLocalVisualStudio6Generator
                      std::string& options)
 {
   // Compute the link information for this configuration.
-  cmComputeLinkInformation cli(&target, configName);
-  if(!cli.Compute())
+  cmComputeLinkInformation* pcli = target.GetLinkInformation(configName);
+  if(!pcli)
     {
     return;
     }
+  cmComputeLinkInformation& cli = *pcli;
   typedef cmComputeLinkInformation::ItemVector ItemVector;
   ItemVector const& linkLibs = cli.GetItems();
   std::vector<std::string> const& linkDirs = cli.GetDirectories();

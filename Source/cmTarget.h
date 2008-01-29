@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmTarget.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/28 19:46:16 $
-  Version:   $Revision: 1.99 $
+  Date:      $Date: 2008/01/29 20:07:33 $
+  Version:   $Revision: 1.100 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -24,6 +24,7 @@ class cmake;
 class cmMakefile;
 class cmSourceFile;
 class cmGlobalGenerator;
+class cmComputeLinkInformation;
 
 /** \class cmTarget
  * \brief Represent a library or executable target loaded from a makefile.
@@ -35,6 +36,7 @@ class cmTarget
 {
 public:
   cmTarget();
+  ~cmTarget();
   enum TargetType { EXECUTABLE, STATIC_LIBRARY,
                     SHARED_LIBRARY, MODULE_LIBRARY, UTILITY, GLOBAL_TARGET,
                     INSTALL_FILES, INSTALL_PROGRAMS, INSTALL_DIRECTORY};
@@ -289,12 +291,14 @@ public:
 
   bool HaveBuildTreeRPATH();
   bool HaveInstallTreeRPATH();
-  
-  /// return true if chrpath might work for this target
-  bool IsChrpathAvailable();
+
+  /** Return true if chrpath might work for this target */
+  bool IsChrpathUsed();
 
   std::string GetInstallNameDirForBuildTree(const char* config);
   std::string GetInstallNameDirForInstallTree(const char* config);
+
+  cmComputeLinkInformation* GetLinkInformation(const char* config);
 
   // Get the properties
   cmPropertyMap &GetProperties() { return this->Properties; };
@@ -461,6 +465,8 @@ private:
   ImportInfoMapType ImportInfoMap;
   ImportInfo const* GetImportInfo(const char* config);
   void ComputeImportInfo(std::string const& desired_config, ImportInfo& info);
+
+  std::map<cmStdString, cmComputeLinkInformation*> LinkInformation;
 
   // The cmMakefile instance that owns this target.  This should
   // always be set.

@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmComputeLinkInformation.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/27 18:42:49 $
-  Version:   $Revision: 1.6 $
+  Date:      $Date: 2008/01/29 20:07:33 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -50,6 +50,12 @@ public:
   std::vector<std::string> const& GetFrameworkPaths();
   const char* GetLinkLanguage() const { return this->LinkLanguage; }
   std::vector<std::string> const& GetRuntimeSearchPath();
+  std::string const& GetRuntimeFlag() const { return this->RuntimeFlag; }
+  std::string const& GetRuntimeSep() const { return this->RuntimeSep; }
+  void GetRPath(std::vector<std::string>& runtimeDirs, bool for_install);
+  std::string GetRPathString(bool for_install);
+  std::string GetChrpathString();
+  std::string GetChrpathTool();
 private:
   void AddItem(std::string const& item, cmTarget* tgt);
 
@@ -76,6 +82,10 @@ private:
   std::string LibLinkFlag;
   std::string LibLinkFileFlag;
   std::string LibLinkSuffix;
+  std::string RuntimeFlag;
+  std::string RuntimeSep;
+  std::string RuntimeAlways;
+  bool RuntimeUseChrpath;
 
   // Link type adjustment.
   void ComputeLinkTypeInfo();
