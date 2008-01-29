@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmFindPackageCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/29 01:38:48 $
-  Version:   $Revision: 1.35 $
+  Date:      $Date: 2008/01/29 14:57:39 $
+  Version:   $Revision: 1.36 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -187,7 +187,11 @@ cmFindPackageCommand::cmFindPackageCommand()
     "  <package>_VERSION_MAJOR = major from major[.minor[.patch]], if any\n"
     "  <package>_VERSION_MINOR = minor from major[.minor[.patch]], if any\n"
     "  <package>_VERSION_PATCH = patch from major[.minor[.patch]], if any\n"
-    "and the corresponding package configuration file is loaded."
+    "and the corresponding package configuration file is loaded.  "
+    "When multiple package configuration files are available whose version "
+    "files claim compatibility with the version requested it is unspecified "
+    "which one is chosen.  "
+    "No attempt is made to choose a highest or closest version number."
     "\n"
     "Config mode provides an elaborate interface and search procedure.  "
     "Much of the interface is provided for completeness and for use "
