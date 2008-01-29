@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: CMakeSetupDialog.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/12 18:25:24 $
-  Version:   $Revision: 1.27 $
+  Date:      $Date: 2008/01/29 20:54:49 $
+  Version:   $Revision: 1.28 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -453,7 +453,11 @@ void CMakeSetupDialog::showProgress(const QString& /*msg*/, float percent)
   
 void CMakeSetupDialog::error(const QString& message)
 {
-  this->Output->append(QString("<b><font color=red>%1</font></b>").arg(message));
+  QStringList messages = message.split('\n');
+  foreach(QString m, messages)
+    {
+    this->Output->append(QString("<b><font color=red>%1</font></b>").arg(m));
+    }
 }
 
 void CMakeSetupDialog::setEnabledState(bool enabled)
