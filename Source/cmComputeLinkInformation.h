@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmComputeLinkInformation.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/29 20:07:33 $
-  Version:   $Revision: 1.7 $
+  Date:      $Date: 2008/01/29 20:47:18 $
+  Version:   $Revision: 1.8 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -56,6 +56,7 @@ public:
   std::string GetRPathString(bool for_install);
   std::string GetChrpathString();
   std::string GetChrpathTool();
+  std::set<cmTarget*> const& GetSharedLibrariesLinked();
 private:
   void AddItem(std::string const& item, cmTarget* tgt);
 
@@ -65,6 +66,7 @@ private:
   std::vector<std::string> Depends;
   std::vector<std::string> FrameworkPaths;
   std::vector<std::string> RuntimeSearchPath;
+  std::set<cmTarget*> SharedLibrariesLinked;
 
   // Context information.
   cmTarget* Target;

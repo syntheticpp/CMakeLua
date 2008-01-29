@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmComputeLinkInformation.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/29 20:07:33 $
-  Version:   $Revision: 1.11 $
+  Date:      $Date: 2008/01/29 20:47:18 $
+  Version:   $Revision: 1.12 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -284,6 +284,13 @@ std::vector<std::string> const& cmComputeLinkInformation::GetFrameworkPaths()
 }
 
 //----------------------------------------------------------------------------
+std::set<cmTarget*> const&
+cmComputeLinkInformation::GetSharedLibrariesLinked()
+{
+  return this->SharedLibrariesLinked;
+}
+
+//----------------------------------------------------------------------------
 bool cmComputeLinkInformation::Compute()
 {
   // Skip targets that do not link.
@@ -338,6 +345,12 @@ void cmComputeLinkInformation::AddItem(std::string const& item,
     // Skip linking to executables on platforms with no import
     // libraries or loader flags.
     return;
+    }
+
+  // Keep track of shared libraries linked.
+  if(tgt && tgt->GetType() == cmTarget::SHARED_LIBRARY)
+    {
+    this->SharedLibrariesLinked.insert(tgt);
     }
 
   if(tgt && (tgt->GetType() == cmTarget::STATIC_LIBRARY ||
