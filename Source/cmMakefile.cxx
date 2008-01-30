@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefile.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/28 13:38:35 $
-  Version:   $Revision: 1.431 $
+  Date:      $Date: 2008/01/30 13:37:38 $
+  Version:   $Revision: 1.432 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -2955,7 +2955,14 @@ std::string cmMakefile::GetListFileStack()
 
 void cmMakefile::PushScope()
 {
-  this->DefinitionStack.push_back(this->DefinitionStack.back());
+  // Get the index of the next stack entry.
+  std::vector<DefinitionMap>::size_type index = this->DefinitionStack.size();
+
+  // Allocate a new stack entry.
+  this->DefinitionStack.push_back(DefinitionMap());
+
+  // Copy the previous top to the new top.
+  this->DefinitionStack[index] = this->DefinitionStack[index-1];
 }
 
 void cmMakefile::PopScope()
