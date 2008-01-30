@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmExportFileGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/30 22:25:52 $
-  Version:   $Revision: 1.6 $
+  Date:      $Date: 2008/01/30 22:57:54 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -168,7 +168,6 @@ cmExportFileGenerator
   std::vector<std::string> actual_libs;
   cmTarget::LinkLibraryVectorType const& libs =
     target->GetOriginalLinkLibraries();
-  const char* sep = "";
   for(cmTarget::LinkLibraryVectorType::const_iterator li = libs.begin();
       li != libs.end(); ++li)
     {
@@ -207,6 +206,10 @@ cmExportFileGenerator
   for(std::vector<std::string>::const_iterator li = libs.begin();
       li != libs.end(); ++li)
     {
+    // Separate this from the previous entry.
+    link_libs += sep;
+    sep = ";";
+
     // Append this entry.
     if(cmTarget* tgt = mf->FindTargetToUse(li->c_str()))
       {
