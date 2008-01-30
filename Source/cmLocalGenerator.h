@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalGenerator.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/29 20:07:33 $
-  Version:   $Revision: 1.101 $
+  Date:      $Date: 2008/01/30 02:16:49 $
+  Version:   $Revision: 1.102 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -210,6 +210,9 @@ public:
     const char* Defines;
   };
 
+  /** Set whether to treat conversions to SHELL as a link script shell.  */
+  void SetLinkScriptShell(bool b) { this->LinkScriptShell = b; }
+
   /** Escape the given string to be used as a command line argument in
       the native build system shell.  Optionally allow the build
       system to replace make variable references.  Optionally adjust
@@ -346,6 +349,7 @@ protected:
   bool NMake;
   bool ForceUnixPath;
   bool MSYSShell;
+  bool LinkScriptShell;
   bool UseRelativePaths;
   bool IgnoreLibPrefix;
   bool Configured;

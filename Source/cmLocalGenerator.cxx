@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/29 20:07:33 $
-  Version:   $Revision: 1.262 $
+  Date:      $Date: 2008/01/30 02:16:49 $
+  Version:   $Revision: 1.263 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -50,6 +50,7 @@ cmLocalGenerator::cmLocalGenerator()
   this->MinGWMake = false;
   this->NMake = false;
   this->MSYSShell = false;
+  this->LinkScriptShell = false;
   this->IgnoreLibPrefix = false;
   this->UseRelativePaths = false;
   this->Configured = false;
@@ -1995,7 +1996,7 @@ std::string cmLocalGenerator::Convert(const char* source,
         // For the MSYS shell convert drive letters to posix paths, so
     // that c:/some/path becomes /c/some/path.  This is needed to
     // avoid problems with the shell path translation.
-    if(this->MSYSShell)
+    if(this->MSYSShell && !this->LinkScriptShell)
       {
       if(result.size() > 2 && result[1] == ':')
         {
