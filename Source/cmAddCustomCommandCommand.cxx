@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmAddCustomCommandCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/23 15:27:59 $
-  Version:   $Revision: 1.36 $
+  Date:      $Date: 2008/01/30 16:22:10 $
+  Version:   $Revision: 1.37 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -152,7 +152,17 @@ bool cmAddCustomCommandCommand
         case doing_outputs:
           if (!cmSystemTools::FileIsFullPath(copy.c_str()))
             {
-            filename = this->Makefile->GetStartDirectory();
+            // This is an output to be generated, so it should be
+            // under the build tree.  CMake 2.4 placed this under the
+            // source tree.  However the only case that this change
+            // will break is when someone writes
+            //
+            //   add_custom_command(OUTPUT out.txt ...)
+            //
+            // and later references "${CMAKE_CURRENT_SOURCE_DIR}/out.txt".
+            // This is fairly obscure so we can wait for someone to
+            // complain.
+            filename = this->Makefile->GetCurrentOutputDirectory();
             filename += "/";
             }
           filename += copy;

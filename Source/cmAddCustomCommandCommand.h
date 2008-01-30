@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmAddCustomCommandCommand.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/23 15:27:59 $
-  Version:   $Revision: 1.32 $
+  Date:      $Date: 2008/01/30 16:22:10 $
+  Version:   $Revision: 1.33 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -78,6 +78,9 @@ public:
       "This defines a new command that can be executed during the build "
       "process. The outputs named should be listed as source files in the "
       "target for which they are to be generated. "
+      "If an output name is a relative path it will be interpreted "
+      "relative to the build tree directory corresponding to the current "
+      "source directory. "
       "Note that MAIN_DEPENDENCY is completely optional and is "
       "used as a suggestion to visual studio about where to hang the "
       "custom command. In makefile terms this creates a new target in the "
