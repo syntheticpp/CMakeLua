@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmGlobalVisualStudio71Generator.h,v $
   Language:  C++
-  Date:      $Date: 2006/11/09 14:57:23 $
-  Version:   $Revision: 1.16 $
+  Date:      $Date: 2008/01/30 17:04:38 $
+  Version:   $Revision: 1.17 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -56,7 +56,8 @@ protected:
   virtual void WriteProjectConfigurations(std::ostream& fout,
                                           const char* name,
                                           bool partOfDefaultBuild);
-  virtual void WriteExternalProject(std::ostream& fout, const char* name,
+  virtual void WriteExternalProject(std::ostream& fout,
+                                    const char* name,
                                     const char* path,
                                     const std::vector<std::string>& depends);
   virtual void WriteSLNFooter(std::ostream& fout);

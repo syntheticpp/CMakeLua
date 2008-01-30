@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalVisualStudio7Generator.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/29 22:30:34 $
-  Version:   $Revision: 1.49 $
+  Date:      $Date: 2008/01/30 17:04:38 $
+  Version:   $Revision: 1.50 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -96,7 +96,7 @@ private:
   void OutputTargetRules(std::ostream& fout, const char* configName, 
                          cmTarget &target, const char *libName);
   void OutputBuildTool(std::ostream& fout, const char* configName,
-                       cmTarget& t);
+                       cmTarget& t, bool debug);
   void OutputLibraryDirectories(std::ostream& fout,
                                 std::vector<std::string> const& dirs);
   void OutputModuleDefinitionFile(std::ostream& fout, cmTarget &target);

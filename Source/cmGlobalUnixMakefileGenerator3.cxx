@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator3
   Module:    $RCSfile: cmGlobalUnixMakefileGenerator3.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/23 20:03:42 $
-  Version:   $Revision: 1.123 $
+  Date:      $Date: 2008/01/30 17:04:38 $
+  Version:   $Revision: 1.124 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -861,7 +861,7 @@ int cmGlobalUnixMakefileGenerator3
       (target.GetMakefile()->GetLocalGenerator());
     result = static_cast<int>(lg->ProgressFiles[target.GetName()].size());
     
-    TargetDependSet const& depends = this->GetTargetDepends(target);
+    TargetDependSet const& depends = this->GetTargetDirectDepends(target);
     
     TargetDependSet::const_iterator i;
     for (i = depends.begin(); i != depends.end(); ++i)
@@ -898,7 +898,7 @@ cmGlobalUnixMakefileGenerator3
 ::AppendGlobalTargetDepends(std::vector<std::string>& depends,
                             cmTarget& target)
 {
-  TargetDependSet const& depends_set = this->GetTargetDepends(target);
+  TargetDependSet const& depends_set = this->GetTargetDirectDepends(target);
   for(TargetDependSet::const_iterator i = depends_set.begin();
       i != depends_set.end(); ++i)
     {
