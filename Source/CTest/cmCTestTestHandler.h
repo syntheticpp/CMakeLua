@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCTestTestHandler.h,v $
   Language:  C++
-  Date:      $Date: 2007/09/24 15:10:55 $
-  Version:   $Revision: 1.26 $
+  Date:      $Date: 2008/01/30 16:17:36 $
+  Version:   $Revision: 1.27 $
 
   Copyright (c) 2002 Kitware, Inc. All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -136,6 +136,8 @@ protected:
   std::vector<cmStdString> CustomTestsIgnore;
   std::string             StartTest;
   std::string             EndTest;
+  unsigned int            StartTestTime;
+  unsigned int            EndTestTime;
   bool MemCheck;
   int CustomMaximumPassedTestOutputSize;
   int CustomMaximumFailedTestOutputSize;

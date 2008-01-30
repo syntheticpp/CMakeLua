@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCTestTestHandler.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/23 15:28:01 $
-  Version:   $Revision: 1.64 $
+  Date:      $Date: 2008/01/30 16:17:36 $
+  Version:   $Revision: 1.65 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -917,6 +917,7 @@ void cmCTestTestHandler::ProcessDirectory(std::vector<cmStdString> &passed,
   cmCTestTestHandler::ListOfTests::size_type tmsize = this->TestList.size();
 
   this->StartTest = this->CTest->CurrentTime();
+  this->StartTestTime = cmSystemTools::GetTime();
   double elapsed_time_start = cmSystemTools::GetTime();
 
   *this->LogFile << "Start testing: " << this->StartTest << std::endl
@@ -999,6 +1000,7 @@ void cmCTestTestHandler::ProcessDirectory(std::vector<cmStdString> &passed,
     }
 
   this->EndTest = this->CTest->CurrentTime();
+  this->EndTestTime = cmSystemTools::GetTime();
   this->ElapsedTestingTime = cmSystemTools::GetTime() - elapsed_time_start;
   if ( this->LogFile )
     {
@@ -1023,6 +1025,7 @@ void cmCTestTestHandler::GenerateDartOutput(std::ostream& os)
   this->CTest->StartXML(os);
   os << "<Testing>\n"
     << "\t<StartDateTime>" << this->StartTest << "</StartDateTime>\n"
+    << "\t<StartTestTime>" << this->StartTestTime << "</StartTestTime>\n"
     << "\t<TestList>\n";
   cmCTestTestHandler::TestResultsVector::size_type cc;
   for ( cc = 0; cc < this->TestResults.size(); cc ++ )
@@ -1110,6 +1113,7 @@ void cmCTestTestHandler::GenerateDartOutput(std::ostream& os)
     }
 
   os << "\t<EndDateTime>" << this->EndTest << "</EndDateTime>\n"
+     << "\t<EndTestTime>" << this->EndTestTime << "</EndTestTime>\n"
      << "<ElapsedMinutes>"
      << static_cast<int>(this->ElapsedTestingTime/6)/10.0
      << "</ElapsedMinutes>"
