@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmGetPropertyCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/28 13:38:35 $
-  Version:   $Revision: 1.6 $
+  Date:      $Date: 2008/01/30 16:21:54 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -287,7 +287,8 @@ bool cmGetPropertyCommand::HandleSourceMode()
   if(cmSourceFile* sf =
      this->Makefile->GetOrCreateSource(this->Name.c_str()))
     {
-    return this->StoreResult(sf->GetProperty(this->PropertyName.c_str()));
+    return
+      this->StoreResult(sf->GetPropertyForUser(this->PropertyName.c_str()));
     }
   else
     {

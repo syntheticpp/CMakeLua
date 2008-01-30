@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmSourceFile.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/17 23:13:55 $
-  Version:   $Revision: 1.24 $
+  Date:      $Date: 2008/01/30 16:21:54 $
+  Version:   $Revision: 1.25 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -52,6 +52,10 @@ public:
   void AppendProperty(const char* prop, const char* value);
   const char *GetProperty(const char *prop) const;
   bool GetPropertyAsBool(const char *prop) const;
+
+  /** Implement getting a property when called from a CMake language
+      command like get_property or get_source_file_property.  */
+  const char* GetPropertyForUser(const char *prop);
 
   /**
    * The full path to the file.  The non-const version of this method
