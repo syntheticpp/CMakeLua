@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmTarget.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/29 22:30:34 $
-  Version:   $Revision: 1.101 $
+  Date:      $Date: 2008/01/30 22:25:52 $
+  Version:   $Revision: 1.102 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -33,6 +33,20 @@ struct cmTargetLinkInformationMap:
   cmTargetLinkInformationMap() {}
   cmTargetLinkInformationMap(cmTargetLinkInformationMap const& r);
   ~cmTargetLinkInformationMap();
+};
+
+struct cmTargetLinkInterface: public std::vector<std::string>
+{
+  typedef std::vector<std::string> derived;
+};
+
+struct cmTargetLinkInterfaceMap:
+  public std::map<cmStdString, cmTargetLinkInterface*>
+{
+  typedef std::map<cmStdString, cmTargetLinkInterface*> derived;
+  cmTargetLinkInterfaceMap() {}
+  cmTargetLinkInterfaceMap(cmTargetLinkInterfaceMap const& r);
+  ~cmTargetLinkInterfaceMap();
 };
 
 /** \class cmTarget
@@ -208,6 +222,12 @@ public:
       target.  */
   std::vector<std::string> const*
   GetImportedLinkLibraries(const char* config);
+
+  /** Get the library interface dependencies.  This is the set of
+      libraries from which something that links to this target may
+      also receive symbols.  Returns 0 if the user has not specified
+      such dependencies or for static libraries.  */
+  cmTargetLinkInterface const* GetLinkInterface(const char* config);
 
   /** Get the directory in which this target will be built.  If the
       configuration name is given then the generator will add its
@@ -475,6 +495,10 @@ private:
   void ComputeImportInfo(std::string const& desired_config, ImportInfo& info);
 
   cmTargetLinkInformationMap LinkInformation;
+
+  // Link interface.
+  cmTargetLinkInterface* ComputeLinkInterface(const char* config);
+  cmTargetLinkInterfaceMap LinkInterface;
 
   // The cmMakefile instance that owns this target.  This should
   // always be set.

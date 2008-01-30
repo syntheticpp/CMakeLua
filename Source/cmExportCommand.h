@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmExportCommand.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/28 18:21:42 $
-  Version:   $Revision: 1.8 $
+  Date:      $Date: 2008/01/30 22:25:52 $
+  Version:   $Revision: 1.9 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -18,6 +18,8 @@
 #define cmExportCommand_h
 
 #include "cmCommand.h"
+
+class cmExportBuildFileGenerator;
 
 /** \class cmExportLibraryDependenciesCommand
  * \brief Add a test to the lists of tests to run.
@@ -93,6 +95,9 @@ private:
   cmCAEnabler Append;
   cmCAString Namespace;
   cmCAString Filename;
+
+  friend class cmExportBuildFileGenerator;
+  std::string ErrorMessage;
 };
 
 

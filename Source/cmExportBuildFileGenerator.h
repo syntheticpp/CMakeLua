@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmExportBuildFileGenerator.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/28 18:21:42 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2008/01/30 22:25:52 $
+  Version:   $Revision: 1.3 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -19,6 +19,8 @@
 
 #include "cmExportFileGenerator.h"
 
+class cmExportCommand;
+
 /** \class cmExportBuildFileGenerator
  * \brief Generate a file exporting targets from a build tree.
  *
@@ -31,12 +33,17 @@
 class cmExportBuildFileGenerator: public cmExportFileGenerator
 {
 public:
+  cmExportBuildFileGenerator();
+
   /** Set the list of targets to export.  */
   void SetExports(std::vector<cmTarget*> const* exports)
     { this->Exports = exports; }
 
   /** Set whether to append generated code to the output file.  */
   void SetAppendMode(bool append) { this->AppendMode = append; }
+
+  /** Set the command instance through which errors should be reported.  */
+  void SetCommand(cmExportCommand* cmd) { this->ExportCommand = cmd; }
 protected:
   // Implement virtual methods from the superclass.
   virtual bool GenerateMainFile(std::ostream& os);
@@ -52,6 +59,7 @@ protected:
                                  ImportPropertyMap& properties);
 
   std::vector<cmTarget*> const* Exports;
+  cmExportCommand* ExportCommand;
 };
 
 #endif

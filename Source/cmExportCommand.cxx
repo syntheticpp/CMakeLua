@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmExportCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/28 18:21:42 $
-  Version:   $Revision: 1.9 $
+  Date:      $Date: 2008/01/30 22:25:52 $
+  Version:   $Revision: 1.10 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -100,12 +100,6 @@ bool cmExportCommand
     fname += this->Filename.GetString();
     }
 
-  // If no targets are to be exported we are done.
-  if(this->Targets.GetVector().empty())
-    {
-    return true;
-    }
-
   // Collect the targets to be exported.
   std::vector<cmTarget*> targets;
   for(std::vector<std::string>::const_iterator
@@ -149,6 +143,7 @@ bool cmExportCommand
   ebfg.SetNamespace(this->Namespace.GetCString());
   ebfg.SetAppendMode(this->Append.IsEnabled());
   ebfg.SetExports(&targets);
+  ebfg.SetCommand(this);
 
   // Compute the set of configurations exported.
   if(const char* types =
@@ -177,6 +172,13 @@ bool cmExportCommand
   if(!ebfg.GenerateImportFile())
     {
     this->SetError("could not write export file.");
+    return false;
+    }
+
+  // Report generated error message if any.
+  if(!this->ErrorMessage.empty())
+    {
+    this->SetError(this->ErrorMessage.c_str());
     return false;
     }
 

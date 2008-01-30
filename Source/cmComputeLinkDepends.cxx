@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmComputeLinkDepends.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/30 17:15:17 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2008/01/30 22:25:52 $
+  Version:   $Revision: 1.5 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -263,17 +263,22 @@ void cmComputeLinkDepends::FollowLinkEntry(BFSEntry const& qe)
   if(entry.Target)
     {
     // Follow the target dependencies.
-    if(entry.Target->GetType() != cmTarget::EXECUTABLE)
+    if(entry.Target->IsImported())
       {
-      if(entry.Target->IsImported())
-        {
-        this->AddImportedLinkEntries(depender_index, entry.Target);
-        }
-      else
-        {
-        this->AddTargetLinkEntries(depender_index,
-                                   entry.Target->GetOriginalLinkLibraries());
-        }
+      // Imported targets provide their own link information.
+      this->AddImportedLinkEntries(depender_index, entry.Target);
+      }
+    else if(cmTargetLinkInterface const* interface =
+            entry.Target->GetLinkInterface(this->Config))
+      {
+      // This target provides its own link interface information.
+      this->AddLinkEntries(depender_index, *interface);
+      }
+    else if(entry.Target->GetType() != cmTarget::EXECUTABLE)
+      {
+      // Use the target's link implementation as the interface.
+      this->AddTargetLinkEntries(depender_index,
+                                 entry.Target->GetOriginalLinkLibraries());
       }
     }
   else
