@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmGlobalVisualStudio7Generator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/30 17:04:38 $
-  Version:   $Revision: 1.97 $
+  Date:      $Date: 2008/01/30 21:22:51 $
+  Version:   $Revision: 1.98 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -308,20 +308,6 @@ void cmGlobalVisualStudio7Generator::WriteTargetsToSolution(
     cmGlobalGenerator::TargetDependSet& originalTargets
     )
 {
-  // Create a map of project that should only show up once
-  // in a project
-  const char* onlyOnceNames[] = 
-    {"INCLUDE_EXTERNAL_MSPROJECT","CMAKE_CHECK_BUILD_SYSTEM_TARGET",
-     "INSTALL", "RUN_TESTS", "EDIT_CACHE", "REBUILD_CACHE", "PACKAGE", 0};
-  std::map<cmStdString, int> onlyOnceMap;
-  int i =0;
-  for(const char* name = onlyOnceNames[i];
-      name != 0; name = onlyOnceNames[++i])
-    {
-    onlyOnceMap[name] = 0;
-    }
-  // add the CMAKE_CHECK_BUILD_SYSTEM_TARGET 
-  onlyOnceMap[CMAKE_CHECK_BUILD_SYSTEM_TARGET] = 0;
   std::string rootdir = root->GetMakefile()->GetStartOutputDirectory();
   rootdir += "/";
   for(cmGlobalGenerator::TargetDependSet::iterator tt =
@@ -343,25 +329,20 @@ void cmGlobalVisualStudio7Generator::WriteTargetsToSolution(
       const cmCustomCommandLines& cmds = cc.GetCommandLines();
       std::string project = cmds[0][0];
       std::string location = cmds[0][1];
-      std::cout << "About to call WriteExternalProject " << this->GetName() << "\n";
       this->WriteExternalProject(fout, project.c_str(), 
                                  location.c_str(), cc.GetDepends());
       }
     else
       {
-      // if the target is an onlyOnceNames do it once
-      std::map<cmStdString, int>::iterator o = 
-        onlyOnceMap.find(target->GetName());
       bool skip = false;
-      if(o != onlyOnceMap.end())
+      // if it is a global target or the check build system target
+      // then only use the one that is for the root
+      if(target->GetType() == cmTarget::GLOBAL_TARGET
+         || !strcmp(target->GetName(), CMAKE_CHECK_BUILD_SYSTEM_TARGET))
         {
-        if(o->second > 0)
+        if(target->GetMakefile() != root->GetMakefile())
           {
           skip = true;
-          }
-        else
-          {
-          o->second++;
           }
         }
       // if not skipping the project then write it into the 
