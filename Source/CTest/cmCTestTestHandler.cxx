@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCTestTestHandler.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/30 16:17:36 $
-  Version:   $Revision: 1.65 $
+  Date:      $Date: 2008/01/30 16:54:55 $
+  Version:   $Revision: 1.66 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -917,7 +917,7 @@ void cmCTestTestHandler::ProcessDirectory(std::vector<cmStdString> &passed,
   cmCTestTestHandler::ListOfTests::size_type tmsize = this->TestList.size();
 
   this->StartTest = this->CTest->CurrentTime();
-  this->StartTestTime = cmSystemTools::GetTime();
+  this->StartTestTime = static_cast<unsigned int>(cmSystemTools::GetTime());
   double elapsed_time_start = cmSystemTools::GetTime();
 
   *this->LogFile << "Start testing: " << this->StartTest << std::endl
@@ -1000,7 +1000,7 @@ void cmCTestTestHandler::ProcessDirectory(std::vector<cmStdString> &passed,
     }
 
   this->EndTest = this->CTest->CurrentTime();
-  this->EndTestTime = cmSystemTools::GetTime();
+  this->EndTestTime = static_cast<unsigned int>(cmSystemTools::GetTime());
   this->ElapsedTestingTime = cmSystemTools::GetTime() - elapsed_time_start;
   if ( this->LogFile )
     {

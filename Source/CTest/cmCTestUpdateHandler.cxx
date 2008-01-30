@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCTestUpdateHandler.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/30 16:17:36 $
-  Version:   $Revision: 1.39 $
+  Date:      $Date: 2008/01/30 16:54:55 $
+  Version:   $Revision: 1.40 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -541,7 +541,7 @@ int cmCTestUpdateHandler::ProcessHandler()
     return -1;
     }
   std::string start_time = this->CTest->CurrentTime();
-  unsigned int start_time_time = cmSystemTools::GetTime();
+  unsigned int start_time_time = static_cast<unsigned int>(cmSystemTools::GetTime());
   double elapsed_time_start = cmSystemTools::GetTime();
 
   cmCTestLog(this->CTest, HANDLER_VERBOSE_OUTPUT, "* Update repository: "
