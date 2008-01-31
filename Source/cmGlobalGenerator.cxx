@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmGlobalGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/31 03:56:34 $
-  Version:   $Revision: 1.222 $
+  Date:      $Date: 2008/01/31 17:19:00 $
+  Version:   $Revision: 1.223 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1911,7 +1911,7 @@ cmGlobalGenerator::AddTargetDepends(cmTarget* target,
     for(cmGlobalGenerator::TargetDependSet::const_iterator i =
           tset.begin(); i != tset.end(); ++i)
       {
-      cmTarget* dtarget = const_cast<cmTarget*>(*i);
+      cmTarget* dtarget = *i;
       this->AddTargetDepends(dtarget, projectTargets);
       }
     }
