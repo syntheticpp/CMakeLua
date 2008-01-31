@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCTestTestHandler.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/31 16:43:44 $
-  Version:   $Revision: 1.67 $
+  Date:      $Date: 2008/01/31 21:33:07 $
+  Version:   $Revision: 1.68 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1388,7 +1388,7 @@ void cmCTestTestHandler::GetListOfTests()
     // does the CTestTestfile.cmake exist ?
     testFilename = "CTestTestfile.cmake";
     }
-  if( cmSystemTools::FileExists("DartTestfile.txt") )
+  else if( cmSystemTools::FileExists("DartTestfile.txt") )
     {
     // does the DartTestfile.txt exist ?
     testFilename = "DartTestfile.txt";
