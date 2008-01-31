@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmGlobalVisualStudio7Generator.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/30 17:04:38 $
-  Version:   $Revision: 1.44 $
+  Date:      $Date: 2008/01/31 21:38:45 $
+  Version:   $Revision: 1.45 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -136,7 +136,8 @@ protected:
   virtual void WriteExternalProject(std::ostream& fout, 
                                     const char* name, 
                                     const char* path,
-                                    const std::vector<std::string>& dependencies);
+                                    const std::vector<std::string>&
+                                    dependencies);
 
   std::string ConvertToSolutionPath(const char* path);
 
