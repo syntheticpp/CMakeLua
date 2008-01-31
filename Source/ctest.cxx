@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: ctest.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/17 17:44:59 $
-  Version:   $Revision: 1.101 $
+  Date:      $Date: 2008/01/31 16:43:44 $
+  Version:   $Revision: 1.102 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -224,7 +224,8 @@ int main (int argc, char *argv[])
   // If there is a testing input file, check for documentation options
   // only if there are actually arguments.  We want running without
   // arguments to run tests.
-  if(argc > 1 || !cmSystemTools::FileExists("CTestTestfile.cmake"))
+  if(argc > 1 || !(cmSystemTools::FileExists("CTestTestfile.cmake") || 
+                   cmSystemTools::FileExists("DartTestfile.txt")))
     {
     if(argc == 1)
       {
