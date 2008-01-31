@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator3
   Module:    $RCSfile: cmGlobalUnixMakefileGenerator3.h,v $
   Language:  C++
-  Date:      $Date: 2007/12/23 20:03:42 $
-  Version:   $Revision: 1.53 $
+  Date:      $Date: 2008/01/31 03:56:34 $
+  Version:   $Revision: 1.54 $
 
   Copyright (c) 2005 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -114,7 +114,7 @@ public:
    const char* config, bool ignoreErrors, bool fast);
 
   // returns some progress informaiton
-  int GetTargetTotalNumberOfActions(cmTarget const& target,
+  int GetTargetTotalNumberOfActions(cmTarget & target,
                                     std::set<cmStdString> &emitted);
   unsigned long GetNumberOfProgressActionsInAll
   (cmLocalUnixMakefileGenerator3 *lg);
