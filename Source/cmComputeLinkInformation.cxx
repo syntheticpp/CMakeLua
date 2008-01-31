@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmComputeLinkInformation.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/31 12:50:40 $
-  Version:   $Revision: 1.13 $
+  Date:      $Date: 2008/01/31 13:05:34 $
+  Version:   $Revision: 1.14 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -340,7 +340,15 @@ bool cmComputeLinkInformation::Compute()
 
   // Restore the target link type so the correct system runtime
   // libraries are found.
-  this->SetCurrentLinkType(this->StartLinkType);
+  const char* lss = this->Target->GetProperty("LINK_SEARCH_END_STATIC");
+  if(cmSystemTools::IsOn(lss))
+    {
+    this->SetCurrentLinkType(LinkStatic);
+    }
+  else
+    {
+    this->SetCurrentLinkType(this->StartLinkType);
+    }
 
   // Compute the linker search path.
   this->ComputeLinkerSearchDirectories();

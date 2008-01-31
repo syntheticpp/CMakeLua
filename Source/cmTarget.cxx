@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmTarget.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/30 22:25:52 $
-  Version:   $Revision: 1.186 $
+  Date:      $Date: 2008/01/31 13:05:34 $
+  Version:   $Revision: 1.187 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -283,6 +283,18 @@ void cmTarget::DefineProperties(cmake *cm)
     ("LINK_FLAGS_<CONFIG>", cmProperty::TARGET,
      "Per-configuration linker flags for a target.",
      "This is the configuration-specific version of LINK_FLAGS.");
+
+  cm->DefineProperty
+    ("LINK_SEARCH_END_STATIC", cmProperty::TARGET,
+     "End a link line such that static system libraries are used.",
+     "Some linkers support switches such as -Bstatic and -Bdynamic "
+     "to determine whether to use static or shared libraries for -lXXX "
+     "options.  CMake uses these options to set the link type for "
+     "libraries whose full paths are not known or (in some cases) are in "
+     "implicit link directories for the platform.  By default the "
+     "linker search type is left at -Bdynamic by the end of the library "
+     "list.  This property switches the final linker search type to "
+     "-Bstatic.");
 
   cm->DefineProperty
     ("LINKER_LANGUAGE", cmProperty::TARGET,
