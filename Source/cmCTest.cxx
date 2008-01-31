@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/30 16:17:36 $
-  Version:   $Revision: 1.332 $
+  Date:      $Date: 2008/01/31 21:10:32 $
+  Version:   $Revision: 1.333 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1261,7 +1261,6 @@ void cmCTest::StartXML(std::ostream& ostr)
        << "\tProcessorClockFrequency=\"" 
        << info.GetProcessorClockFrequency() << "\"\n" 
        << ">" << std::endl;
-  ostr << "<SystemInformation junk=1.0></SystemInformation>\n";
 }
 
 //----------------------------------------------------------------------
