@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmTarget.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/30 22:25:52 $
-  Version:   $Revision: 1.102 $
+  Date:      $Date: 2008/01/31 20:45:31 $
+  Version:   $Revision: 1.103 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -35,9 +35,13 @@ struct cmTargetLinkInformationMap:
   ~cmTargetLinkInformationMap();
 };
 
-struct cmTargetLinkInterface: public std::vector<std::string>
+struct cmTargetLinkInterface
 {
-  typedef std::vector<std::string> derived;
+  // Libraries listed in the interface.
+  std::vector<std::string> Libraries;
+
+  // Shared library dependencies needed for linking on some platforms.
+  std::vector<std::string> SharedDeps;
 };
 
 struct cmTargetLinkInterfaceMap:
@@ -217,11 +221,6 @@ public:
   bool GetPropertyAsBool(const char *prop);
 
   bool IsImported() const {return this->IsImportedTarget;}
-
-  /** Get link libraries for the given configuration of an imported
-      target.  */
-  std::vector<std::string> const*
-  GetImportedLinkLibraries(const char* config);
 
   /** Get the library interface dependencies.  This is the set of
       libraries from which something that links to this target may
@@ -487,7 +486,7 @@ private:
     std::string Location;
     std::string SOName;
     std::string ImportLibrary;
-    std::vector<std::string> LinkLibraries;
+    cmTargetLinkInterface LinkInterface;
   };
   typedef std::map<cmStdString, ImportInfo> ImportInfoMapType;
   ImportInfoMapType ImportInfoMap;

@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmComputeLinkInformation.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/31 12:50:40 $
-  Version:   $Revision: 1.9 $
+  Date:      $Date: 2008/01/31 20:45:30 $
+  Version:   $Revision: 1.10 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -58,7 +58,7 @@ public:
   std::string GetChrpathTool();
   std::set<cmTarget*> const& GetSharedLibrariesLinked();
 private:
-  void AddItem(std::string const& item, cmTarget* tgt);
+  void AddItem(std::string const& item, cmTarget* tgt, bool isSharedDep);
 
   // Output information.
   ItemVector Items;
@@ -78,6 +78,14 @@ private:
   const char* Config;
   const char* LinkLanguage;
 
+  // Modes for dealing with dependent shared libraries.
+  enum SharedDepMode
+  {
+    SharedDepModeNone, // Drop
+    SharedDepModeDir,  // Use in runtime information
+    SharedDepModeLink  // List file on link line
+  };
+
   // System info.
   bool UseImportLibrary;
   const char* LoaderFlag;
@@ -88,6 +96,7 @@ private:
   std::string RuntimeSep;
   std::string RuntimeAlways;
   bool RuntimeUseChrpath;
+  SharedDepMode SharedDependencyMode;
 
   // Link type adjustment.
   void ComputeLinkTypeInfo();
@@ -134,6 +143,7 @@ private:
   void AddLinkerSearchDirectories(std::vector<std::string> const& dirs);
   std::set<cmStdString> DirectoriesEmmitted;
   std::set<cmStdString> ImplicitLinkDirs;
+  std::vector<std::string> SharedDependencyDirectories;
 
   // Linker search path compatibility mode.
   std::vector<std::string> OldLinkDirs;
