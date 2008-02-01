@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmTarget.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/31 20:45:31 $
-  Version:   $Revision: 1.188 $
+  Date:      $Date: 2008/02/01 13:55:41 $
+  Version:   $Revision: 1.189 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -3207,10 +3207,10 @@ cmTargetLinkInterface* cmTarget::ComputeLinkInterface(const char* config)
       }
 
     // Construct the list of libs linked for this configuration.
-    cmTarget::LinkLibraryVectorType const& libs =
+    cmTarget::LinkLibraryVectorType const& llibs =
       this->GetOriginalLinkLibraries();
-    for(cmTarget::LinkLibraryVectorType::const_iterator li = libs.begin();
-        li != libs.end(); ++li)
+    for(cmTarget::LinkLibraryVectorType::const_iterator li = llibs.begin();
+        li != llibs.end(); ++li)
       {
       // Skip entries that will resolve to the target itself, are empty,
       // or are not meant for this configuration.
