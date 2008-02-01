@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: CMakeSetup.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/01 15:41:29 $
-  Version:   $Revision: 1.10 $
+  Date:      $Date: 2008/02/01 16:48:00 $
+  Version:   $Revision: 1.11 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -24,6 +24,7 @@
 #include "cmDocumentation.h"
 #include "cmSystemTools.h"
 #include "cmake.h"
+#include "cmVersion.h"
 
 //----------------------------------------------------------------------------
 static const char * cmDocumentationName[][3] =
@@ -106,7 +107,9 @@ int main(int argc, char** argv)
     }
 
   CMakeSetupDialog dialog;
-  dialog.setWindowTitle(QApplication::applicationName());
+  QString title = QString("CMake %1");
+  title = title.arg(cmVersion::GetCMakeVersion().c_str());
+  dialog.setWindowTitle(title);
   dialog.show();
  
   // for now: args support specifying build and/or source directory 
