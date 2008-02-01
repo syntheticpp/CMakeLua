@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmExportInstallFileGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/01 13:56:00 $
-  Version:   $Revision: 1.6 $
+  Date:      $Date: 2008/02/01 19:35:14 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -269,7 +269,7 @@ cmExportInstallFileGenerator
   cmOStringStream e;
   e << "INSTALL(EXPORT \"" << this->Name << "\" ...) "
     << "includes target \"" << depender->GetName()
-    << "\" which requires target \"" << depender->GetName()
+    << "\" which requires target \"" << dependee->GetName()
     << "\" that is not in the export set.";
   cmSystemTools::Error(e.str().c_str());
 }
