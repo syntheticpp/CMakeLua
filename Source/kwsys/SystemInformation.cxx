@@ -3,8 +3,8 @@
   Program:   BatchMake
   Module:    $RCSfile: SystemInformation.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/01 16:36:06 $
-  Version:   $Revision: 1.17 $
+  Date:      $Date: 2008/02/01 16:40:55 $
+  Version:   $Revision: 1.18 $
   Copyright (c) 2005 Insight Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
 
@@ -2852,7 +2852,7 @@ kwsys_stl::string SystemInformationImplementation::ParseValueFromKStat(const cha
   kwsys_stl::string buffer = this->RunProcess(args);
 
   kwsys_stl::string value = "";
-  for(unsigned int i=buffer.size()-1;i>0;i--)
+  for(size_t i=buffer.size()-1;i>0;i--)
     {
     if(buffer[i] == ' ' || buffer[i] == '\t')
       {
