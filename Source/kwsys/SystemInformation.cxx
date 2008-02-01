@@ -3,8 +3,8 @@
   Program:   BatchMake
   Module:    $RCSfile: SystemInformation.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/31 21:37:52 $
-  Version:   $Revision: 1.11 $
+  Date:      $Date: 2008/02/01 02:33:32 $
+  Version:   $Revision: 1.12 $
   Copyright (c) 2005 Insight Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
 
@@ -125,7 +125,7 @@ public:
   void RunCPUCheck();
   void RunOSCheck();
   void RunMemoryCheck();
-private:
+public:
 #define VENDOR_STRING_LENGTH    (12 + 1)
 #define CHIPNAME_STRING_LENGTH    (48 + 1)
 #define SERIALNUMBER_STRING_LENGTH  (29 + 1)
@@ -389,15 +389,15 @@ unsigned long SystemInformation::GetAvailablePhysicalMemory()
 /** Run the different checks */
 void SystemInformation::RunCPUCheck()
 {
-  return this->Implementation->RunCPUCheck();
+  this->Implementation->RunCPUCheck();
 }
 void SystemInformation::RunOSCheck()
 {
-  return this->Implementation->RunOSCheck();
+  this->Implementation->RunOSCheck();
 }
 void SystemInformation::RunMemoryCheck()
 {
-  return this->Implementation->RunMemoryCheck();
+  this->Implementation->RunMemoryCheck();
 }
 
 
@@ -2947,7 +2947,7 @@ bool SystemInformationImplementation::QueryOSInformation()
         {
         this->OSRelease = "XP";
         }
-
+#ifdef VER_NT_WORKSTATION
       // Test for product type.
       if (bOsVersionInfoEx) 
         {
@@ -2990,8 +2990,9 @@ bool SystemInformationImplementation::QueryOSInformation()
 
         sprintf (operatingSystem, "%s(Build %d)", osvi.szCSDVersion, osvi.dwBuildNumber & 0xFFFF);
         this->OSVersion = operatingSystem; 
-        } 
+        }
       else 
+#endif        // VER_NT_WORKSTATION
         {
         HKEY hKey;
         char szProductType[80];
