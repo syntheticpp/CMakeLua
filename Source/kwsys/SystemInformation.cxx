@@ -3,8 +3,8 @@
   Program:   BatchMake
   Module:    $RCSfile: SystemInformation.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/01 16:40:55 $
-  Version:   $Revision: 1.18 $
+  Date:      $Date: 2008/02/01 17:35:50 $
+  Version:   $Revision: 1.19 $
   Copyright (c) 2005 Insight Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
 
@@ -2210,7 +2210,7 @@ int SystemInformationImplementation::RetreiveInformationFromCpuInfoFile()
   // L1 Cache size
   kwsys_stl::string cacheSize = this->ExtractValueFromCpuInfoFile(buffer,"cache size");
   pos = cacheSize.find(" KB");
-  if(pos!=-1)
+  if(pos!=cacheSize.npos)
     {
     cacheSize = cacheSize.substr(0,pos);
     }
@@ -2834,7 +2834,7 @@ kwsys_stl::string SystemInformationImplementation::ParseValueFromKStat(const cha
 
       // Remove the quotes if any
       size_t quotes = arg.find('"');
-      while(quotes != -1)
+      while(quotes != arg.npos)
         {
         arg.erase(quotes,1);
         quotes = arg.find('"');
