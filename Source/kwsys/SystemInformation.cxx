@@ -3,8 +3,8 @@
   Program:   BatchMake
   Module:    $RCSfile: SystemInformation.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/01 02:33:32 $
-  Version:   $Revision: 1.12 $
+  Date:      $Date: 2008/02/01 16:09:39 $
+  Version:   $Revision: 1.13 $
   Copyright (c) 2005 Insight Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
 
@@ -801,7 +801,7 @@ bool SystemInformationImplementation::DoesCPUSupportCPUID()
 {
   int CPUIDPresent = 0;
 
-#if defined(_MSC_VER) && (_MSC_VER >= 1300)
+#if USE_ASM_INSTRUCTIONS
   // Use SEH to determine CPUID presence
     __try {
         _asm {
@@ -842,7 +842,7 @@ bool SystemInformationImplementation::DoesCPUSupportCPUID()
 
 bool SystemInformationImplementation::RetrieveCPUFeatures()
 {
-#if defined(_MSC_VER) && (_MSC_VER >= 1300)
+#if USE_ASM_INSTRUCTIONS
   int localCPUFeatures = 0;
   int localCPUAdvanced = 0;
 
@@ -2761,7 +2761,7 @@ kwsys_stl::string SystemInformationImplementation::RunProcess(kwsys_stl::vector<
     }
   kwsysProcess_WaitForExit(gp, 0);
 
-  int result = 1;
+  int result = 0;
   switch(kwsysProcess_GetState(gp))
     {
     case kwsysProcess_State_Exited:
@@ -2790,7 +2790,10 @@ kwsys_stl::string SystemInformationImplementation::RunProcess(kwsys_stl::vector<
       } break;
     }
   kwsysProcess_Delete(gp);
-  (void)result;
+  if(result)
+    {
+    kwsys_ios::cerr << "Error " << args[0] << " returned :" << result << "\n";
+    }
   return buffer;
 }
   
