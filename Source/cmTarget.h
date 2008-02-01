@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmTarget.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/31 20:45:31 $
-  Version:   $Revision: 1.103 $
+  Date:      $Date: 2008/02/01 18:08:12 $
+  Version:   $Revision: 1.104 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -190,18 +190,6 @@ public:
    */
   bool GetHaveInstallRule() { return this->HaveInstallRule; }
   void SetHaveInstallRule(bool h) { this->HaveInstallRule = h; }
-
-  /**
-   * Get/Set the path needed for calls to install_name_tool regarding this
-   * target. Used to support fixing up installed libraries and executables on
-   * the Mac (including bundles and frameworks). Only used if the target does
-   * not have an INSTALL_NAME_DIR property.
-   * See cmInstallTargetGenerator::AddInstallNamePatchRule and callers for
-   * more information.
-   */
-  std::string GetInstallNameFixupPath() { return this->InstallNameFixupPath; }
-  void SetInstallNameFixupPath(const char *path) {
-    this->InstallNameFixupPath = path; }
 
   /** Add a utility on which this project depends. A utility is an executable
    * name as would be specified to the ADD_EXECUTABLE or UTILITY_SOURCE
@@ -465,7 +453,6 @@ private:
   std::vector<std::string> LinkDirectories;
   std::set<cmStdString> LinkDirectoriesEmmitted;
   bool HaveInstallRule;
-  std::string InstallNameFixupPath;
   std::string InstallPath;
   std::string RuntimeInstallPath;
   std::string OutputDir;
