@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: QCMake.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/11/13 04:54:49 $
-  Version:   $Revision: 1.12 $
+  Date:      $Date: 2008/02/01 15:41:29 $
+  Version:   $Revision: 1.13 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -292,6 +292,7 @@ void QCMake::progressCallback(const char* msg, float percent, void* cd)
     {
     emit self->outputMessage(msg);
     }
+  QCoreApplication::processEvents();
 }
 
 void QCMake::errorCallback(const char* msg, const char* /*title*/,
@@ -299,6 +300,7 @@ void QCMake::errorCallback(const char* msg, const char* /*title*/,
 {
   QCMake* self = reinterpret_cast<QCMake*>(cd);
   emit self->errorMessage(msg);
+  QCoreApplication::processEvents();
 }
 
 QString QCMake::binaryDirectory() const

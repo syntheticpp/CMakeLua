@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: CMakeSetupDialog.h,v $
   Language:  C++
-  Date:      $Date: 2007/11/13 04:54:49 $
-  Version:   $Revision: 1.17 $
+  Date:      $Date: 2008/02/01 15:41:29 $
+  Version:   $Revision: 1.18 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -102,9 +102,6 @@ public:
   
 signals:  
   void cmakeInitialized();
-
-protected slots:
-  void processEvents();
 
 protected:
   virtual void run();

@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: CMakeSetup.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/13 22:56:50 $
-  Version:   $Revision: 1.9 $
+  Date:      $Date: 2008/02/01 15:41:29 $
+  Version:   $Revision: 1.10 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -18,6 +18,7 @@
 #include <QApplication>
 #include <QFileInfo>
 #include <QDir>
+#include <QTranslator>
 
 #include "CMakeSetupDialog.h"
 #include "cmDocumentation.h"
@@ -64,6 +65,12 @@ int main(int argc, char** argv)
 {
   cmSystemTools::FindExecutableDirectory(argv[0]);
   QApplication app(argc, argv);
+
+  QTranslator translator;
+  QString transfile = QString("cmake_%1").arg(QLocale::system().name());
+  translator.load(transfile, app.applicationDirPath());
+  app.installTranslator(&translator);
+  
   app.setApplicationName("CMakeSetup");
   app.setOrganizationName("Kitware");
   app.setWindowIcon(QIcon(":/Icons/CMakeSetup.png"));
@@ -99,7 +106,7 @@ int main(int argc, char** argv)
     }
 
   CMakeSetupDialog dialog;
-  dialog.setWindowTitle("CMakeSetup");
+  dialog.setWindowTitle(QApplication::applicationName());
   dialog.show();
  
   // for now: args support specifying build and/or source directory 
