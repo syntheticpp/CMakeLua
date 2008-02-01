@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/30 02:16:49 $
-  Version:   $Revision: 1.263 $
+  Date:      $Date: 2008/02/01 13:56:00 $
+  Version:   $Revision: 1.264 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1603,6 +1603,15 @@ void cmLocalGenerator::OutputLinkLibraries(std::ostream& fout,
       fout << this->EscapeForShell(rpath.c_str(), true);
       fout << " ";
       }
+    }
+
+  // Add the linker runtime search path if any.
+  std::string rpath_link = cli.GetRPathLinkString();
+  if(!cli.GetRPathLinkFlag().empty() && !rpath_link.empty())
+    {
+    fout << cli.GetRPathLinkFlag();
+    fout << this->EscapeForShell(rpath_link.c_str(), true);
+    fout << " ";
     }
 
   // Add standard libraries for this language.

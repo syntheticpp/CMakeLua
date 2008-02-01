@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmExportInstallFileGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/30 22:25:52 $
-  Version:   $Revision: 1.5 $
+  Date:      $Date: 2008/02/01 13:56:00 $
+  Version:   $Revision: 1.6 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -264,16 +264,12 @@ cmExportInstallFileGenerator
 //----------------------------------------------------------------------------
 void
 cmExportInstallFileGenerator
-::ComplainAboutMissingTarget(cmTarget* target, const char* dep)
+::ComplainAboutMissingTarget(cmTarget* depender, cmTarget* dependee)
 {
   cmOStringStream e;
   e << "INSTALL(EXPORT \"" << this->Name << "\" ...) "
-    << "includes target \"" << target->GetName()
-    << "\" which links to target \"" << dep
-    << "\" that is not in the export set.  "
-    << "If the link dependency is not part of the public interface "
-    << "consider setting the LINK_INTERFACE_LIBRARIES property on "
-    << "target \"" << target->GetName() << "\".  "
-    << "Otherwise add it to the export set.";
+    << "includes target \"" << depender->GetName()
+    << "\" which requires target \"" << depender->GetName()
+    << "\" that is not in the export set.";
   cmSystemTools::Error(e.str().c_str());
 }

@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmComputeLinkDepends.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/31 20:45:30 $
-  Version:   $Revision: 1.6 $
+  Date:      $Date: 2008/02/01 13:56:00 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -122,6 +122,14 @@ The initial exploration of dependencies using a BFS associates an
 integer index with each link item.  When the graph is built outgoing
 edges are sorted by this index.  This preserves the original link
 order as much as possible subject to the dependencies.
+
+After the initial exploration of the link interface tree, any
+transitive (dependent) shared libraries that were encountered and not
+included in the interface are processed in their own BFS.  This BFS
+follows only the dependent library lists and not the link interfaces.
+They are added to the link items with a mark indicating that the are
+transitive dependencies.  Then cmComputeLinkInformation deals with
+them on a per-platform basis.
 
 */
 

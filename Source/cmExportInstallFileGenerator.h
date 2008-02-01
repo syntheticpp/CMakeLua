@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmExportInstallFileGenerator.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/28 13:38:35 $
-  Version:   $Revision: 1.1 $
+  Date:      $Date: 2008/02/01 13:56:00 $
+  Version:   $Revision: 1.2 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -66,7 +66,8 @@ protected:
   virtual void GenerateImportTargetsConfig(std::ostream& os,
                                            const char* config,
                                            std::string const& suffix);
-  virtual void ComplainAboutMissingTarget(cmTarget* target, const char* dep);
+  virtual void ComplainAboutMissingTarget(cmTarget* depender,
+                                          cmTarget* dependee);
 
   /** Generate a per-configuration file for the targets.  */
   bool GenerateImportFileConfig(const char* config);

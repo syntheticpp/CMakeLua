@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmTarget.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/01 13:55:41 $
-  Version:   $Revision: 1.189 $
+  Date:      $Date: 2008/02/01 13:56:00 $
+  Version:   $Revision: 1.190 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -193,13 +193,13 @@ void cmTarget::DefineProperties(cmake *cm)
      "Shared libraries may be linked to other shared libraries as part "
      "of their implementation.  On some platforms the linker searches "
      "for the dependent libraries of shared libraries they are including "
-     "in the link.  CMake gives the paths to these libraries to the linker "
-     "by listing them on the link line explicitly.  This property lists "
+     "in the link.  This property lists "
      "the dependent shared libraries of an imported library.  The list "
      "should be disjoint from the list of interface libraries in the "
      "IMPORTED_LINK_INTERFACE_LIBRARIES property.  On platforms requiring "
      "dependent shared libraries to be found at link time CMake uses this "
-     "list to add the dependent libraries to the link command line.");
+     "list to add appropriate files or paths to the link command line.  "
+     "Ignored for non-imported targets.");
 
   cm->DefineProperty
     ("IMPORTED_LINK_DEPENDENT_LIBRARIES_<CONFIG>", cmProperty::TARGET,

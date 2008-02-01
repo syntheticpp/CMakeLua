@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmExportBuildFileGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/30 22:25:52 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2008/02/01 13:56:00 $
+  Version:   $Revision: 1.5 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -122,7 +122,8 @@ cmExportBuildFileGenerator
 //----------------------------------------------------------------------------
 void
 cmExportBuildFileGenerator
-::ComplainAboutMissingTarget(cmTarget* target, const char* dep)
+::ComplainAboutMissingTarget(cmTarget* depender,
+                             cmTarget* dependee)
 {
   if(!this->ExportCommand || !this->ExportCommand->ErrorMessage.empty())
     {
@@ -130,13 +131,10 @@ cmExportBuildFileGenerator
     }
 
   cmOStringStream e;
-  e << "called with target \"" << target->GetName()
-    << "\" which links to target \"" << dep
+  e << "called with target \"" << depender->GetName()
+    << "\" which requires target \"" << dependee->GetName()
     << "\" that is not in the export list.\n"
-    << "If the link dependency is not part of the public interface "
-    << "consider setting the LINK_INTERFACE_LIBRARIES property on \""
-    << target->GetName() << "\".  Otherwise add it to the export list.  "
-    << "If the link dependency is not easy to reference in this call, "
+    << "If the required target is not easy to reference in this call, "
     << "consider using the APPEND option with multiple separate calls.";
   this->ExportCommand->ErrorMessage = e.str();
 }

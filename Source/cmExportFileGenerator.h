@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmExportFileGenerator.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/31 20:45:31 $
-  Version:   $Revision: 1.7 $
+  Date:      $Date: 2008/02/01 13:56:00 $
+  Version:   $Revision: 1.8 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -85,7 +85,8 @@ protected:
 
   /** Each subclass knows how to complain about a target that is
       missing from an export set.  */
-  virtual void ComplainAboutMissingTarget(cmTarget*, const char* dep) = 0;
+  virtual void ComplainAboutMissingTarget(cmTarget* depender,
+                                          cmTarget* dependee) = 0;
 
   // The namespace in which the exports are placed in the generated file.
   std::string Namespace;

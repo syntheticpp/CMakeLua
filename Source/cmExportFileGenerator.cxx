@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmExportFileGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/31 20:45:31 $
-  Version:   $Revision: 1.9 $
+  Date:      $Date: 2008/02/01 13:56:00 $
+  Version:   $Revision: 1.10 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -245,7 +245,7 @@ cmExportFileGenerator
           {
           // We are not appending, so all exported targets should be
           // known here.  This is probably user-error.
-          this->ComplainAboutMissingTarget(target, li->c_str());
+          this->ComplainAboutMissingTarget(target, tgt);
           }
         // Assume the target will be exported by another command.
         // Append it with the export namespace.
