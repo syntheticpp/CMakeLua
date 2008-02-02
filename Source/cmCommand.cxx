@@ -27,6 +27,7 @@ static int cmLuaFunc(lua_State *L)
 {
   // build a list file function 
   cmListFileFunction lff;
+  cmExecutionStatus status;
   lff.Name = lua_tostring(L, lua_upvalueindex(1));
   
   int i;
@@ -44,7 +45,8 @@ static int cmLuaFunc(lua_State *L)
   cmMakefile *mf = static_cast<cmMakefile *>(lua_touserdata(L,-1));
 
   // pass it to ExecuteCommand
-  mf->ExecuteCommand(lff);
+  mf->ExecuteCommand(lff, status);
+  // What should I do with status?
 
   return 0;  /* number of results */
 }
