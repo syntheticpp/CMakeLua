@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmExportCommand.h,v $
   Language:  C++
-  Date:      $Date: 2007/12/20 22:49:38 $
-  Version:   $Revision: 1.5 $
+  Date:      $Date: 2008/01/30 22:25:52 $
+  Version:   $Revision: 1.9 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -18,6 +18,8 @@
 #define cmExportCommand_h
 
 #include "cmCommand.h"
+
+class cmExportBuildFileGenerator;
 
 /** \class cmExportLibraryDependenciesCommand
  * \brief Add a test to the lists of tests to run.
@@ -41,7 +43,8 @@ public:
    * This is called when the command is first encountered in
    * the CMakeLists.txt file.
    */
-  virtual bool InitialPass(std::vector<std::string> const& args);
+  virtual bool InitialPass(std::vector<std::string> const& args,
+                           cmExecutionStatus &status);
 
   /**
    * The name of the command as specified in CMakeList.txt.
@@ -54,7 +57,7 @@ public:
   virtual const char* GetTerseDocumentation()
     {
     return
-      "Write out the dependency information for all targets of a project.";
+      "Export targets from the build tree for use by outside projects.";
     }
 
   /**
@@ -63,15 +66,25 @@ public:
   virtual const char* GetFullDocumentation()
     {
     return
-      "  export(TARGETS tgt1 ... tgtN [PREFIX <prefix>] FILE <filename> "
-      "[APPEND])\n"
-      "Create a file that can be included into a CMake listfile with the "
-      "INCLUDE command.  The file will contain a number of SET commands "
-      "that will set all the variables needed for library dependency "
-      "information.  This should be the last command in the top level "
-      "CMakeLists.txt file of the project.  If the APPEND option is "
-      "specified, the SET commands will be appended to the given file "
-      "instead of replacing it.";
+      "  export(TARGETS [target1 [target2 [...]]] [NAMESPACE <namespace>]\n"
+      "         [APPEND] FILE <filename>)\n"
+      "Create a file <filename> that may be included by outside projects to "
+      "import targets from the current project's build tree.  "
+      "This is useful during cross-compiling to build utility executables "
+      "that can run on the host platform in one project and then import "
+      "them into another project being compiled for the target platform.  "
+      "If the NAMESPACE option is given the <namespace> string will be "
+      "prepended to all target names written to the file.  "
+      "If the APPEND option is given the generated code will be appended "
+      "to the file instead of overwriting it.  "
+      "If a library target is included in the export but "
+      "a target to which it links is not included the behavior is "
+      "unspecified."
+      "\n"
+      "The file created by this command is specific to the build tree and "
+      "should never be installed.  "
+      "See the install(EXPORT) command to export targets from an "
+      "installation tree.";
     }
 
   cmTypeMacro(cmExportCommand, cmCommand);
@@ -80,8 +93,11 @@ private:
   cmCommandArgumentGroup ArgumentGroup;
   cmCAStringVector Targets;
   cmCAEnabler Append;
-  cmCAString Prefix;
+  cmCAString Namespace;
   cmCAString Filename;
+
+  friend class cmExportBuildFileGenerator;
+  std::string ErrorMessage;
 };
 
 

@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCTestTestHandler.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/11/08 18:03:37 $
-  Version:   $Revision: 1.60 $
+  Date:      $Date: 2008/01/31 21:33:07 $
+  Version:   $Revision: 1.68 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -53,12 +53,13 @@ public:
    * This is called when the command is first encountered in
    * the CMakeLists.txt file.
    */
-  virtual bool InitialPass(std::vector<std::string> const& args);
+  virtual bool InitialPass(std::vector<std::string> const& args,
+                           cmExecutionStatus &);
 
   /**
    * The name of the command as specified in CMakeList.txt.
    */
-  virtual const char* GetName() { return "SUBDIRS";}
+  virtual const char* GetName() { return "subdirs";}
 
   // Unused methods
   virtual const char* GetTerseDocumentation() { return ""; }
@@ -70,7 +71,8 @@ public:
 };
 
 //----------------------------------------------------------------------
-bool cmCTestSubdirCommand::InitialPass(std::vector<std::string> const& args)
+bool cmCTestSubdirCommand
+::InitialPass(std::vector<std::string> const& args, cmExecutionStatus &)
 {
   if(args.size() < 1 )
     {
@@ -98,14 +100,14 @@ bool cmCTestSubdirCommand::InitialPass(std::vector<std::string> const& args)
       // does the CTestTestfile.cmake exist ?
       testFilename = "CTestTestfile.cmake";
       }
-    else if( cmSystemTools::FileExists("DartTestfile.txt") )
+    else if( cmSystemTools::FileExists("DartTestfile.txt") ) 
       {
       // does the DartTestfile.txt exist ?
       testFilename = "DartTestfile.txt";
       }
     else
       {
-      // No DartTestfile.txt? Who cares...
+      // No CTestTestfile? Who cares...
       cmSystemTools::ChangeDirectory(cwd.c_str());
       continue;
       }
@@ -122,6 +124,96 @@ bool cmCTestSubdirCommand::InitialPass(std::vector<std::string> const& args)
       this->SetError(m.c_str());
       return false;
       }
+    }
+  return true;
+}
+
+//----------------------------------------------------------------------
+class cmCTestAddSubdirectoryCommand : public cmCommand
+{
+public:
+  /**
+   * This is a virtual constructor for the command.
+   */
+  virtual cmCommand* Clone()
+    {
+    cmCTestAddSubdirectoryCommand* c = new cmCTestAddSubdirectoryCommand;
+    c->TestHandler = this->TestHandler;
+    return c;
+    }
+
+  /**
+   * This is called when the command is first encountered in
+   * the CMakeLists.txt file.
+   */
+  virtual bool InitialPass(std::vector<std::string> const& args,
+                           cmExecutionStatus &);
+
+  /**
+   * The name of the command as specified in CMakeList.txt.
+   */
+  virtual const char* GetName() { return "add_subdirectory";}
+
+  // Unused methods
+  virtual const char* GetTerseDocumentation() { return ""; }
+  virtual const char* GetFullDocumentation() { return ""; }
+
+  cmTypeMacro(cmCTestAddSubdirectoryCommand, cmCommand);
+
+  cmCTestTestHandler* TestHandler;
+};
+
+//----------------------------------------------------------------------
+bool cmCTestAddSubdirectoryCommand
+::InitialPass(std::vector<std::string> const& args, cmExecutionStatus &)
+{
+  if(args.size() < 1 )
+    {
+    this->SetError("called with incorrect number of arguments");
+    return false;
+    }
+
+  std::string cwd = cmSystemTools::GetCurrentWorkingDirectory();
+  cmSystemTools::ChangeDirectory(cwd.c_str());
+  std::string fname = cwd;
+  fname += "/";
+  fname += args[1];
+
+  if ( !cmSystemTools::FileExists(fname.c_str()) )
+    {
+    // No subdirectory? So what...
+    return true;
+    }
+  cmSystemTools::ChangeDirectory(fname.c_str());
+  const char* testFilename;
+  if( cmSystemTools::FileExists("CTestTestfile.cmake") )
+    {
+    // does the CTestTestfile.cmake exist ?
+    testFilename = "CTestTestfile.cmake";
+    }
+  else if( cmSystemTools::FileExists("DartTestfile.txt") )
+    {
+    // does the DartTestfile.txt exist ?
+    testFilename = "DartTestfile.txt";
+    }
+  else
+    {
+    // No CTestTestfile? Who cares...
+    cmSystemTools::ChangeDirectory(cwd.c_str());
+    return true;
+    }
+  fname += "/";
+  fname += testFilename;
+  bool readit = 
+    this->Makefile->ReadListFile(this->Makefile->GetCurrentListFile(),
+                                 fname.c_str());
+  cmSystemTools::ChangeDirectory(cwd.c_str());
+  if(!readit)
+    {
+    std::string m = "Could not find include file: ";
+    m += fname;
+    this->SetError(m.c_str());
+    return false;
     }
   return true;
 }
@@ -144,7 +236,8 @@ public:
    * This is called when the command is first encountered in
    * the CMakeLists.txt file.
    */
-  virtual bool InitialPass(std::vector<std::string> const&);
+  virtual bool InitialPass(std::vector<std::string> const&,
+                           cmExecutionStatus &);
 
   /**
    * The name of the command as specified in CMakeList.txt.
@@ -161,7 +254,8 @@ public:
 };
 
 //----------------------------------------------------------------------
-bool cmCTestAddTestCommand::InitialPass(std::vector<std::string> const& args)
+bool cmCTestAddTestCommand
+::InitialPass(std::vector<std::string> const& args, cmExecutionStatus &)
 {
   if ( args.size() < 2 )
     {
@@ -189,8 +283,9 @@ public:
   /**
    * This is called when the command is first encountered in
    * the CMakeLists.txt file.
-   */
-  virtual bool InitialPass(std::vector<std::string> const&);
+  */
+  virtual bool InitialPass(std::vector<std::string> const&,
+                           cmExecutionStatus &);
 
   /**
    * The name of the command as specified in CMakeList.txt.
@@ -207,8 +302,8 @@ public:
 };
 
 //----------------------------------------------------------------------
-bool cmCTestSetTestsPropertiesCommand::InitialPass(
-  std::vector<std::string> const& args)
+bool cmCTestSetTestsPropertiesCommand
+::InitialPass(std::vector<std::string> const& args, cmExecutionStatus &)
 {
   return this->TestHandler->SetTestsProperties(args);
 }
@@ -832,6 +927,7 @@ void cmCTestTestHandler::ProcessDirectory(std::vector<cmStdString> &passed,
   cmCTestTestHandler::ListOfTests::size_type tmsize = this->TestList.size();
 
   this->StartTest = this->CTest->CurrentTime();
+  this->StartTestTime = static_cast<unsigned int>(cmSystemTools::GetTime());
   double elapsed_time_start = cmSystemTools::GetTime();
 
   *this->LogFile << "Start testing: " << this->StartTest << std::endl
@@ -914,6 +1010,7 @@ void cmCTestTestHandler::ProcessDirectory(std::vector<cmStdString> &passed,
     }
 
   this->EndTest = this->CTest->CurrentTime();
+  this->EndTestTime = static_cast<unsigned int>(cmSystemTools::GetTime());
   this->ElapsedTestingTime = cmSystemTools::GetTime() - elapsed_time_start;
   if ( this->LogFile )
     {
@@ -938,6 +1035,7 @@ void cmCTestTestHandler::GenerateDartOutput(std::ostream& os)
   this->CTest->StartXML(os);
   os << "<Testing>\n"
     << "\t<StartDateTime>" << this->StartTest << "</StartDateTime>\n"
+    << "\t<StartTestTime>" << this->StartTestTime << "</StartTestTime>\n"
     << "\t<TestList>\n";
   cmCTestTestHandler::TestResultsVector::size_type cc;
   for ( cc = 0; cc < this->TestResults.size(); cc ++ )
@@ -1025,6 +1123,7 @@ void cmCTestTestHandler::GenerateDartOutput(std::ostream& os)
     }
 
   os << "\t<EndDateTime>" << this->EndTest << "</EndDateTime>\n"
+     << "\t<EndTestTime>" << this->EndTestTime << "</EndTestTime>\n"
      << "<ElapsedMinutes>"
      << static_cast<int>(this->ElapsedTestingTime/6)/10.0
      << "</ElapsedMinutes>"
@@ -1265,16 +1364,23 @@ void cmCTestTestHandler::GetListOfTests()
   newCom1->TestHandler = this;
   cm.AddCommand(newCom1);
 
-  // Add handler for SUBDIR
-  cmCTestSubdirCommand* newCom2 = new cmCTestSubdirCommand;
+  // Add handler for SUBDIRS
+  cmCTestSubdirCommand* newCom2 = 
+    new cmCTestSubdirCommand;
   newCom2->TestHandler = this;
   cm.AddCommand(newCom2);
 
-  // Add handler for SET_SOURCE_FILES_PROPERTIES
-  cmCTestSetTestsPropertiesCommand* newCom3
-    = new cmCTestSetTestsPropertiesCommand;
+  // Add handler for ADD_SUBDIRECTORY
+  cmCTestAddSubdirectoryCommand* newCom3 = 
+    new cmCTestAddSubdirectoryCommand;
   newCom3->TestHandler = this;
   cm.AddCommand(newCom3);
+
+  // Add handler for SET_SOURCE_FILES_PROPERTIES
+  cmCTestSetTestsPropertiesCommand* newCom4
+    = new cmCTestSetTestsPropertiesCommand;
+  newCom4->TestHandler = this;
+  cm.AddCommand(newCom4);
 
   const char* testFilename;
   if( cmSystemTools::FileExists("CTestTestfile.cmake") )

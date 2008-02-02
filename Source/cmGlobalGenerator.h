@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmGlobalGenerator.h,v $
   Language:  C++
-  Date:      $Date: 2007/12/23 20:03:42 $
-  Version:   $Revision: 1.101 $
+  Date:      $Date: 2008/01/31 03:56:34 $
+  Version:   $Revision: 1.105 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -150,6 +150,9 @@ public:
   ///! Get the export target set with the   given name
   const std::vector<cmTargetExport*>* GetExportSet(const char* name) const;
 
+  /** Add a file to the manifest of generated targets for a configuration.  */
+  void AddToManifest(const char* config, std::string const& f);
+
   void EnableInstallTarget();
 
   int TryCompileTimeout;
@@ -183,9 +186,7 @@ public:
   void FindMakeProgram(cmMakefile*);
 
   ///! Find a target by name by searching the local generators.
-  cmTarget* FindTarget(const char* project, 
-                       const char* name, 
-                       bool useImportedTargets);
+  cmTarget* FindTarget(const char* project, const char* name);
 
   /** Determine if a name resolves to a framework on disk or a built target
       that is a framework. */
@@ -209,6 +210,13 @@ public:
       configuration.  This is valid during generation only.  */
   cmTargetManifest const& GetTargetManifest() { return this->TargetManifest; }
 
+  /** Get the content of a directory on disk including the target
+      files to be generated.  This may be called only during the
+      generation step.  It is intended for use only by
+      cmComputeLinkInformation.  */
+  std::set<cmStdString> const& GetDirectoryContent(std::string const& dir,
+                                                   bool needDisk);
+
   void AddTarget(cmTargets::value_type &v);
 
   virtual const char* GetAllTargetName()          { return "ALL_BUILD"; }
@@ -224,10 +232,11 @@ public:
   virtual const char* GetCleanTargetName()        { return 0; }
 
   // Class to track a set of dependencies.
-  class TargetDependSet: public std::set<cmTarget const*> {};
+  class TargetDependSet: public std::set<cmTarget*> {};
 
-  // what targets does the specified target depend on
-  TargetDependSet const& GetTargetDepends(cmTarget const& target);
+  // what targets does the specified target depend on directly
+  // via a target_link_libraries or add_dependencies
+  TargetDependSet & GetTargetDirectDepends(cmTarget & target);
 
   const std::map<cmStdString, std::vector<cmLocalGenerator*> >& GetProjectMap()
                                                const {return this->ProjectMap;}
@@ -237,6 +246,15 @@ public:
   void GetFilesReplacedDuringGenerate(std::vector<std::string>& filenames);
 
 protected:
+  // for a project collect all its targets by following depend
+  // information, and also collect all the targets
+  void GetTargetSets(cmGlobalGenerator::TargetDependSet& projectTargets,
+                     cmGlobalGenerator::TargetDependSet& originalTargets,
+                     cmLocalGenerator* root,
+                     std::vector<cmLocalGenerator*> const& generators);
+  void AddTargetDepends(cmTarget* target,
+                        cmGlobalGenerator::TargetDependSet&
+                        projectTargets);
   void SetLanguageEnabledFlag(const char* l, cmMakefile* mf);
   void SetLanguageEnabledMaps(const char* l, cmMakefile* mf);
 
@@ -263,7 +281,7 @@ protected:
   cmLocalGenerator* CurrentLocalGenerator;
   // map from project name to vector of local generators in that project
   std::map<cmStdString, std::vector<cmLocalGenerator*> > ProjectMap;
-  std::map<cmLocalGenerator*, std::set<cmTarget const*> >
+  std::map<cmLocalGenerator*, std::set<cmTarget *> >
   LocalGeneratorToTargetMap;
 
   // Set of named installation components requested by the project.
@@ -287,9 +305,8 @@ private:
   std::map<cmStdString, cmStdString> ExtensionToLanguage;
   std::map<cmStdString, int> LanguageToLinkerPreference; 
 
-  // this is used to improve performance 
+  // this is used to improve performance
   std::map<cmStdString,cmTarget *> TotalTargets;
-  std::map<cmStdString,cmTarget *> ImportedTotalTargets;
 
   cmExternalMakefileProjectGenerator* ExtraGenerator;
 
@@ -297,13 +314,24 @@ private:
   std::vector<std::string> FilesReplacedDuringGenerate;
 
   // Track inter-target dependencies.
-  bool ConsiderTargetDepends(cmTarget const* depender,
+  bool ConsiderTargetDepends(cmTarget * depender,
                              TargetDependSet& depender_depends,
                              const char* dependee_name);
-  bool FindDependency(cmTarget const* goal, cmTarget const* current,
-                      std::vector<cmTarget const*>& steps);
-  typedef std::map<cmTarget const*, TargetDependSet> TargetDependMap;
+  bool FindDependency(cmTarget * goal, cmTarget * current,
+                      std::vector<cmTarget *>& steps);
+  typedef std::map<cmTarget *, TargetDependSet> TargetDependMap;
   TargetDependMap TargetDependencies;
+
+  // Cache directory content and target files to be built.
+  struct DirectoryContent: public std::set<cmStdString>
+  {
+    typedef std::set<cmStdString> derived;
+    bool LoadedFromDisk;
+    DirectoryContent(): LoadedFromDisk(false) {}
+    DirectoryContent(DirectoryContent const& dc):
+      derived(dc), LoadedFromDisk(dc.LoadedFromDisk) {}
+  };
+  std::map<cmStdString, DirectoryContent> DirectoryContentMap;
 };
 
 #endif

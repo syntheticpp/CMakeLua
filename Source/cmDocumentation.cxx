@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmDocumentation.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/29 16:53:36 $
-  Version:   $Revision: 1.62 $
+  Date:      $Date: 2008/01/14 22:05:09 $
+  Version:   $Revision: 1.65 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -84,7 +84,7 @@ static const char *cmPropertiesDocumentationDescription[][3] =
    "This is the documentation for the properties supported by CMake. "
    "Properties can have different scopes. They can either be assigned to a "
    "source file, a directory, a target or globally to CMake. By modifying the "
-   "values of properties the behaviour of the buildsystem can be customized.",
+   "values of properties the behaviour of the build system can be customized.",
    0},
   {0,0,0}
 };
@@ -346,6 +346,15 @@ bool cmDocumentation::PrintDocumentation(Type ht, std::ostream& os)
       this->PrintDocumentationList(os,"Compatibility Commands");
       return true;
     case cmDocumentation::ModuleList: 
+      // find the modules first, print the custom module docs only if 
+      // any custom modules have been found actually, Alex
+      this->CreateCustomModulesSection();
+      this->CreateModulesSection();
+      if (this->AllSections.find("Custom CMake Modules")
+         != this->AllSections.end())
+        {
+        this->PrintDocumentationList(os,"Custom CMake Modules");
+        }
       this->PrintDocumentationList(os,"Modules");
       return true;
     case cmDocumentation::PropertyList: 
@@ -445,14 +454,23 @@ void cmDocumentation
 ::CreateModuleDocsForDir(cmsys::Directory& dir, 
                          cmDocumentationSection &moduleSection)
 {
+  // sort the files alphabetically, so the docs for one module are easier 
+  // to find than if they are in random order
+  std::vector<std::string> sortedFiles;
   for(unsigned int i = 0; i < dir.GetNumberOfFiles(); ++i)
+  {
+    sortedFiles.push_back(dir.GetFile(i));
+  }
+  std::sort(sortedFiles.begin(), sortedFiles.end());
+
+  for(std::vector<std::string>::const_iterator fname = sortedFiles.begin();
+      fname!=sortedFiles.end(); ++fname)
     {
-    std::string fname = dir.GetFile(i);
-    if(fname.length() > 6)
+    if(fname->length() > 6)
       {
-      if(fname.substr(fname.length()-6, 6) == ".cmake")
+      if(fname->substr(fname->length()-6, 6) == ".cmake")
         {
-        std::string moduleName = fname.substr(0, fname.length()-6);
+        std::string moduleName = fname->substr(0, fname->length()-6);
         // this check is to avoid creating documentation for the modules with
         // the same name in multiple directories of CMAKE_MODULE_PATH
         if (this->ModulesFound.find(moduleName) == this->ModulesFound.end())
@@ -460,7 +478,7 @@ void cmDocumentation
           this->ModulesFound.insert(moduleName);
           std::string path = dir.GetPath();
           path += "/";
-          path += fname;
+          path += (*fname);
           this->CreateSingleModule(path.c_str(), moduleName.c_str(), 
                                    moduleSection);
           }

@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalGenerator.h,v $
   Language:  C++
-  Date:      $Date: 2007/12/29 04:07:14 $
-  Version:   $Revision: 1.91 $
+  Date:      $Date: 2008/01/30 02:16:49 $
+  Version:   $Revision: 1.102 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -75,7 +75,7 @@ public:
   /**
    * Generate a manifest of target files that will be built.
    */
-  virtual void GenerateTargetManifest(cmTargetManifest&);
+  virtual void GenerateTargetManifest();
 
   ///! Get the makefile for this generator
   cmMakefile *GetMakefile() {
@@ -139,6 +139,13 @@ public:
   ///! Get the include flags for the current makefile and language
   const char* GetIncludeFlags(const char* lang); 
 
+  /**
+   * Encode a list of preprocessor definitions for the compiler
+   * command line.
+   */
+  void AppendDefines(std::string& defines, const char* defines_list,
+                     const char* lang);
+
   /** Translate a dependency as given in CMake code to the name to
       appear in a generated build file.  If the given name is that of
       a CMake target it will be transformed to the real output
@@ -166,13 +173,6 @@ public:
                                   bool /*verbose*/,
                                   bool /*color*/)
     { return true; }
-
-  /** Compute the list of link libraries and directories for the given
-      target and configuration.  */
-  void ComputeLinkInformation(cmTarget& target, const char* config,
-                              std::vector<cmStdString>& outLibs,
-                              std::vector<cmStdString>& outDirs,
-                              std::vector<cmStdString>* fullPathLibs=0);
 
   /** Get the include flags for the current makefile and language.  */
   void GetIncludeDirectories(std::vector<std::string>& dirs,
@@ -207,7 +207,11 @@ public:
     const char* TargetInstallNameDir;
     const char* LinkFlags;
     const char* LanguageCompileFlags;
+    const char* Defines;
   };
+
+  /** Set whether to treat conversions to SHELL as a link script shell.  */
+  void SetLinkScriptShell(bool b) { this->LinkScriptShell = b; }
 
   /** Escape the given string to be used as a command line argument in
       the native build system shell.  Optionally allow the build
@@ -219,7 +223,10 @@ public:
 
   /** Backwards-compatibility version of EscapeForShell.  */
   std::string EscapeForShellOldStyle(const char* str);
-  
+
+  /** Escape the given string as an argument in a CMake script.  */
+  std::string EscapeForCMake(const char* str);
+
   /** Return the directories into which object files will be put.
    *  There maybe more than one for fat binary systems like OSX.
    */
@@ -244,13 +251,6 @@ public:
    */
   virtual std::string GetTargetDirectory(cmTarget const& target) const;
 
-  ///! Determine the arguments for the linker call, used also by 
-  /// cmInstallTargetGenerator
-  bool GetLinkerArgs(std::string& rpath, std::string& linkLibs,
-                     cmTarget& tgt, bool relink, unsigned int minRpathSize);
-  
-  bool IsChrpathAvailable(const cmTarget& target);
-
   /**
    * Get the level of backwards compatibility requested by the project
    * in this directory.  This is the value of the CMake variable
@@ -270,7 +270,6 @@ public:
                                   unsigned int minor,
                                   unsigned int patch = 0xFFu);
 protected:
-
   /** Construct a comment for a custom command.  */
   std::string ConstructComment(const cmCustomCommand& cc,
                                const char* default_comment = "");
@@ -314,7 +313,8 @@ protected:
 
   // Compute object file names.
   std::string GetObjectFileNameWithoutTarget(const cmSourceFile& source,
-                                             std::string::size_type dir_len);
+                                             std::string::size_type dir_len,
+                                             bool* hasSourceExtension = 0);
   std::string& CreateSafeUniqueObjectFileName(const char* sin,
                                               std::string::size_type dir_len);
 
@@ -322,6 +322,12 @@ protected:
   std::string FindRelativePathTopSource();
   std::string FindRelativePathTopBinary();
   void SetupPathConversions();
+
+  std::string ConvertToLinkReference(std::string const& lib);
+
+  /** Check whether the native build system supports the given
+      definition.  Issues a warning.  */
+  virtual bool CheckDefinition(std::string const& define) const;
 
   cmMakefile *Makefile;
   cmGlobalGenerator *GlobalGenerator;
@@ -340,8 +346,10 @@ protected:
   bool WindowsVSIDE;
   bool WatcomWMake;
   bool MinGWMake;
+  bool NMake;
   bool ForceUnixPath;
   bool MSYSShell;
+  bool LinkScriptShell;
   bool UseRelativePaths;
   bool IgnoreLibPrefix;
   bool Configured;

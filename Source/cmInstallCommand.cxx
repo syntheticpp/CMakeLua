@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmInstallCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/17 20:20:06 $
-  Version:   $Revision: 1.37 $
+  Date:      $Date: 2008/01/28 19:46:16 $
+  Version:   $Revision: 1.42 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -46,7 +46,8 @@ static cmInstallFilesGenerator* CreateInstallFilesGenerator(
 
 
 // cmInstallCommand
-bool cmInstallCommand::InitialPass(std::vector<std::string> const& args)
+bool cmInstallCommand::InitialPass(std::vector<std::string> const& args, 
+                                   cmExecutionStatus &)
 {
   // Allow calling with no arguments so that arguments may be built up
   // using a variable that may be left empty.
@@ -299,7 +300,7 @@ bool cmInstallCommand::HandleTargetsMode(std::vector<std::string> const& args)
       ++targetIt)
     {
       // Lookup this target in the current directory.
-      if(cmTarget* target=this->Makefile->FindTarget(targetIt->c_str(), false))
+      if(cmTarget* target=this->Makefile->FindTarget(targetIt->c_str()))
         {
         // Found the target.  Check its type.
         if(target->GetType() != cmTarget::EXECUTABLE &&
@@ -375,7 +376,7 @@ bool cmInstallCommand::HandleTargetsMode(std::vector<std::string> const& args)
           // This is a non-DLL platform.
           // If it is marked with FRAMEWORK property use the FRAMEWORK set of
           // INSTALL properties. Otherwise, use the LIBRARY properties.
-          if(target.GetPropertyAsBool("FRAMEWORK"))
+          if(target.IsFrameworkOnApple())
             {
             // Use the FRAMEWORK properties.
             if (!frameworkArgs.GetDestination().empty())
@@ -450,9 +451,9 @@ bool cmInstallCommand::HandleTargetsMode(std::vector<std::string> const& args)
         break;
       case cmTarget::EXECUTABLE:
         {
-        // Executables use the RUNTIME properties.
-        if(target.GetPropertyAsBool("MACOSX_BUNDLE"))
+        if(target.IsAppBundleOnApple())
           {
+          // Application bundles use the BUNDLE properties.
           if (!bundleArgs.GetDestination().empty())
             {
             bundleGenerator = CreateInstallTargetGenerator(target, bundleArgs, 
@@ -469,6 +470,7 @@ bool cmInstallCommand::HandleTargetsMode(std::vector<std::string> const& args)
           }
         else
           {
+          // Executables use the RUNTIME properties.
           if (!runtimeArgs.GetDestination().empty())
             {
             runtimeGenerator = CreateInstallTargetGenerator(target, 
@@ -488,7 +490,7 @@ bool cmInstallCommand::HandleTargetsMode(std::vector<std::string> const& args)
         // library.  Install it to the archive destination if it
         // exists.
         if(dll_platform && !archiveArgs.GetDestination().empty() &&
-           target.GetPropertyAsBool("ENABLE_EXPORTS"))
+           target.IsExecutableWithExports())
           {
           // The import library uses the ARCHIVE properties.
           archiveGenerator = CreateInstallTargetGenerator(target, 
@@ -511,9 +513,7 @@ bool cmInstallCommand::HandleTargetsMode(std::vector<std::string> const& args)
   //
   bool createInstallGeneratorsForTargetFileSets = true;
 
-  if(cmTarget::SHARED_LIBRARY == target.GetType() &&
-    target.GetPropertyAsBool("FRAMEWORK") &&
-    this->Makefile->IsOn("APPLE"))
+  if(target.IsFrameworkOnApple())
     {
     createInstallGeneratorsForTargetFileSets = false;
     }
@@ -871,6 +871,29 @@ cmInstallCommand::HandleDirectoryMode(std::vector<std::string> const& args)
       doing_component = false;
       literal_args += " USE_SOURCE_PERMISSIONS";
       }
+    else if(args[i] == "FILES_MATCHING")
+      {
+      if(in_match_mode)
+        {
+        cmOStringStream e;
+        e << args[0] << " does not allow \""
+          << args[i] << "\" after PATTERN or REGEX.";
+        this->SetError(e.str().c_str());
+        return false;
+        }
+
+      // Add this option literally.
+      doing_dirs = false;
+      doing_destination = false;
+      doing_pattern = false;
+      doing_regex = false;
+      doing_permissions_file = false;
+      doing_permissions_dir = false;
+      doing_permissions_match = false;
+      doing_configurations = false;
+      doing_component = false;
+      literal_args += " FILES_MATCHING";
+      }
     else if(args[i] == "CONFIGURATIONS")
       {
       if(in_match_mode)
@@ -1045,13 +1068,9 @@ cmInstallCommand::HandleDirectoryMode(std::vector<std::string> const& args)
     return false;
     }
 
-  // Compute destination path.
-  std::string dest;
-  cmInstallCommandArguments::ComputeDestination(destination, dest);
-
   // Create the directory install generator.
   this->Makefile->AddInstallGenerator(
-    new cmInstallDirectoryGenerator(dirs, dest.c_str(),
+    new cmInstallDirectoryGenerator(dirs, destination,
                                     permissions_file.c_str(),
                                     permissions_dir.c_str(),
                                     configurations,
@@ -1071,12 +1090,12 @@ bool cmInstallCommand::HandleExportMode(std::vector<std::string> const& args)
 {
   // This is the EXPORT mode.
   cmInstallCommandArguments ica;
-  cmCAStringVector exports(&ica.Parser, "EXPORT");
-  cmCAString prefix(&ica.Parser, "PREFIX", &ica.ArgumentGroup);
+  cmCAString exp(&ica.Parser, "EXPORT");
+  cmCAString name_space(&ica.Parser, "NAMESPACE", &ica.ArgumentGroup);
   cmCAString filename(&ica.Parser, "FILE", &ica.ArgumentGroup);
-  exports.Follows(0);
+  exp.Follows(0);
 
-  ica.ArgumentGroup.Follows(&exports);
+  ica.ArgumentGroup.Follows(&exp);
   std::vector<std::string> unknownArgs;
   ica.Parse(&args, &unknownArgs);
 
@@ -1094,43 +1113,65 @@ bool cmInstallCommand::HandleExportMode(std::vector<std::string> const& args)
     return false;
     }
 
-  std::string cmakeDir = this->Makefile->GetHomeOutputDirectory();
-  cmakeDir += cmake::GetCMakeFilesDirectory();
-  for(std::vector<std::string>::const_iterator 
-      exportIt = exports.GetVector().begin();
-      exportIt != exports.GetVector().end();
-      ++exportIt)
+  // Make sure there is a destination.
+  if(ica.GetDestination().empty())
     {
-    const std::vector<cmTargetExport*>* exportSet = this->
-                          Makefile->GetLocalGenerator()->GetGlobalGenerator()->
-                          GetExportSet(exportIt->c_str());
-    if (exportSet == 0)
+    // A destination is required.
+    cmOStringStream e;
+    e << args[0] << " given no DESTINATION!";
+    this->SetError(e.str().c_str());
+    return false;
+    }
+
+  // Check the file name.
+  std::string fname = filename.GetString();
+  if(fname.find_first_of(":/\\") != fname.npos)
+    {
+    cmOStringStream e;
+    e << args[0] << " given invalid export file name \"" << fname << "\".  "
+      << "The FILE argument may not contain a path.  "
+      << "Specify the path in the DESTINATION argument.";
+    this->SetError(e.str().c_str());
+    return false;
+    }
+
+  // Check the file extension.
+  if(!fname.empty() &&
+     cmSystemTools::GetFilenameLastExtension(fname) != ".cmake")
+    {
+    cmOStringStream e;
+    e << args[0] << " given invalid export file name \"" << fname << "\".  "
+      << "The FILE argument must specify a name ending in \".cmake\".";
+    this->SetError(e.str().c_str());
+    return false;
+    }
+
+  // Construct the file name.
+  if(fname.empty())
+    {
+    fname = exp.GetString();
+    fname += ".cmake";
+
+    if(fname.find_first_of(":/\\") != fname.npos)
       {
       cmOStringStream e;
-      e << "EXPORT given unknown export name \"" << exportIt->c_str() << "\".";
+      e << args[0] << " given export name \"" << exp.GetString() << "\".  "
+        << "This name cannot be safely converted to a file name.  "
+        << "Specify a different export name or use the FILE option to set "
+        << "a file name explicitly.";
       this->SetError(e.str().c_str());
-      return false;
-      }
-
-    // Create the export install generator.
-    cmInstallExportGenerator* exportGenerator = new cmInstallExportGenerator(
-                    ica.GetDestination().c_str(), ica.GetPermissions().c_str(),
-                    ica.GetConfigurations(),0 , filename.GetCString(), 
-                    prefix.GetCString(), cmakeDir.c_str());
-
-    if (exportGenerator->SetExportSet(exportIt->c_str(),exportSet))
-      {
-      this->Makefile->AddInstallGenerator(exportGenerator);
-      }
-    else
-      {
-      cmOStringStream e;
-      e << "EXPORT failed, maybe a target is exported more than once.";
-      this->SetError(e.str().c_str());
-      delete exportGenerator;
       return false;
       }
     }
+
+  // Create the export install generator.
+  cmInstallExportGenerator* exportGenerator =
+    new cmInstallExportGenerator(
+      exp.GetCString(), ica.GetDestination().c_str(),
+      ica.GetPermissions().c_str(), ica.GetConfigurations(),
+      ica.GetComponent().c_str(), fname.c_str(),
+      name_space.GetCString(), this->Makefile);
+  this->Makefile->AddInstallGenerator(exportGenerator);
 
   return true;
 }

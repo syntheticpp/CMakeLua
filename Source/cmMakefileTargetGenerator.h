@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefileTargetGenerator.h,v $
   Language:  C++
-  Date:      $Date: 2007/12/30 21:11:38 $
-  Version:   $Revision: 1.19 $
+  Date:      $Date: 2008/01/30 01:46:25 $
+  Version:   $Revision: 1.20 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -107,6 +107,8 @@ protected:
   void WriteObjectsVariable(std::string& variableName,
                             std::string& variableNameExternal);
   void WriteObjectsString(std::string& buildObjs);
+  void WriteObjectsStrings(std::vector<std::string>& objStrings,
+                           std::string::size_type limit = std::string::npos);
 
   // write the driver rule to build target outputs
   void WriteTargetDriverRule(const char* main_output, bool relink);

@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmUseMangledMesaCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/05/12 18:12:13 $
-  Version:   $Revision: 1.17 $
+  Date:      $Date: 2008/01/23 15:27:59 $
+  Version:   $Revision: 1.18 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -21,7 +21,7 @@
 
 // cmUseMangledMesaCommand
 bool cmUseMangledMesaCommand
-::InitialPass(std::vector<std::string> const& args)
+::InitialPass(std::vector<std::string> const& args, cmExecutionStatus &)
 { 
   // expected two arguments:
   // arguement one: the full path to gl_mangle.h

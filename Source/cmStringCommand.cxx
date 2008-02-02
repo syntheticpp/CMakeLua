@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmStringCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/16 12:56:43 $
-  Version:   $Revision: 1.26 $
+  Date:      $Date: 2008/01/23 15:27:59 $
+  Version:   $Revision: 1.27 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -23,7 +23,8 @@
 #include <time.h>
 
 //----------------------------------------------------------------------------
-bool cmStringCommand::InitialPass(std::vector<std::string> const& args)
+bool cmStringCommand
+::InitialPass(std::vector<std::string> const& args, cmExecutionStatus &)
 {
   if(args.size() < 1)
     {

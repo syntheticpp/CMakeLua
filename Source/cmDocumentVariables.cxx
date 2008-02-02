@@ -778,6 +778,30 @@ void cmDocumentVariables::DefineVariables(cmake* cm)
      "On most compilers this is \"-l\".",false,
      "Variables that Control the Build");
   cm->DefineProperty
+    ("CMAKE_LINK_LIBRARY_FILE_FLAG", cmProperty::VARIABLE,
+     "Flag used to link a library specified by a path to its file.",
+     "The flag used before a library file path is given to the linker.  "
+     "This is needed only on very few platforms.", false,
+     "Variables that Control the Build");
+  cm->DefineProperty
+    ("CMAKE_LINK_OLD_PATHS", cmProperty::VARIABLE,
+     "Enable linker search path compatibility mode.",
+     "This option enables linking compatibility mode for broken projects.  "
+     "There exists code that effectively does\n"
+     "  target_link_libraries(myexe /path/to/libA.so -lB)\n"
+     "where -lB is meant to link to /path/to/libB.so.  This is broken "
+     "because it specifies -lB without adding \"/path/to\" to the linker "
+     "search path with the link_directories command.  With CMake 2.4 and "
+     "below the code worked accidentally because \"/path/to\" would be "
+     "added to the linker search path by its implementation of linking to "
+     "/path/to/libA.so (which passed -L/path/to -lA to the linker).  "
+     "This option tells CMake to add the directories containing libraries "
+     "specified with a full path to the linker search path if the link "
+     "line contains any items like -lB.  "
+     "The behavior is also enabled if CMAKE_BACKWARDS_COMPATIBILITY is "
+     "set to 2.4 or lower.", false,
+     "Variables that Control the Build");
+  cm->DefineProperty
     ("CMAKE_USE_RELATIVE_PATHS", cmProperty::VARIABLE,
      "Use relative paths (May not work!).",
      "If this is set to TRUE, then the CMake will use "
@@ -836,6 +860,27 @@ void cmDocumentVariables::DefineVariables(cmake* cm)
     ("CMAKE_<LANG>_PLATFORM_ID", cmProperty::VARIABLE,
      "An internal variable subject to change.",
      "This is used in determining the platform and is subject to change.",
+     false,
+     "Variables for Languages");
+
+  cm->DefineProperty
+    ("CMAKE_<LANG>_COMPILER_ABI", cmProperty::VARIABLE,
+     "An internal variable subject to change.",
+     "This is used in determining the compiler ABI and is subject to change.",
+     false,
+     "Variables for Languages");
+
+  cm->DefineProperty
+    ("CMAKE_INTERNAL_PLATFORM_ABI", cmProperty::VARIABLE,
+     "An internal variable subject to change.",
+     "This is used in determining the compiler ABI and is subject to change.",
+     false,
+     "Variables for Languages");
+
+  cm->DefineProperty
+    ("CMAKE_<LANG>_SIZEOF_DATA_PTR", cmProperty::VARIABLE,
+     "An internal variable subject to change.",
+     "This is used in determining the architecture and is subject to change.",
      false,
      "Variables for Languages");
 
@@ -899,7 +944,34 @@ void cmDocumentVariables::DefineVariables(cmake* cm)
      "This is a rule variable that tells CMake how "
      "to create a static library for the language <LANG>.",false,
      "Variables for Languages");
-  
+
+  cm->DefineProperty
+    ("CMAKE_<LANG>_ARCHIVE_CREATE", cmProperty::VARIABLE,
+     "Rule variable to create a new static archive.",
+     "This is a rule variable that tells CMake how to create a static "
+     "archive.  It is used in place of CMAKE_<LANG>_CREATE_STATIC_LIBRARY "
+     "on some platforms in order to support large object counts.  "
+     "See also CMAKE_<LANG>_ARCHIVE_APPEND and CMAKE_<LANG>_ARCHIVE_FINISH.",
+     false, "Variables for Languages");
+
+  cm->DefineProperty
+    ("CMAKE_<LANG>_ARCHIVE_APPEND", cmProperty::VARIABLE,
+     "Rule variable to append to a static archive.",
+     "This is a rule variable that tells CMake how to append to a static "
+     "archive.  It is used in place of CMAKE_<LANG>_CREATE_STATIC_LIBRARY "
+     "on some platforms in order to support large object counts.  "
+     "See also CMAKE_<LANG>_ARCHIVE_CREATE and CMAKE_<LANG>_ARCHIVE_FINISH.",
+     false, "Variables for Languages");
+
+  cm->DefineProperty
+    ("CMAKE_<LANG>_ARCHIVE_FINISH", cmProperty::VARIABLE,
+     "Rule variable to finish an existing static archive.",
+     "This is a rule variable that tells CMake how to finish a static "
+     "archive.  It is used in place of CMAKE_<LANG>_CREATE_STATIC_LIBRARY "
+     "on some platforms in order to support large object counts.  "
+     "See also CMAKE_<LANG>_ARCHIVE_CREATE and CMAKE_<LANG>_ARCHIVE_APPEND.",
+     false, "Variables for Languages");
+
   cm->DefineProperty
     ("CMAKE_<LANG>_IGNORE_EXTENSIONS", cmProperty::VARIABLE,
      "File extensions that should be ignored by the build.",
@@ -1014,6 +1086,16 @@ void cmDocumentVariables::DefineVariables(cmake* cm)
                      cmProperty::VARIABLE,0,0);
   cm->DefineProperty("CMAKE_SHARED_LIBRARY_RUNTIME_<LANG>_FLAG_SEP",
                      cmProperty::VARIABLE,0,0);
+  cm->DefineProperty("CMAKE_SHARED_LIBRARY_RPATH_LINK_<LANG>_FLAG",
+                     cmProperty::VARIABLE,0,0);
+  cm->DefineProperty("CMAKE_EXECUTABLE_RUNTIME_<LANG>_FLAG",
+                     cmProperty::VARIABLE,0,0);
+  cm->DefineProperty("CMAKE_EXECUTABLE_RUNTIME_<LANG>_FLAG_SEP",
+                     cmProperty::VARIABLE,0,0);
+  cm->DefineProperty("CMAKE_EXECUTABLE_RPATH_LINK_<LANG>_FLAG",
+                     cmProperty::VARIABLE,0,0);
+  cm->DefineProperty("CMAKE_PLATFORM_REQUIRED_RUNTIME_PATH",
+                     cmProperty::VARIABLE,0,0);
   cm->DefineProperty("CMAKE_SHARED_MODULE_CREATE_<LANG>_FLAGS",
                      cmProperty::VARIABLE,0,0);
   cm->DefineProperty("CMAKE_SHARED_MODULE_<LANG>_FLAGS",
@@ -1026,5 +1108,8 @@ void cmDocumentVariables::DefineVariables(cmake* cm)
                      cmProperty::VARIABLE,0,0);
   cm->DefineProperty("CMAKE_SHARED_MODULE_RUNTIME_<LANG>_FLAG_SEP",
                      cmProperty::VARIABLE,0,0);
-
+  cm->DefineProperty("CMAKE_LINK_DEPENDENT_LIBRARY_FILES",
+                     cmProperty::VARIABLE,0,0);
+  cm->DefineProperty("CMAKE_LINK_DEPENDENT_LIBRARY_DIRS",
+                     cmProperty::VARIABLE,0,0);
 }

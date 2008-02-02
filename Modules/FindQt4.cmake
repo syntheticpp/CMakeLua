@@ -69,6 +69,26 @@
 #        interface file is constructed from the basename of the header with
 #        the suffix .xml appended.
 #
+#  macro QT4_CREATE_TRANSLATION( qm_files sources ... ts_files ... )
+#        out: qm_files
+#        in:  sources ts_files
+#        generates commands to create .ts (vie lupdate) and .qm
+#        (via lrelease) - files from sources. The ts files are 
+#        created and/or updated in the source tree (unless given with full paths).
+#        The qm files are generated in the build tree.
+#        Updating the translations can be done by adding the qm_files
+#        to the source list of your library/executable, so they are
+#        always updated, or by adding a custom target to control when
+#        they get updated/generated.
+#
+#  macro QT4_ADD_TRANSLATION( qm_files ts_files ... )
+#        out: qm_files
+#        in:  ts_files
+#        generates commands to create .qm from .ts - files. The generated
+#        filenames can be found in qm_files. The ts_files
+#        must exists and are not updated in any way.
+#
+#
 #  QT_FOUND         If false, don't try to use Qt.
 #  QT4_FOUND        If false, don't try to use Qt 4.
 #
@@ -208,6 +228,8 @@
 #  QT_RCC_EXECUTABLE          Where to find the rcc tool
 #  QT_DBUSCPP2XML_EXECUTABLE  Where to find the qdbuscpp2xml tool.
 #  QT_DBUSXML2CPP_EXECUTABLE  Where to find the qdbusxml2cpp tool.
+#  QT_LUPDATE_EXECUTABLE      Where to find the lupdate tool.
+#  QT_LRELEASE_EXECUTABLE     Where to find the lrelease tool.
 #  
 #  QT_DOC_DIR                 Path to "doc" of Qt4
 #  QT_MKSPECS_DIR             Path to "mkspecs" of Qt4
@@ -830,6 +852,18 @@ IF (QT4_QMAKE_FOUND)
     NO_DEFAULT_PATH
     )
 
+  FIND_PROGRAM(QT_LUPDATE_EXECUTABLE
+    NAMES lupdate
+    PATHS ${QT_BINARY_DIR}
+    NO_DEFAULT_PATH
+    )
+
+  FIND_PROGRAM(QT_LRELEASE_EXECUTABLE
+    NAMES lrelease
+    PATHS ${QT_BINARY_DIR}
+    NO_DEFAULT_PATH
+    )
+
   IF (QT_MOC_EXECUTABLE)
      SET(QT_WRAP_CPP "YES")
   ENDIF (QT_MOC_EXECUTABLE)
@@ -840,7 +874,9 @@ IF (QT4_QMAKE_FOUND)
 
 
 
-  MARK_AS_ADVANCED( QT_UIC_EXECUTABLE QT_UIC3_EXECUTABLE QT_MOC_EXECUTABLE QT_RCC_EXECUTABLE QT_DBUSXML2CPP_EXECUTABLE QT_DBUSCPP2XML_EXECUTABLE)
+  MARK_AS_ADVANCED( QT_UIC_EXECUTABLE QT_UIC3_EXECUTABLE QT_MOC_EXECUTABLE
+    QT_RCC_EXECUTABLE QT_DBUSXML2CPP_EXECUTABLE QT_DBUSCPP2XML_EXECUTABLE
+    QT_LUPDATE_EXECUTABLE QT_LRELEASE_EXECUTABLE)
 
   ######################################
   #
@@ -864,6 +900,21 @@ IF (QT4_QMAKE_FOUND)
       ENDIF ("${_currentArg}" STREQUAL "OPTIONS")
     ENDFOREACH(_currentArg) 
   ENDMACRO (QT4_EXTRACT_OPTIONS)
+  
+  # macro used to create the names of output files preserving relative dirs
+  MACRO (QT4_MAKE_OUTPUT_FILE infile prefix ext outfile )
+    STRING(REGEX MATCH "${CMAKE_CURRENT_BINARY_DIR}" _match ${infile})
+    IF(_match)
+      FILE(RELATIVE_PATH rel ${CMAKE_CURRENT_BINARY_DIR} ${infile})
+    ELSE(_match)
+      FILE(RELATIVE_PATH rel ${CMAKE_CURRENT_SOURCE_DIR} ${infile})
+    ENDIF(_match)
+    SET(_outfile "${CMAKE_CURRENT_BINARY_DIR}/${rel}")
+    GET_FILENAME_COMPONENT(outpath ${_outfile} PATH)
+    GET_FILENAME_COMPONENT(_outfile ${_outfile} NAME_WE)
+    FILE(MAKE_DIRECTORY ${outpath})
+    SET(${outfile} ${outpath}/${prefix}${_outfile}.${ext})
+  ENDMACRO (QT4_MAKE_OUTPUT_FILE )
 
   MACRO (QT4_GET_MOC_INC_DIRS _moc_INC_DIRS)
      SET(${_moc_INC_DIRS})
@@ -875,21 +926,34 @@ IF (QT4_QMAKE_FOUND)
 
   ENDMACRO(QT4_GET_MOC_INC_DIRS)
 
+  # helper macro to set up a moc rule
+  MACRO (QT4_CREATE_MOC_COMMAND infile outfile moc_includes moc_options)
+    # For Windows, create a parameters file to work around command line length limit
+    IF (WIN32)
+      SET (_moc_parameters_file ${outfile}_parameters)
+      SET (_moc_parameters ${moc_includes} ${moc_options} -o "${outfile}" "${infile}")
+      FILE (REMOVE ${_moc_parameters_file})
+      FOREACH(arg ${_moc_parameters})
+        FILE (APPEND ${_moc_parameters_file} "${arg}\n")
+      ENDFOREACH(arg)
+      ADD_CUSTOM_COMMAND(OUTPUT ${outfile}
+                         COMMAND ${QT_MOC_EXECUTABLE}
+                         ARGS @"${_moc_parameters_file}"
+                         DEPENDS ${infile})
+    ELSE (WIN32)     
+      ADD_CUSTOM_COMMAND(OUTPUT ${outfile}
+                         COMMAND ${QT_MOC_EXECUTABLE}
+                         ARGS ${moc_includes} ${moc_options} -o ${outfile} ${infile}
+                         DEPENDS ${infile})     
+    ENDIF (WIN32)
+  ENDMACRO (QT4_CREATE_MOC_COMMAND)
 
+  
   MACRO (QT4_GENERATE_MOC infile outfile )
-  # get include dirs
      QT4_GET_MOC_INC_DIRS(moc_includes)
-
      GET_FILENAME_COMPONENT(abs_infile ${infile} ABSOLUTE)
-
-     ADD_CUSTOM_COMMAND(OUTPUT ${outfile}
-        COMMAND ${QT_MOC_EXECUTABLE}
-        ARGS ${moc_includes} -o ${outfile} ${abs_infile}
-        DEPENDS ${abs_infile})
-
+     QT4_CREATE_MOC_COMMAND(${abs_infile} ${outfile} "${moc_includes}" "")
      SET_SOURCE_FILES_PROPERTIES(${outfile} PROPERTIES SKIP_AUTOMOC TRUE)  # dont run automoc on this file
-
-     MACRO_ADD_FILE_DEPENDENCIES(${abs_infile} ${outfile})
   ENDMACRO (QT4_GENERATE_MOC)
 
 
@@ -902,13 +966,8 @@ IF (QT4_QMAKE_FOUND)
 
     FOREACH (it ${moc_files})
       GET_FILENAME_COMPONENT(it ${it} ABSOLUTE)
-      GET_FILENAME_COMPONENT(outfile ${it} NAME_WE)
-
-      SET(outfile ${CMAKE_CURRENT_BINARY_DIR}/moc_${outfile}.cxx)
-      ADD_CUSTOM_COMMAND(OUTPUT ${outfile}
-        COMMAND ${QT_MOC_EXECUTABLE}
-        ARGS ${moc_includes} ${moc_options} -o ${outfile} ${it}
-        DEPENDS ${it})
+      QT4_MAKE_OUTPUT_FILE(${it} moc_ cxx outfile)
+      QT4_CREATE_MOC_COMMAND(${it} ${outfile} "${moc_includes}" "${moc_options}")
       SET(${outfiles} ${${outfiles}} ${outfile})
     ENDFOREACH(it)
 
@@ -1077,23 +1136,54 @@ IF (QT4_QMAKE_FOUND)
             IF(_match)
                FOREACH (_current_MOC_INC ${_match})
                   STRING(REGEX MATCH "[^ <\"]+\\.moc" _current_MOC "${_current_MOC_INC}")
-
-                  GET_filename_component(_basename ${_current_MOC} NAME_WE)
-   #               SET(_header ${CMAKE_CURRENT_SOURCE_DIR}/${_basename}.h)
+                  GET_FILENAME_COMPONENT(_basename ${_current_MOC} NAME_WE)
                   SET(_header ${_abs_PATH}/${_basename}.h)
                   SET(_moc    ${CMAKE_CURRENT_BINARY_DIR}/${_current_MOC})
-                  ADD_CUSTOM_COMMAND(OUTPUT ${_moc}
-                     COMMAND ${QT_MOC_EXECUTABLE}
-                     ARGS ${_moc_INCS} ${_header} -o ${_moc}
-                     DEPENDS ${_header}
-                  )
-
+                  QT4_CREATE_MOC_COMMAND(${_header} ${_moc} "${moc_INCS}" "")
                   MACRO_ADD_FILE_DEPENDENCIES(${_abs_FILE} ${_moc})
                ENDFOREACH (_current_MOC_INC)
             ENDIF(_match)
          ENDIF ( NOT _skip AND EXISTS ${_abs_FILE} )
       ENDFOREACH (_current_FILE)
    ENDMACRO(QT4_AUTOMOC)
+
+   MACRO(QT4_CREATE_TRANSLATION _qm_files)
+      SET(_my_sources)
+      SET(_my_tsfiles)
+      FOREACH (_file ${ARGN})
+         GET_FILENAME_COMPONENT(_ext ${_file} EXT)
+         GET_FILENAME_COMPONENT(_abs_FILE ${_file} ABSOLUTE)
+         IF(_ext MATCHES "ts")
+           LIST(APPEND _my_tsfiles ${_abs_FILE})
+         ELSE(_ext MATCHES "ts")
+           LIST(APPEND _my_sources ${_abs_FILE})
+         ENDIF(_ext MATCHES "ts")
+      ENDFOREACH(_file)
+      FOREACH(_ts_file ${_my_tsfiles})
+        ADD_CUSTOM_COMMAND(OUTPUT ${_ts_file}
+           COMMAND ${QT_LUPDATE_EXECUTABLE}
+           ARGS ${_my_sources} -ts ${_ts_file}
+           DEPENDS ${_my_sources})
+      ENDFOREACH(_ts_file)
+      QT4_ADD_TRANSLATION(${_qm_files} ${_my_tsfiles})
+   ENDMACRO(QT4_CREATE_TRANSLATION)
+
+   MACRO(QT4_ADD_TRANSLATION _qm_files)
+      FOREACH (_current_FILE ${ARGN})
+         GET_FILENAME_COMPONENT(_abs_FILE ${_current_FILE} ABSOLUTE)
+         GET_FILENAME_COMPONENT(qm ${_abs_FILE} NAME_WE)
+         SET(qm "${CMAKE_CURRENT_BINARY_DIR}/${qm}.qm")
+
+         ADD_CUSTOM_COMMAND(OUTPUT ${qm}
+            COMMAND ${QT_LRELEASE_EXECUTABLE}
+            ARGS ${_abs_FILE} -qm ${qm}
+            DEPENDS ${_abs_FILE}
+         )
+         SET(${_qm_files} ${${_qm_files}} ${qm})
+      ENDFOREACH (_current_FILE)
+   ENDMACRO(QT4_ADD_TRANSLATION)
+
+
 
 
 
@@ -1238,12 +1328,30 @@ IF (QT4_QMAKE_FOUND)
   
   ## glib
   IF(QT_QCONFIG MATCHES "glib")
-    # Qt less than Qt 4.2.0 doesn't use glib
-    # Qt 4.2.0 uses glib-2.0 (wish we could ask Qt that it uses 2.0)
-    FIND_LIBRARY(QT_GLIB_LIBRARY NAMES glib-2.0)
-    FIND_LIBRARY(QT_GTHREAD_LIBRARY NAMES gthread-2.0)
-    SET(QT_CORE_LIB_DEPENDENCIES ${QT_CORE_LIB_DEPENDENCIES}
-        ${QT_GTHREAD_LIBRARY} ${QT_GLIB_LIBRARY})
+    # Qt 4.2.0+ uses glib-2.0
+    EXECUTE_PROCESS(COMMAND pkg-config --libs-only-L glib-2.0 gthread-2.0
+      OUTPUT_VARIABLE _glib_query_output
+      RESULT_VARIABLE _glib_result
+      ERROR_VARIABLE _glib_query_output )
+
+    IF(_glib_result MATCHES 0)
+      STRING(REPLACE "-L" "" _glib_query_output "${_glib_query_output}")
+      SEPARATE_ARGUMENTS(_glib_query_output)
+    ELSE(_glib_result MATCHES 0)
+      SET(_glib_query_output)
+      MESSAGE(WARNING "When querying pkg-config for glib-2.0.  An error was reported:\n${_glib_query_output}")
+    ENDIF(_glib_result MATCHES 0)
+
+    FIND_LIBRARY(QT_GLIB_LIBRARY NAMES glib-2.0 PATHS ${_glib_query_output} )
+    FIND_LIBRARY(QT_GTHREAD_LIBRARY NAMES gthread-2.0 PATHS ${_glib_query_output} )
+
+    IF(NOT QT_GLIB_LIBRARY OR NOT QT_GTHREAD_LIBRARY)
+      MESSAGE(WARNING "Unable to find glib 2.0 to satisfy Qt dependency.")
+    ELSE(NOT QT_GLIB_LIBRARY OR NOT QT_GTHREAD_LIBRARY)
+      SET(QT_CORE_LIB_DEPENDENCIES ${QT_CORE_LIB_DEPENDENCIES}
+          ${QT_GTHREAD_LIBRARY} ${QT_GLIB_LIBRARY})
+    ENDIF(NOT QT_GLIB_LIBRARY OR NOT QT_GTHREAD_LIBRARY)
+
     MARK_AS_ADVANCED(QT_GLIB_LIBRARY)
     MARK_AS_ADVANCED(QT_GTHREAD_LIBRARY)
   ENDIF(QT_QCONFIG MATCHES "glib")

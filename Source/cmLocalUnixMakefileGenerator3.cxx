@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalUnixMakefileGenerator3.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/28 16:50:14 $
-  Version:   $Revision: 1.228 $
+  Date:      $Date: 2008/01/18 15:25:25 $
+  Version:   $Revision: 1.235 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -36,6 +36,25 @@
 
 #include <memory> // auto_ptr
 #include <queue>
+
+//----------------------------------------------------------------------------
+// Helper function used below.
+static std::string cmSplitExtension(std::string const& in, std::string& base)
+{
+  std::string ext;
+  std::string::size_type dot_pos = in.rfind(".");
+  if(dot_pos != std::string::npos)
+    {
+    // Remove the extension first in case &base == &in.
+    ext = in.substr(dot_pos, std::string::npos);
+    base = in.substr(0, dot_pos);
+    }
+  else
+    {
+    base = in;
+    }
+  return ext;
+}
 
 //----------------------------------------------------------------------------
 cmLocalUnixMakefileGenerator3::cmLocalUnixMakefileGenerator3()
@@ -191,8 +210,7 @@ void cmLocalUnixMakefileGenerator3::WriteAllProgressVariable()
   cmGlobalUnixMakefileGenerator3 *gg = 
     static_cast<cmGlobalUnixMakefileGenerator3*>(this->GlobalGenerator);
 
-  ruleFileStream << "CMAKE_ALL_PROGRESS = " 
-                 << gg->GetNumberOfProgressActionsInAll(this) << "\n";
+  ruleFileStream << gg->GetNumberOfProgressActionsInAll(this) << "\n";
 }
 
 //----------------------------------------------------------------------------
@@ -298,12 +316,37 @@ void
 cmLocalUnixMakefileGenerator3
 ::WriteObjectConvenienceRule(std::ostream& ruleFileStream,
                              const char* comment, const char* output,
-                             LocalObjectInfo const& targets)
+                             LocalObjectInfo const& info)
 {
+  // If the rule includes the source file extension then create a
+  // version that has the extension removed.  The help should include
+  // only the version without source extension.
+  bool inHelp = true;
+  if(info.HasSourceExtension)
+    {
+    // Remove the last extension.  This should be kept.
+    std::string outBase1 = output;
+    std::string outExt1 = cmSplitExtension(outBase1, outBase1);
+
+    // Now remove the source extension and put back the last
+    // extension.
+    std::string outNoExt;
+    cmSplitExtension(outBase1, outNoExt);
+    outNoExt += outExt1;
+
+    // Add a rule to drive the rule below.
+    std::vector<std::string> depends;
+    depends.push_back(output);
+    std::vector<std::string> no_commands;
+    this->WriteMakeRule(ruleFileStream, 0,
+                        outNoExt.c_str(), depends, no_commands, true, true);
+    inHelp = false;
+    }
+
   // Recursively make the rule for each target using the object file.
   std::vector<std::string> commands;
-  for(std::vector<LocalObjectEntry>::const_iterator t = targets.begin();
-      t != targets.end(); ++t)
+  for(std::vector<LocalObjectEntry>::const_iterator t = info.begin();
+      t != info.end(); ++t)
     {
     std::string tgtMakefileName =
       this->GetRelativeTargetDirectory(*(t->Target));
@@ -322,7 +365,7 @@ cmLocalUnixMakefileGenerator3
   // Write the rule to the makefile.
   std::vector<std::string> no_depends;
   this->WriteMakeRule(ruleFileStream, comment,
-                      output, no_depends, commands, true, true);
+                      output, no_depends, commands, true, inHelp);
 }
 
 //----------------------------------------------------------------------------
@@ -1433,7 +1476,14 @@ cmLocalUnixMakefileGenerator3
 #ifdef CMAKE_BUILD_WITH_CMAKE
     else if(lang == "Fortran")
       {
-      scanner = new cmDependsFortran(includes);
+      std::vector<std::string> defines;
+      if(const char* c_defines =
+         mf->GetDefinition("CMAKE_TARGET_DEFINITIONS"))
+        {
+        cmSystemTools::ExpandListArgument(c_defines, defines);
+        }
+
+      scanner = new cmDependsFortran(includes, defines);
       }
     else if(lang == "Java")
       {
@@ -1526,17 +1576,6 @@ void cmLocalUnixMakefileGenerator3
   this->WriteSpecialTargetsTop(ruleFileStream);
 
   // Include the progress variables for the target.
-  std::string progressFile = cmake::GetCMakeFilesDirectory();
-  progressFile += "/progress.make";
-  std::string progressFileNameFull =
-    this->ConvertToFullPath(progressFile.c_str());
-  ruleFileStream
-    << "# Include the progress variables for this target.\n"
-    << this->IncludeDirective << " "
-    << this->Convert(progressFileNameFull.c_str(),
-                     cmLocalGenerator::START_OUTPUT,
-                     cmLocalGenerator::MAKEFILE) << "\n\n";
-  
   // Write all global targets
   this->WriteDivider(ruleFileStream);
   ruleFileStream
@@ -1621,7 +1660,14 @@ void cmLocalUnixMakefileGenerator3
     progCmd << this->Convert(progressDir.c_str(),
                              cmLocalGenerator::FULL,
                              cmLocalGenerator::SHELL);
-    progCmd << " $(CMAKE_ALL_PROGRESS)";
+
+    std::string progressFile = cmake::GetCMakeFilesDirectory();
+    progressFile += "/progress.make";
+    std::string progressFileNameFull =
+      this->ConvertToFullPath(progressFile.c_str());
+    progCmd << " " << this->Convert(progressFileNameFull.c_str(),
+                                    cmLocalGenerator::FULL,
+                                    cmLocalGenerator::SHELL);
     commands.push_back(progCmd.str());
     }
   std::string mf2Dir = cmake::GetCMakeFilesDirectoryPostSlash();
@@ -1780,6 +1826,56 @@ void cmLocalUnixMakefileGenerator3
       cmakefileStream << "\"" << pi->first << "\"\n";
       }
     cmakefileStream << "  )\n";
+
+    // Tell the dependency scanner what compiler is used.
+    std::string cidVar = "CMAKE_";
+    cidVar += l->first;
+    cidVar += "_COMPILER_ID";
+    const char* cid = this->Makefile->GetDefinition(cidVar.c_str());
+    if(cid && *cid)
+      {
+      cmakefileStream
+        << "SET(CMAKE_" << l->first.c_str() << "_COMPILER_ID \""
+        << cid << "\")\n";
+      }
+    }
+
+  // Build a list of preprocessor definitions for the target.
+  std::vector<std::string> defines;
+  {
+  std::string defPropName = "COMPILE_DEFINITIONS_";
+  defPropName += cmSystemTools::UpperCase(this->ConfigurationName);
+  if(const char* ddefs = this->Makefile->GetProperty("COMPILE_DEFINITIONS"))
+    {
+    cmSystemTools::ExpandListArgument(ddefs, defines);
+    }
+  if(const char* cdefs = target.GetProperty("COMPILE_DEFINITIONS"))
+    {
+    cmSystemTools::ExpandListArgument(cdefs, defines);
+    }
+  if(const char* dcdefs = this->Makefile->GetProperty(defPropName.c_str()))
+    {
+    cmSystemTools::ExpandListArgument(dcdefs, defines);
+    }
+  if(const char* ccdefs = target.GetProperty(defPropName.c_str()))
+    {
+    cmSystemTools::ExpandListArgument(ccdefs, defines);
+    }
+  }
+  if(!defines.empty())
+    {
+    cmakefileStream
+      << "\n"
+      << "# Preprocessor definitions for this target.\n"
+      << "SET(CMAKE_TARGET_DEFINITIONS\n";
+    for(std::vector<std::string>::const_iterator di = defines.begin();
+        di != defines.end(); ++di)
+      {
+      cmakefileStream
+        << "  " << this->EscapeForCMake(di->c_str()) << "\n";
+      }
+    cmakefileStream
+      << "  )\n";
     }
 }
 
@@ -1788,13 +1884,16 @@ std::string
 cmLocalUnixMakefileGenerator3
 ::GetObjectFileName(cmTarget& target,
                     const cmSourceFile& source,
-                    std::string* nameWithoutTargetDir)
+                    std::string* nameWithoutTargetDir,
+                    bool* hasSourceExtension)
 {
   if(const char* fileTargetDirectory =
      source.GetProperty("MACOSX_PACKAGE_LOCATION"))
     {
     // Special handling for OSX package files.
-    std::string objectName = this->GetObjectFileNameWithoutTarget(source, 0);
+    std::string objectName =
+      this->GetObjectFileNameWithoutTarget(source, 0,
+                                           hasSourceExtension);
     if(nameWithoutTargetDir)
       {
       *nameWithoutTargetDir = objectName;
@@ -1845,7 +1944,8 @@ cmLocalUnixMakefileGenerator3
     dir_len += 1;
     dir_len += obj.size();
     std::string objectName =
-      this->GetObjectFileNameWithoutTarget(source, dir_len);
+      this->GetObjectFileNameWithoutTarget(source, dir_len,
+                                           hasSourceExtension);
     if(nameWithoutTargetDir)
       {
       *nameWithoutTargetDir = objectName;

@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmDependsFortran.h,v $
   Language:  C++
-  Date:      $Date: 2007/12/30 21:11:38 $
-  Version:   $Revision: 1.11 $
+  Date:      $Date: 2008/01/09 15:30:10 $
+  Version:   $Revision: 1.14 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -36,7 +36,8 @@ public:
       path from the build directory to the target file, the source
       file from which to start scanning, the include file search
       path, and the target directory.  */
-  cmDependsFortran(std::vector<std::string> const& includes);
+  cmDependsFortran(std::vector<std::string> const& includes,
+    std::vector<std::string> const& defines);
 
   /** Virtual destructor to cleanup subclasses properly.  */
   virtual ~cmDependsFortran();
@@ -45,6 +46,11 @@ public:
       by a Fortran90 compiler to copy the .mod file to the
       corresponding stamp file.  */
   static bool CopyModule(const std::vector<std::string>& args);
+
+  /** Determine if a mod file and the corresponding mod.stamp file
+      are representing  different module information. */
+  static bool  ModulesDiffer(const char* modFile, const char* stampFile,
+                             const char* compilerId);
 
   /** Method to find an included file in the include path.  Fortran
       always searches the directory containing the including source
@@ -81,6 +87,7 @@ protected:
 
   // The include file search path.
   std::vector<std::string> const* IncludePath;
+  std::vector<std::string> PPDefinitions;
 
   // Internal implementation details.
   cmDependsFortranInternals* Internal;

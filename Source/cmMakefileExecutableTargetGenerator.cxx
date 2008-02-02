@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefileExecutableTargetGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/28 19:59:06 $
-  Version:   $Revision: 1.39 $
+  Date:      $Date: 2008/01/30 02:16:49 $
+  Version:   $Revision: 1.41 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -259,7 +259,7 @@ void cmMakefileExecutableTargetGenerator::WriteExecutableRule(bool relink)
     }
 
   // Add symbol export flags if necessary.
-  if(this->Target->GetPropertyAsBool("ENABLE_EXPORTS"))
+  if(this->Target->IsExecutableWithExports())
     {
     std::string export_flag_var = "CMAKE_EXE_EXPORTS_";
     export_flag_var += linkLanguage;
@@ -351,7 +351,7 @@ void cmMakefileExecutableTargetGenerator::WriteExecutableRule(bool relink)
     this->Makefile->GetRequiredDefinition(linkRuleVar.c_str());
   std::vector<std::string> commands1;
   cmSystemTools::ExpandListArgument(linkRule, real_link_commands);
-  if(this->Target->GetPropertyAsBool("ENABLE_EXPORTS"))
+  if(this->Target->IsExecutableWithExports())
     {
     // If a separate rule for creating an import library is specified
     // add it now.
@@ -367,6 +367,9 @@ void cmMakefileExecutableTargetGenerator::WriteExecutableRule(bool relink)
 
   // Expand the rule variables.
   {
+  // Set path conversion for link script shells.
+  this->LocalGenerator->SetLinkScriptShell(useLinkScript);
+
   // Collect up flags to link in needed libraries.
   cmOStringStream linklibs;
   this->LocalGenerator->OutputLinkLibraries(linklibs, *this->Target, relink);
@@ -428,6 +431,9 @@ void cmMakefileExecutableTargetGenerator::WriteExecutableRule(bool relink)
     this->LocalGenerator->ExpandRuleVariables(*i, vars);
     }
   this->LocalGenerator->TargetImplib = "";
+
+  // Restore path conversion to normal shells.
+  this->LocalGenerator->SetLinkScriptShell(false);
   }
 
   // Optionally convert the build rule to use a script to avoid long

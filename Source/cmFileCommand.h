@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmFileCommand.h,v $
   Language:  C++
-  Date:      $Date: 2007/10/10 15:47:43 $
-  Version:   $Revision: 1.30 $
+  Date:      $Date: 2008/01/23 15:27:59 $
+  Version:   $Revision: 1.32 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -40,7 +40,8 @@ public:
    * This is called when the command is first encountered in
    * the CMakeLists.txt file.
    */
-  virtual bool InitialPass(std::vector<std::string> const& args);
+  virtual bool InitialPass(std::vector<std::string> const& args,
+                           cmExecutionStatus &status);
 
   /**
    * This determines if the command is invoked when in script mode.
@@ -68,7 +69,7 @@ public:
     return
       "  file(WRITE filename \"message to write\"... )\n"
       "  file(APPEND filename \"message to write\"... )\n"
-      "  file(READ filename variable [LIMIT numBytes])\n"
+      "  file(READ filename variable [LIMIT numBytes] [OFFSET offset] [HEX])\n"
       "  file(STRINGS filename variable [LIMIT_COUNT num]\n"
       "       [LIMIT_INPUT numBytes] [LIMIT_OUTPUT numBytes]\n"
       "       [LENGTH_MINIMUM numBytes] [LENGTH_MAXIMUM numBytes]\n"
@@ -93,7 +94,9 @@ public:
       "because it will lead to an infinite loop. Use configure_file if you "
       "want to generate input files to CMake.\n"
       "READ will read the content of a file and store it into the "
-      "variable.\n"
+      "variable. It will start at the given offset and read up to numBytes. "
+      "If the argument HEX is given, the binary data will be converted to "
+      "hexadecimal representation and this will be stored in the variable.\n"
       "STRINGS will parse a list of ASCII strings from a file and "
       "store it in a variable. Binary data in the file are ignored. Carriage "
       "return (CR) characters are ignored. It works also for Intel Hex and "

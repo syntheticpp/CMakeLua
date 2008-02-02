@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCTestBuildHandler.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/06/14 17:05:09 $
-  Version:   $Revision: 1.60 $
+  Date:      $Date: 2008/01/30 16:17:36 $
+  Version:   $Revision: 1.61 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -399,6 +399,7 @@ int cmCTestBuildHandler::ProcessHandler()
 
   // Remember start build time
   this->StartBuild = this->CTest->CurrentTime();
+  this->StartBuildTime = cmSystemTools::GetTime();
   int retVal = 0;
   int res = cmsysProcess_State_Exited;
   if ( !this->CTest->GetShowOnly() )
@@ -414,6 +415,7 @@ int cmCTestBuildHandler::ProcessHandler()
 
   // Remember end build time and calculate elapsed time
   this->EndBuild = this->CTest->CurrentTime();
+  this->EndBuildTime = cmSystemTools::GetTime();
   double elapsed_build_time = cmSystemTools::GetTime() - elapsed_time_start;
   if (res != cmsysProcess_State_Exited || retVal )
     {
@@ -483,6 +485,9 @@ void cmCTestBuildHandler::GenerateDartBuildOutput(
   this->CTest->StartXML(os);
   os << "<Build>\n"
      << "\t<StartDateTime>" << this->StartBuild << "</StartDateTime>\n"
+     << "\t<StartBuildTime>" << 
+    static_cast<unsigned int>(this->StartBuildTime)
+     << "</StartBuildTime>\n"
      << "<BuildCommand>"
      << this->CTest->MakeXMLSafe(
        this->CTest->GetCTestConfiguration("MakeCommand"))
@@ -586,6 +591,8 @@ void cmCTestBuildHandler::GenerateDartBuildOutput(
     }
   os << "\t<Log Encoding=\"base64\" Compression=\"/bin/gzip\">\n\t</Log>\n"
      << "\t<EndDateTime>" << this->EndBuild << "</EndDateTime>\n"
+     << "\t<EndBuildTime>" << static_cast<unsigned int>(this->EndBuildTime)
+     << "</EndBuildTime>\n"
      << "<ElapsedMinutes>" << static_cast<int>(elapsed_build_time/6)/10.0
      << "</ElapsedMinutes>"
      << "</Build>" << std::endl;

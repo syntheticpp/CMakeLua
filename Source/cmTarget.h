@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmTarget.h,v $
   Language:  C++
-  Date:      $Date: 2007/12/23 20:03:42 $
-  Version:   $Revision: 1.94 $
+  Date:      $Date: 2008/02/01 18:08:12 $
+  Version:   $Revision: 1.104 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -24,6 +24,34 @@ class cmake;
 class cmMakefile;
 class cmSourceFile;
 class cmGlobalGenerator;
+class cmComputeLinkInformation;
+
+struct cmTargetLinkInformationMap:
+  public std::map<cmStdString, cmComputeLinkInformation*>
+{
+  typedef std::map<cmStdString, cmComputeLinkInformation*> derived;
+  cmTargetLinkInformationMap() {}
+  cmTargetLinkInformationMap(cmTargetLinkInformationMap const& r);
+  ~cmTargetLinkInformationMap();
+};
+
+struct cmTargetLinkInterface
+{
+  // Libraries listed in the interface.
+  std::vector<std::string> Libraries;
+
+  // Shared library dependencies needed for linking on some platforms.
+  std::vector<std::string> SharedDeps;
+};
+
+struct cmTargetLinkInterfaceMap:
+  public std::map<cmStdString, cmTargetLinkInterface*>
+{
+  typedef std::map<cmStdString, cmTargetLinkInterface*> derived;
+  cmTargetLinkInterfaceMap() {}
+  cmTargetLinkInterfaceMap(cmTargetLinkInterfaceMap const& r);
+  ~cmTargetLinkInterfaceMap();
+};
 
 /** \class cmTarget
  * \brief Represent a library or executable target loaded from a makefile.
@@ -163,18 +191,6 @@ public:
   bool GetHaveInstallRule() { return this->HaveInstallRule; }
   void SetHaveInstallRule(bool h) { this->HaveInstallRule = h; }
 
-  /**
-   * Get/Set the path needed for calls to install_name_tool regarding this
-   * target. Used to support fixing up installed libraries and executables on
-   * the Mac (including bundles and frameworks). Only used if the target does
-   * not have an INSTALL_NAME_DIR property.
-   * See cmInstallTargetGenerator::AddInstallNamePatchRule and callers for
-   * more information.
-   */
-  std::string GetInstallNameFixupPath() { return this->InstallNameFixupPath; }
-  void SetInstallNameFixupPath(const char *path) {
-    this->InstallNameFixupPath = path; }
-
   /** Add a utility on which this project depends. A utility is an executable
    * name as would be specified to the ADD_EXECUTABLE or UTILITY_SOURCE
    * commands. It is not a full path nor does it have an extension.
@@ -187,11 +203,18 @@ public:
 
   ///! Set/Get a property of this target file
   void SetProperty(const char *prop, const char *value);
+  void AppendProperty(const char* prop, const char* value);
   const char *GetProperty(const char *prop);
   const char *GetProperty(const char *prop, cmProperty::ScopeType scope);
   bool GetPropertyAsBool(const char *prop);
 
   bool IsImported() const {return this->IsImportedTarget;}
+
+  /** Get the library interface dependencies.  This is the set of
+      libraries from which something that links to this target may
+      also receive symbols.  Returns 0 if the user has not specified
+      such dependencies or for static libraries.  */
+  cmTargetLinkInterface const* GetLinkInterface(const char* config);
 
   /** Get the directory in which this target will be built.  If the
       configuration name is given then the generator will add its
@@ -225,12 +248,15 @@ public:
   /** Get the full name of the target according to the settings in its
       makefile.  */
   std::string GetFullName(const char* config=0, bool implib = false);
-  void GetFullName(std::string& prefix,
-                   std::string& base, std::string& suffix,
-                   const char* config=0, bool implib = false);
+  void GetFullNameComponents(std::string& prefix,
+                             std::string& base, std::string& suffix,
+                             const char* config=0, bool implib = false);
 
   /** Get the name of the pdb file for the target.  */
   std::string GetPDBName(const char* config=0);
+
+  /** Get the soname of the target.  Allowed only for a shared library.  */
+  std::string GetSOName(const char* config);
 
   /** Get the full path to the target according to the settings in its
       makefile and the configuration type.  */
@@ -270,6 +296,9 @@ public:
                                std::string& impName,
                                std::string& pdbName, const char* config);
 
+  /** Add the target output files to the global generator manifest.  */
+  void GenerateTargetManifest(const char* config);
+
   /**
    * Compute whether this target must be relinked before installing.
    */
@@ -277,12 +306,14 @@ public:
 
   bool HaveBuildTreeRPATH();
   bool HaveInstallTreeRPATH();
-  
-  /// return true if chrpath might work for this target
-  bool IsChrpathAvailable();
+
+  /** Return true if chrpath might work for this target */
+  bool IsChrpathUsed();
 
   std::string GetInstallNameDirForBuildTree(const char* config);
   std::string GetInstallNameDirForInstallTree(const char* config);
+
+  cmComputeLinkInformation* GetLinkInformation(const char* config);
 
   // Get the properties
   cmPropertyMap &GetProperties() { return this->Properties; };
@@ -303,6 +334,17 @@ public:
   // information to forward these property changes to the targets
   // until we have per-target object file properties.
   void GetLanguages(std::set<cmStdString>& languages) const;
+
+  /** Return whether this target is an executable with symbol exports
+      enabled.  */
+  bool IsExecutableWithExports();
+
+  /** Return whether this target is a shared library Framework on
+      Apple.  */
+  bool IsFrameworkOnApple();
+
+  /** Return whether this target is an executable Bundle on Apple.  */
+  bool IsAppBundleOnApple();
 
 private:
   /**
@@ -389,19 +431,13 @@ private:
   const char* ImportedGetLocation(const char* config);
   const char* NormalGetLocation(const char* config);
 
-  void NormalGetFullNameInternal(TargetType type, const char* config,
-                                 bool implib,
-                                 std::string& outPrefix,
-                                 std::string& outBase,
-                                 std::string& outSuffix);
-  void ImportedGetFullNameInternal(TargetType type, const char* config,
-                                   bool implib,
-                                   std::string& outPrefix,
-                                   std::string& outBase,
-                                   std::string& outSuffix);
+  std::string GetFullNameImported(const char* config, bool implib);
 
   const char* ImportedGetDirectory(const char* config, bool implib);
   const char* NormalGetDirectory(const char* config, bool implib);
+
+  std::string ImportedGetFullPath(const char* config, bool implib);
+  std::string NormalGetFullPath(const char* config, bool implib);
 
 private:
   std::string Name;
@@ -413,12 +449,10 @@ private:
   LinkLibraryVectorType LinkLibraries;
   LinkLibraryVectorType PrevLinkedLibraries;
   bool LinkLibrariesAnalyzed;
-  bool LinkDirectoriesComputed;
   std::vector<std::string> Frameworks;
   std::vector<std::string> LinkDirectories;
-  std::vector<std::string> ExplicitLinkDirectories;
+  std::set<cmStdString> LinkDirectoriesEmmitted;
   bool HaveInstallRule;
-  std::string InstallNameFixupPath;
   std::string InstallPath;
   std::string RuntimeInstallPath;
   std::string OutputDir;
@@ -432,6 +466,25 @@ private:
   LinkLibraryVectorType OriginalLinkLibraries;
   bool DLLPlatform;
   bool IsImportedTarget;
+
+  // Cache import information from properties for each configuration.
+  struct ImportInfo
+  {
+    std::string Location;
+    std::string SOName;
+    std::string ImportLibrary;
+    cmTargetLinkInterface LinkInterface;
+  };
+  typedef std::map<cmStdString, ImportInfo> ImportInfoMapType;
+  ImportInfoMapType ImportInfoMap;
+  ImportInfo const* GetImportInfo(const char* config);
+  void ComputeImportInfo(std::string const& desired_config, ImportInfo& info);
+
+  cmTargetLinkInformationMap LinkInformation;
+
+  // Link interface.
+  cmTargetLinkInterface* ComputeLinkInterface(const char* config);
+  cmTargetLinkInterfaceMap LinkInterface;
 
   // The cmMakefile instance that owns this target.  This should
   // always be set.

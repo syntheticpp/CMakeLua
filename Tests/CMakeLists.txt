@@ -46,13 +46,47 @@ IF(BUILD_TESTING)
   ADD_TEST_MACRO(LinkLine LinkLine)
   ADD_TEST_MACRO(MacroTest miniMacroTest)
   ADD_TEST_MACRO(FunctionTest miniFunctionTest)
+  ADD_TEST_MACRO(ReturnTest ReturnTest)
   ADD_TEST_MACRO(Properties Properties)
   ADD_TEST_MACRO(Assembler HelloAsm)
   ADD_TEST_MACRO(SourceGroups SourceGroups)
-
-
+  ADD_TEST_MACRO(Preprocess Preprocess)
+  ADD_TEST_MACRO(ExportImport ExportImport)
   ADD_TEST_MACRO(LuaTest LuaTest)
-  
+
+  # test for correct sub-project generation
+  # not implemented in VS6 or Xcode
+  IF(NOT MSVC60 AND NOT XCODE AND NOT MSVC70)
+    # run cmake and configure all of SubProject
+    # but only build the independent executable car
+    ADD_TEST(SubProject ${CMAKE_CTEST_COMMAND}
+      --build-and-test
+      "${CMake_SOURCE_DIR}/Tests/SubProject"
+      "${CMake_BINARY_DIR}/Tests/SubProject"
+      --build-project SubProject
+      --build-generator ${CMAKE_TEST_GENERATOR}
+      --build-makeprogram ${CMAKE_TEST_MAKEPROGRAM}
+      --build-target car
+      --test-command car
+      )
+    # For stage 2, do not run cmake again.
+    # Then build the foo sub project which should build
+    # the bar library which should be referenced because
+    # foo links to the static library bar, but bar is not
+    # directly in the foo sub project
+    ADD_TEST(SubProject-Stage2  ${CMAKE_CTEST_COMMAND}
+      --build-and-test
+      "${CMake_SOURCE_DIR}/Tests/SubProject/foo"
+      "${CMake_BINARY_DIR}/Tests/SubProject/foo" 
+      --build-generator ${CMAKE_TEST_GENERATOR}
+      --build-makeprogram ${CMAKE_TEST_MAKEPROGRAM}
+      --build-nocmake 
+      --build-project foo
+      --build-target foo
+      --test-command foo
+      )
+  ENDIF(NOT MSVC60 AND NOT XCODE AND NOT MSVC70)
+
   IF (CMAKE_STRICT)
     ADD_TEST_MACRO(DocTest DocTest)
   ENDIF (CMAKE_STRICT)
@@ -500,8 +534,10 @@ ${CMake_BINARY_DIR}/bin/cmake -DVERSION=CVS -P ${CMake_SOURCE_DIR}/Utilities/Rel
       --build-two-config
       --test-command bin/example)
 
+    IF(CMAKE_SHARED_LIBRARY_RUNTIME_C_FLAG)
+      ADD_TEST_MACRO(RuntimePath RuntimePath)
+    ENDIF(CMAKE_SHARED_LIBRARY_RUNTIME_C_FLAG)
   ENDIF("${CMAKE_SYSTEM_NAME}" MATCHES syllable)
-
 
   ADD_TEST(linkorder1 ${CMAKE_CTEST_COMMAND}
     --build-and-test
@@ -537,7 +573,7 @@ ${CMake_BINARY_DIR}/bin/cmake -DVERSION=CVS -P ${CMake_SOURCE_DIR}/Utilities/Rel
   SET(MAKE_IS_GNU )
   IF(${CMAKE_TEST_MAKEPROGRAM} MATCHES make)
     EXEC_PROGRAM(
-      ${CMAKE_TEST_MAKEPROGRAM} ARGS --version
+      ${CMAKE_TEST_MAKEPROGRAM} ARGS no_such_target --version
       RETURN_VALUE res OUTPUT_VARIABLE out
       )
     IF("${res}" EQUAL 0)

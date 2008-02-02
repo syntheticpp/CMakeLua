@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCTestBuildHandler.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/10 20:03:08 $
-  Version:   $Revision: 1.12 $
+  Date:      $Date: 2008/01/30 16:17:36 $
+  Version:   $Revision: 1.13 $
 
   Copyright (c) 2002 Kitware, Inc. All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -91,6 +91,8 @@ private:
 
   std::string             StartBuild;
   std::string             EndBuild;
+  double                  StartBuildTime;
+  double                  EndBuildTime;
 
   std::vector<cmStdString> CustomErrorMatches;
   std::vector<cmStdString> CustomErrorExceptions;

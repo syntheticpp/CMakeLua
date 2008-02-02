@@ -6,6 +6,8 @@ PROGRAM CMakeFortranCompilerId
    PRINT *, 'INFO:compiler[SunPro]'
 #elif defined(__GNUC__)
    PRINT *, 'INFO:compiler[GNU]'
+#elif defined(__IBM__) || defined(__IBMC__)
+   PRINT *, 'INFO:compiler[VisualAge]'
 #elif defined(_COMPILER_VERSION)
    PRINT *, 'INFO:compiler[MIPSpro]'
 !     This compiler is either not known or is too old to define an

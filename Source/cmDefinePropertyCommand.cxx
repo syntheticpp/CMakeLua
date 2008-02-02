@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmDefinePropertyCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/06/25 14:34:21 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2008/01/23 15:27:59 $
+  Version:   $Revision: 1.3 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -18,8 +18,8 @@
 #include "cmake.h"
 
 // cmDefinePropertiesCommand
-bool cmDefinePropertyCommand::InitialPass(
-  std::vector<std::string> const& args)
+bool cmDefinePropertyCommand
+::InitialPass(std::vector<std::string> const& args, cmExecutionStatus &)
 {
   if(args.size() < 5 )
     {

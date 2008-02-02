@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmWhileCommand.h,v $
   Language:  C++
-  Date:      $Date: 2007/10/15 18:50:18 $
-  Version:   $Revision: 1.7 $
+  Date:      $Date: 2008/01/23 15:27:59 $
+  Version:   $Revision: 1.9 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -32,7 +32,8 @@ public:
   cmWhileFunctionBlocker() {Executing = false; Depth=0;}
   virtual ~cmWhileFunctionBlocker() {}
   virtual bool IsFunctionBlocked(const cmListFileFunction& lff,
-                                 cmMakefile &mf);
+                                 cmMakefile &mf,
+                                 cmExecutionStatus &);
   virtual bool ShouldRemove(const cmListFileFunction& lff, cmMakefile &mf);
   virtual void ScopeEnded(cmMakefile &mf);
   
@@ -63,13 +64,15 @@ public:
    * This overrides the default InvokeInitialPass implementation.
    * It records the arguments before expansion.
    */
-  virtual bool InvokeInitialPass(const std::vector<cmListFileArgument>& args);
+  virtual bool InvokeInitialPass(const std::vector<cmListFileArgument>& args,
+                                 cmExecutionStatus &);
     
   /**
    * This is called when the command is first encountered in
    * the CMakeLists.txt file.
    */
-  virtual bool InitialPass(std::vector<std::string> const&) { return false; }
+  virtual bool InitialPass(std::vector<std::string> const&,
+                           cmExecutionStatus &) { return false; }
 
   /**
    * This determines if the command is invoked when in script mode.
@@ -103,7 +106,7 @@ public:
       "All commands between while and the matching endwhile are recorded "
       "without being invoked.  Once the endwhile is evaluated, the "
       "recorded list of commands is invoked as long as the condition "
-      "is true. The condition is evaulated using the same logic as the "
+      "is true. The condition is evaluated using the same logic as the "
       "if command.";
     }
   

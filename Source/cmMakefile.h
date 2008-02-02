@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefile.h,v $
   Language:  C++
-  Date:      $Date: 2007/12/03 18:35:33 $
-  Version:   $Revision: 1.216 $
+  Date:      $Date: 2008/01/28 13:38:36 $
+  Version:   $Revision: 1.222 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -17,12 +17,13 @@
 #ifndef cmMakefile_h
 #define cmMakefile_h
 
+#include "cmCacheManager.h"
 #include "cmData.h"
+#include "cmExecutionStatus.h"
+#include "cmListFileCache.h"
+#include "cmPropertyMap.h"
 #include "cmSystemTools.h"
 #include "cmTarget.h"
-#include "cmListFileCache.h"
-#include "cmCacheManager.h"
-#include "cmPropertyMap.h"
 
 #if defined(CMAKE_BUILD_WITH_CMAKE)
 #include "cmSourceGroup.h"
@@ -57,6 +58,10 @@ public:
    */
   unsigned int GetCacheMajorVersion();
   unsigned int GetCacheMinorVersion();
+
+  /** Return whether compatibility features needed for a version of
+      the cache or lower should be enabled.  */
+  bool NeedCacheCompatibility(int major, int minor);
   
   /**
    * Construct an empty makefile.
@@ -167,9 +172,10 @@ public:
   void AddDefineFlag(const char* definition);
   void RemoveDefineFlag(const char* definition);
 
-  cmTarget* AddNewTarget(cmTarget::TargetType type, 
-                         const char* name, 
-                         bool isImported);
+  /** Create a new imported target with the name and type given.  */
+  cmTarget* AddImportedTarget(const char* name, cmTarget::TargetType type);
+
+  cmTarget* AddNewTarget(cmTarget::TargetType type, const char* name);
   
   /**
    * Add an executable to the build.
@@ -431,10 +437,12 @@ public:
    * Get the list of targets, const version
    */
   const cmTargets &GetTargets() const { return this->Targets; }
-  const cmTargets &GetImportedTargets() const { return this->ImportedTargets; }
 
-  cmTarget* FindTarget(const char* name, bool useImportedTargets);
+  cmTarget* FindTarget(const char* name);
 
+  /** Find a target to use in place of the given name.  The target
+      returned may be imported or built within the project.  */
+  cmTarget* FindTargetToUse(const char* name);
 
   /**
    * Get a list of include directories in the build.
@@ -630,8 +638,9 @@ public:
    * Execute a single CMake command.  Returns true if the command
    * succeeded or false if it failed.
    */
-  bool ExecuteCommand(const cmListFileFunction& lff);
-  
+  bool ExecuteCommand(const cmListFileFunction& lff, 
+                      cmExecutionStatus &status);
+
   /** Check if a command exists. */
   bool CommandExists(const char* name) const;
     
@@ -713,6 +722,7 @@ public:
 
   ///! Set/Get a property of this directory 
   void SetProperty(const char *prop, const char *value);
+  void AppendProperty(const char *prop, const char *value);
   const char *GetProperty(const char *prop);
   const char *GetPropertyOrDefinition(const char *prop);
   const char *GetProperty(const char *prop, cmProperty::ScopeType scope);
@@ -740,7 +750,7 @@ public:
   // push and pop variable scopes
   void PushScope();
   void PopScope();
-  void RaiseScope(const char *var);
+  void RaiseScope(const char *var, const char *value);
 
 protected:
   // add link libraries and directories to the target
@@ -759,7 +769,6 @@ protected:
 
   // libraries, classes, and executables
   cmTargets Targets;
-  cmTargets ImportedTargets;
   std::vector<cmSourceFile*> SourceFiles;
 
   // Tests
@@ -795,10 +804,13 @@ protected:
   std::vector<DefinitionMap> DefinitionStack;
   std::vector<cmCommand*> UsedCommands;
   cmLocalGenerator* LocalGenerator;
-  bool IsFunctionBlocked(const cmListFileFunction& lff);
+  bool IsFunctionBlocked(const cmListFileFunction& lff, 
+                         cmExecutionStatus &status);
   
 private:
   void Initialize();
+
+  bool ParseDefineFlag(std::string const& definition, bool remove);
 
   void ReadSources(std::ifstream& fin, bool t);
   friend class cmMakeDepend;    // make depend needs direct access
@@ -832,6 +844,10 @@ private:
 
   // stack of list files being read 
   std::deque<cmStdString> ListFileStack;
+
+  cmTarget* FindBasicTarget(const char* name);
+  std::vector<cmTarget*> ImportedTargetsOwned;
+  std::map<cmStdString, cmTarget*> ImportedTargets;
 };
 
 

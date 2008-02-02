@@ -2107,18 +2107,31 @@ kwsys_stl::string SystemTools
     SystemTools::GetPath(path);
     }
   // now add the additional paths
+  {
   for(kwsys_stl::vector<kwsys_stl::string>::const_iterator i = userPaths.begin();
         i != userPaths.end(); ++i)
     {
     path.push_back(*i);
     }
+  }
+  // Add a trailing slash to all paths to aid the search process.
+  {
+  for(kwsys_stl::vector<kwsys_stl::string>::iterator i = path.begin();
+      i != path.end(); ++i)
+    {
+    kwsys_stl::string& p = *i;
+    if(p.empty() || p[p.size()-1] != '/')
+      {
+      p += "/";
+      }
+    }
+  }
   // now look for the file
   kwsys_stl::string tryPath;
   for(kwsys_stl::vector<kwsys_stl::string>::const_iterator p = path.begin();
       p != path.end(); ++p)
     {
     tryPath = *p;
-    tryPath += "/";
     tryPath += name;
     if(SystemTools::FileExists(tryPath.c_str()))
       {
@@ -2230,11 +2243,25 @@ kwsys_stl::string SystemTools::FindProgram(
     SystemTools::GetPath(path);
     }
   // now add the additional paths
+  {
   for(kwsys_stl::vector<kwsys_stl::string>::const_iterator i = 
         userPaths.begin();  i != userPaths.end(); ++i)
     {
     path.push_back(*i);
     }
+  }
+  // Add a trailing slash to all paths to aid the search process.
+  {
+  for(kwsys_stl::vector<kwsys_stl::string>::iterator i = path.begin();
+      i != path.end(); ++i)
+    {
+    kwsys_stl::string& p = *i;
+    if(p.empty() || p[p.size()-1] != '/')
+      {
+      p += "/";
+      }
+    }
+  }
   // Try each path
   for(kwsys_stl::vector<kwsys_stl::string>::iterator p = path.begin();
       p != path.end(); ++p)
@@ -2250,7 +2277,6 @@ kwsys_stl::string SystemTools::FindProgram(
             = extensions.begin(); ext != extensions.end(); ++ext)
         {
         tryPath = *p;
-        tryPath += "/";
         tryPath += name;
         tryPath += *ext;
         if(SystemTools::FileExists(tryPath.c_str()) &&
@@ -2262,7 +2288,6 @@ kwsys_stl::string SystemTools::FindProgram(
       }
     // now try it without them
     tryPath = *p;
-    tryPath += "/";
     tryPath += name;
     if(SystemTools::FileExists(tryPath.c_str()) &&
        !SystemTools::FileIsDirectory(tryPath.c_str()))
@@ -2314,18 +2339,31 @@ kwsys_stl::string SystemTools
   kwsys_stl::vector<kwsys_stl::string> path;
   SystemTools::GetPath(path);
    // now add the additional paths
+  {
   for(kwsys_stl::vector<kwsys_stl::string>::const_iterator i = userPaths.begin();
         i != userPaths.end(); ++i)
     {
     path.push_back(*i);
     }
+  }
+  // Add a trailing slash to all paths to aid the search process.
+  {
+  for(kwsys_stl::vector<kwsys_stl::string>::iterator i = path.begin();
+      i != path.end(); ++i)
+    {
+    kwsys_stl::string& p = *i;
+    if(p.empty() || p[p.size()-1] != '/')
+      {
+      p += "/";
+      }
+    }
+  }
   kwsys_stl::string tryPath;
   for(kwsys_stl::vector<kwsys_stl::string>::const_iterator p = path.begin();
       p != path.end(); ++p)
     {
 #if defined(__APPLE__)
     tryPath = *p;
-    tryPath += "/";
     tryPath += name;
     tryPath += ".framework";
     if(SystemTools::FileExists(tryPath.c_str())
@@ -2336,7 +2374,6 @@ kwsys_stl::string SystemTools
 #endif
 #if defined(_WIN32) && !defined(__CYGWIN__) && !defined(__MINGW32__)
     tryPath = *p;
-    tryPath += "/";
     tryPath += name;
     tryPath += ".lib";
     if(SystemTools::FileExists(tryPath.c_str())
@@ -2346,7 +2383,7 @@ kwsys_stl::string SystemTools
       }
 #else
     tryPath = *p;
-    tryPath += "/lib";
+    tryPath += "lib";
     tryPath += name;
     tryPath += ".so";
     if(SystemTools::FileExists(tryPath.c_str())
@@ -2355,7 +2392,7 @@ kwsys_stl::string SystemTools
       return SystemTools::CollapseFullPath(tryPath.c_str());
       }
     tryPath = *p;
-    tryPath += "/lib";
+    tryPath += "lib";
     tryPath += name;
     tryPath += ".a";
     if(SystemTools::FileExists(tryPath.c_str())
@@ -2364,7 +2401,7 @@ kwsys_stl::string SystemTools
       return SystemTools::CollapseFullPath(tryPath.c_str());
       }
     tryPath = *p;
-    tryPath += "/lib";
+    tryPath += "lib";
     tryPath += name;
     tryPath += ".sl";
     if(SystemTools::FileExists(tryPath.c_str())
@@ -2373,7 +2410,7 @@ kwsys_stl::string SystemTools
       return SystemTools::CollapseFullPath(tryPath.c_str());
       }
     tryPath = *p;
-    tryPath += "/lib";
+    tryPath += "lib";
     tryPath += name;
     tryPath += ".dylib";
     if(SystemTools::FileExists(tryPath.c_str())
@@ -2382,7 +2419,7 @@ kwsys_stl::string SystemTools
       return SystemTools::CollapseFullPath(tryPath.c_str());
       }
     tryPath = *p;
-    tryPath += "/lib";
+    tryPath += "lib";
     tryPath += name;
     tryPath += ".dll";
     if(SystemTools::FileExists(tryPath.c_str())
@@ -2975,81 +3012,144 @@ kwsys_stl::string SystemTools::GetActualCaseForPath(const char* p)
 }
 
 //----------------------------------------------------------------------------
-void SystemTools::SplitPath(const char* p,
-                            kwsys_stl::vector<kwsys_stl::string>& components)
+const char* SystemTools::SplitPathRootComponent(const char* p,
+                                                kwsys_stl::string* root)
 {
-  components.clear();
   // Identify the root component.
   const char* c = p;
   if((c[0] == '/' && c[1] == '/') || (c[0] == '\\' && c[1] == '\\'))
     {
     // Network path.
-    components.push_back("//");
+    if(root)
+      {
+      *root = "//";
+      }
     c += 2;
     }
   else if(c[0] == '/')
     {
     // Unix path.
-    components.push_back("/");
+    if(root)
+      {
+      *root = "/";
+      }
     c += 1;
     }
   else if(c[0] && c[1] == ':' && (c[2] == '/' || c[2] == '\\'))
     {
     // Windows path.
-    kwsys_stl::string root = "_:/";
-    root[0] = c[0];
-    components.push_back(root);
+    if(root)
+      {
+      (*root) = "_:/";
+      (*root)[0] = c[0];
+      }
     c += 3;
     }
   else if(c[0] && c[1] == ':')
     {
     // Path relative to a windows drive working directory.
-    kwsys_stl::string root = "_:";
-    root[0] = c[0];
-    components.push_back(root);
+    if(root)
+      {
+      (*root) = "_:";
+      (*root)[0] = c[0];
+      }
     c += 2;
     }
-#ifdef HAVE_GETPWNAM
   else if(c[0] == '~')
     {
-    int numChars = 1;
-    while(c[numChars] && c[numChars] != '/')
+    // Home directory.  The returned root should always have a
+    // trailing slash so that appending components as
+    // c[0]c[1]/c[2]/... works.  The remaining path returned should
+    // skip the first slash if it exists:
+    //
+    //   "~"    : root = "~/" , return ""
+    //   "~/    : root = "~/" , return ""
+    //   "~/x   : root = "~/" , return "x"
+    //   "~u"   : root = "~u/", return ""
+    //   "~u/"  : root = "~u/", return ""
+    //   "~u/x" : root = "~u/", return "x"
+    int n = 1;
+    while(c[n] && c[n] != '/')
       {
-      numChars++;
+      ++n;
       }
-    const char* homedir;
-    if(numChars == 1)
+    if(root)
       {
-      homedir = getenv("HOME");
+      root->assign(c, n);
+      *root += '/';
       }
-    else
+    if(c[n] == '/')
       {
-      char user[PATH_MAX];
-      strncpy(user, c+1, numChars-1);
-      user[numChars] = '\0';
-      passwd* pw = getpwnam(user);
-      if(p)
-        {
-        homedir = pw->pw_dir;
-        }
-      else
-        {
-        homedir = "";
-        }
+      ++n;
       }
-    kwsys_stl::vector<kwsys_stl::string> home_components;
-    SystemTools::SplitPath(homedir, home_components);
-    components.insert(components.end(), 
-                      home_components.begin(), 
-                      home_components.end());
-    c += numChars;
+    c += n;
     }
-#endif
   else
     {
     // Relative path.
-    components.push_back("");
+    if(root)
+      {
+      *root = "";
+      }
     }
+
+  // Return the remaining path.
+  return c;
+}
+
+//----------------------------------------------------------------------------
+void SystemTools::SplitPath(const char* p,
+                            kwsys_stl::vector<kwsys_stl::string>& components,
+                            bool expand_home_dir)
+{
+  const char* c = p;
+  components.clear();
+
+  // Identify the root component.
+  {
+  kwsys_stl::string root;
+  c = SystemTools::SplitPathRootComponent(c, &root);
+
+  // Expand home directory references if requested.
+  if(expand_home_dir && !root.empty() && root[0] == '~')
+    {
+    kwsys_stl::string homedir;
+    root = root.substr(0, root.size()-1);
+    if(root.size() == 1)
+      {
+#if defined(_WIN32) && !defined(__CYGWIN__)
+      if(const char* p = getenv("USERPROFILE"))
+        {
+        homedir = p;
+        }
+      else
+#endif
+      if(const char* h = getenv("HOME"))
+        {
+        homedir = h;
+        }
+      }
+#ifdef HAVE_GETPWNAM
+    else if(passwd* pw = getpwnam(root.c_str()+1))
+      {
+      if(pw->pw_dir)
+        {
+        homedir = pw->pw_dir;
+        }
+      }
+#endif
+    if(!homedir.empty() && (homedir[homedir.size()-1] == '/' ||
+                            homedir[homedir.size()-1] == '\\'))
+      {
+      homedir = homedir.substr(0, homedir.size()-1);
+      }
+    SystemTools::SplitPath(homedir.c_str(), components);
+    }
+  else
+    {
+    components.push_back(root);
+    }
+  }
 
   // Parse the remaining components.
   const char* first = c;

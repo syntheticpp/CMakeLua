@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmAddTestCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/05/10 17:50:44 $
-  Version:   $Revision: 1.28 $
+  Date:      $Date: 2008/01/23 15:27:59 $
+  Version:   $Revision: 1.29 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -20,7 +20,8 @@
 
 
 // cmExecutableCommand
-bool cmAddTestCommand::InitialPass(std::vector<std::string> const& args)
+bool cmAddTestCommand
+::InitialPass(std::vector<std::string> const& args, cmExecutionStatus &)
 {
   // First argument is the name of the test Second argument is the name of
   // the executable to run (a target or external program) Remaining arguments

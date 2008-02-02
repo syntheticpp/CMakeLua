@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCPackDebGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/11/06 13:27:43 $
-  Version:   $Revision: 1.19 $
+  Date:      $Date: 2008/01/24 12:31:59 $
+  Version:   $Revision: 1.20 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -23,6 +23,8 @@
 
 #include <cmsys/SystemTools.hxx>
 #include <cmsys/Glob.hxx>
+
+#include <limits.h> // USHRT_MAX
 
 // NOTE:
 // A debian package .deb is simply an 'ar' archive. The only subtle difference

@@ -137,8 +137,9 @@ IF(KWSYS_STANDALONE OR CMake_SOURCE_DIR)
   SET(KWSYS_USE_IOStream 1)
   SET(KWSYS_USE_DateStamp 1)
   SET(KWSYS_USE_String 1)
+  SET(KWSYS_USE_SystemInformation 1)
 ENDIF(KWSYS_STANDALONE OR CMake_SOURCE_DIR)
-
+  
 # Setup the large file support default.
 IF(KWSYS_LFS_DISABLE)
   SET(KWSYS_LFS_REQUESTED 0)
@@ -578,6 +579,15 @@ ENDFOREACH(header)
 CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/kwsys_cstddef.hxx.in
                ${KWSYS_HEADER_DIR}/cstddef
                @ONLY IMMEDIATE)
+IF(KWSYS_INSTALL_INCLUDE_DIR)
+  INSTALL(FILES ${KWSYS_HEADER_DIR}/cstddef
+    DESTINATION ${KWSYS_INSTALL_INCLUDE_DIR}/${KWSYS_NAMESPACE}
+    ${KWSYS_INSTALL_INCLUDE_OPTIONS})
+  IF(KWSYS_HEADER_INSTALL_DIR)
+    INSTALL_FILES(${KWSYS_HEADER_INSTALL_DIR}/${KWSYS_NAMESPACE}
+      FILES ${KWSYS_HEADER_DIR}/cstddef)
+  ENDIF(KWSYS_HEADER_INSTALL_DIR)
+ENDIF(KWSYS_INSTALL_INCLUDE_DIR)
 
 #-----------------------------------------------------------------------------
 # Create streams header wrappers to give standard names by which they
@@ -626,7 +636,7 @@ ENDIF(KWSYS_USE_Process)
 # Add selected C++ classes.
 SET(cppclasses
   Directory DynamicLoader Glob RegularExpression SystemTools
-  CommandLineArguments Registry IOStream
+  CommandLineArguments Registry IOStream SystemInformation
   )
 FOREACH(cpp ${cppclasses})
   IF(KWSYS_USE_${cpp})
@@ -757,6 +767,10 @@ IF(KWSYS_C_SRCS OR KWSYS_CXX_SRCS)
       TARGET_LINK_LIBRARIES(${KWSYS_NAMESPACE} ${CMAKE_DL_LIBS})
     ENDIF(UNIX)
   ENDIF(KWSYS_USE_DynamicLoader)
+  
+  IF(KWSYS_USE_SystemInformation AND WIN32)
+    TARGET_LINK_LIBRARIES(${KWSYS_NAMESPACE} ws2_32)
+  ENDIF(KWSYS_USE_SystemInformation AND WIN32)
 
   # Apply user-defined target properties to the library.
   IF(KWSYS_PROPERTIES_CXX)
@@ -890,6 +904,9 @@ IF(KWSYS_STANDALONE OR CMake_SOURCE_DIR)
       testCommandLineArguments
       testCommandLineArguments1
       )
+    IF(KWSYS_USE_SystemInformation)
+      SET(KWSYS_CXX_TESTS ${KWSYS_CXX_TESTS} testSystemInformation)
+    ENDIF(KWSYS_USE_SystemInformation)
     IF(KWSYS_USE_DynamicLoader)
       SET(KWSYS_CXX_TESTS ${KWSYS_CXX_TESTS} testDynamicLoader)
       # If kwsys contains the DynamicLoader, need extra library
@@ -901,7 +918,6 @@ IF(KWSYS_STANDALONE OR CMake_SOURCE_DIR)
       )
     ADD_EXECUTABLE(${KWSYS_NAMESPACE}TestsCxx ${KWSYS_CXX_TEST_SRCS})
     TARGET_LINK_LIBRARIES(${KWSYS_NAMESPACE}TestsCxx ${KWSYS_NAMESPACE})
-
     SET(TEST_SYSTEMTOOLS_BIN_FILE
       "${CMAKE_CURRENT_SOURCE_DIR}/testSystemTools.bin")
     SET(TEST_SYSTEMTOOLS_SRC_FILE

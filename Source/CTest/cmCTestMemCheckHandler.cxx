@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCTestMemCheckHandler.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/08/10 20:28:48 $
-  Version:   $Revision: 1.18 $
+  Date:      $Date: 2008/01/30 16:17:36 $
+  Version:   $Revision: 1.19 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -306,7 +306,8 @@ void cmCTestMemCheckHandler::GenerateDartOutput(std::ostream& os)
   os << "\">" << std::endl;
 
   os << "\t<StartDateTime>" << this->StartTest << "</StartDateTime>\n"
-    << "\t<TestList>\n";
+     << "\t<StartTestTime>" << this->StartTestTime << "</StartTestTime>\n"
+     << "\t<TestList>\n";
   cmCTestMemCheckHandler::TestResultsVector::size_type cc;
   for ( cc = 0; cc < this->TestResults.size(); cc ++ )
     {
@@ -405,6 +406,8 @@ void cmCTestMemCheckHandler::GenerateDartOutput(std::ostream& os)
   os << "\t</DefectList>" << std::endl;
 
   os << "\t<EndDateTime>" << this->EndTest << "</EndDateTime>" << std::endl;
+  os << "\t<EndTestTime>" << this->EndTestTime
+     << "</EndTestTime>" << std::endl;
   os << "<ElapsedMinutes>"
      << static_cast<int>(this->ElapsedTestingTime/6)/10.0
      << "</ElapsedMinutes>\n";

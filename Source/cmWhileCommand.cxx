@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmWhileCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/12/07 14:44:45 $
-  Version:   $Revision: 1.9 $
+  Date:      $Date: 2008/01/23 15:27:59 $
+  Version:   $Revision: 1.10 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -18,7 +18,8 @@
 #include "cmIfCommand.h"
 
 bool cmWhileFunctionBlocker::
-IsFunctionBlocked(const cmListFileFunction& lff, cmMakefile &mf) 
+IsFunctionBlocked(const cmListFileFunction& lff, cmMakefile &mf,
+                  cmExecutionStatus &inStatus)
 {
   // Prevent recusion and don't let this blocker block its own
   // commands.
@@ -51,7 +52,19 @@ IsFunctionBlocked(const cmListFileFunction& lff, cmMakefile &mf)
         // Invoke all the functions that were collected in the block.
         for(unsigned int c = 0; c < this->Functions.size(); ++c)
           {
-          mf.ExecuteCommand(this->Functions[c]);
+          cmExecutionStatus status;
+          mf.ExecuteCommand(this->Functions[c],status);
+          if (status.GetReturnInvoked())
+            {
+            inStatus.SetReturnInvoked(true);
+            mf.RemoveFunctionBlocker(lff);
+            return true;
+            }
+          if (status.GetBreakInvoked())
+            {
+            mf.RemoveFunctionBlocker(lff);
+            return true;
+            }
           }
         expandedArguments.clear();
         mf.ExpandArguments(this->Args, expandedArguments);
@@ -99,8 +112,9 @@ ScopeEnded(cmMakefile &mf)
     mf.GetCurrentDirectory());
 }
 
-bool cmWhileCommand::InvokeInitialPass(
-  const std::vector<cmListFileArgument>& args)
+bool cmWhileCommand
+::InvokeInitialPass(const std::vector<cmListFileArgument>& args, 
+                    cmExecutionStatus &)
 {
   if(args.size() < 1)
     {

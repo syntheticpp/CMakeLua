@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator3
   Module:    $RCSfile: cmGlobalUnixMakefileGenerator3.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/23 20:03:42 $
-  Version:   $Revision: 1.123 $
+  Date:      $Date: 2008/01/31 03:56:34 $
+  Version:   $Revision: 1.125 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -848,7 +848,7 @@ cmGlobalUnixMakefileGenerator3
 
 //----------------------------------------------------------------------------
 int cmGlobalUnixMakefileGenerator3
-::GetTargetTotalNumberOfActions(cmTarget const& target,
+::GetTargetTotalNumberOfActions(cmTarget & target,
                                 std::set<cmStdString> &emitted)
 {
   // do not double count
@@ -861,9 +861,9 @@ int cmGlobalUnixMakefileGenerator3
       (target.GetMakefile()->GetLocalGenerator());
     result = static_cast<int>(lg->ProgressFiles[target.GetName()].size());
     
-    TargetDependSet const& depends = this->GetTargetDepends(target);
+    TargetDependSet & depends = this->GetTargetDirectDepends(target);
     
-    TargetDependSet::const_iterator i;
+    TargetDependSet::iterator i;
     for (i = depends.begin(); i != depends.end(); ++i)
       {
       result += this->GetTargetTotalNumberOfActions(**i, emitted);
@@ -877,11 +877,11 @@ unsigned long cmGlobalUnixMakefileGenerator3
 ::GetNumberOfProgressActionsInAll(cmLocalUnixMakefileGenerator3 *lg)
 {
   unsigned long result = 0;
-  std::set<cmTarget const*>& targets = this->LocalGeneratorToTargetMap[lg];
-  for(std::set<cmTarget const*>::iterator t = targets.begin();
+  std::set<cmTarget *>& targets = this->LocalGeneratorToTargetMap[lg];
+  for(std::set<cmTarget *>::iterator t = targets.begin();
       t != targets.end(); ++t)
     {
-    cmTarget const* target = *t;
+    cmTarget * target = *t;
     cmLocalUnixMakefileGenerator3 *lg3 =
       static_cast<cmLocalUnixMakefileGenerator3 *>
       (target->GetMakefile()->GetLocalGenerator());
@@ -898,7 +898,7 @@ cmGlobalUnixMakefileGenerator3
 ::AppendGlobalTargetDepends(std::vector<std::string>& depends,
                             cmTarget& target)
 {
-  TargetDependSet const& depends_set = this->GetTargetDepends(target);
+  TargetDependSet const& depends_set = this->GetTargetDirectDepends(target);
   for(TargetDependSet::const_iterator i = depends_set.begin();
       i != depends_set.end(); ++i)
     {

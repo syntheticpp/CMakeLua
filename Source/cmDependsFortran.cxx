@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmDependsFortran.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/30 21:11:38 $
-  Version:   $Revision: 1.37 $
+  Date:      $Date: 2008/01/18 23:40:05 $
+  Version:   $Revision: 1.46 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -70,6 +70,7 @@ struct cmDependsFortranFile
 struct cmDependsFortranParser_s
 {
   cmDependsFortranParser_s(cmDependsFortran* self,
+                           std::set<std::string>& ppDefines,
                            cmDependsFortranSourceInfo& info);
   ~cmDependsFortranParser_s();
 
@@ -89,9 +90,9 @@ struct cmDependsFortranParser_s
   bool InInterface;
 
   int OldStartcond;
-  bool InPPFalseBranch;
-  std::vector<bool> SkipToEnd;
-  int StepI;
+  std::set<std::string> PPDefinitions;
+  size_t InPPFalseBranch;
+  std::stack<bool> SkipToEnd;
 
   // Information about the parsed source.
   cmDependsFortranSourceInfo& Info;
@@ -130,14 +131,30 @@ public:
 
 //----------------------------------------------------------------------------
 cmDependsFortran::cmDependsFortran():
-  IncludePath(0), Internal(0)
+  IncludePath(0), PPDefinitions(0), Internal(0)
 {
 }
 
 //----------------------------------------------------------------------------
-cmDependsFortran::cmDependsFortran(std::vector<std::string> const& includes):
-  IncludePath(&includes), Internal(new cmDependsFortranInternals)
+cmDependsFortran
+::cmDependsFortran(std::vector<std::string> const& includes,
+                   std::vector<std::string> const& definitions):
+  IncludePath(&includes),
+  Internal(new cmDependsFortranInternals)
 {
+  // translate i.e. FOO=BAR to FOO and add it to the list of defined
+  // preprocessor symbols
+  for(std::vector<std::string>::const_iterator
+      it = definitions.begin(); it != definitions.end(); ++it)
+    {
+    std::string def = *it;
+    std::string::size_type assignment = def.find("=");
+    if(assignment != std::string::npos)
+      {
+      def = it->substr(0, assignment);
+      }
+    this->PPDefinitions.push_back(def);
+    }
 }
 
 //----------------------------------------------------------------------------
@@ -171,8 +188,13 @@ bool cmDependsFortran::WriteDependencies(const char *src, const char *obj,
   cmDependsFortranSourceInfo& info =
     this->Internal->CreateObjectInfo(obj, src);
 
-  // Create the parser object.
-  cmDependsFortranParser parser(this, info);
+  // Make a copy of the macros defined via ADD_DEFINITIONS
+  std::set<std::string> ppDefines(this->PPDefinitions.begin(),
+                                  this->PPDefinitions.end());
+
+  // Create the parser object. The constructor takes ppMacro and info per
+  // reference, so we may look into the resulting objects later.
+  cmDependsFortranParser parser(this, ppDefines, info);
 
   // Push on the starting file.
   cmDependsFortranParser_FilePush(&parser, src);
@@ -195,8 +217,7 @@ bool cmDependsFortran::Finalize(std::ostream& makeDepends,
   this->LocateModules();
 
   // Get the directory in which stamp files will be stored.
-  const char* stamp_dir =
-    this->LocalGenerator->GetMakefile()->GetCurrentOutputDirectory();
+  const char* stamp_dir = this->TargetDirectory.c_str();
 
   // Get the directory in which module files will be created.
   const char* mod_dir;
@@ -208,7 +229,8 @@ bool cmDependsFortran::Finalize(std::ostream& makeDepends,
     }
   else
     {
-    mod_dir = stamp_dir;
+    mod_dir =
+      this->LocalGenerator->GetMakefile()->GetCurrentOutputDirectory();
     }
 
   // Actually write dependencies to the streams.
@@ -330,10 +352,7 @@ void cmDependsFortran::LocateModules()
     std::ifstream fin(fname.c_str());
     if(fin)
       {
-      std::string moduleDir =
-        cmSystemTools::GetFilenamePath(
-          cmSystemTools::GetFilenamePath(targetDir));
-      this->MatchRemoteModules(fin, moduleDir.c_str());
+      this->MatchRemoteModules(fin, targetDir.c_str());
       }
     }
 }
@@ -341,8 +360,7 @@ void cmDependsFortran::LocateModules()
 //----------------------------------------------------------------------------
 void cmDependsFortran::MatchLocalModules()
 {
-  const char* stampDir =
-    this->LocalGenerator->GetMakefile()->GetCurrentOutputDirectory();
+  const char* stampDir = this->TargetDirectory.c_str();
   std::set<cmStdString> const& provides = this->Internal->TargetProvides;
   for(std::set<cmStdString>::const_iterator i = provides.begin();
       i != provides.end(); ++i)
@@ -435,7 +453,8 @@ cmDependsFortran
       i != info.Requires.end(); ++i)
     {
     // Require only modules not provided in the same source.
-    if(info.Provides.find(*i) != info.Provides.end())
+    if(std::set<cmStdString>::const_iterator(info.Provides.find(*i)) !=
+       info.Provides.end())
       {
       continue;
       }
@@ -536,7 +555,14 @@ cmDependsFortran
                                       cmLocalGenerator::HOME_OUTPUT,
                                       cmLocalGenerator::SHELL);
       makeDepends << "\t$(CMAKE_COMMAND) -E cmake_copy_f90_mod "
-                  << modFile << " " << stampFile << "\n";
+                  << modFile << " " << stampFile;
+      cmMakefile* mf = this->LocalGenerator->GetMakefile();
+      const char* cid = mf->GetDefinition("CMAKE_Fortran_COMPILER_ID");
+      if(cid && *cid)
+        {
+        makeDepends << " " << cid;
+        }
+      makeDepends << "\n";
       }
     // After copying the modules update the timestamp file so that
     // copying will not be done again until the source rebuilds.
@@ -600,6 +626,7 @@ bool cmDependsFortran::CopyModule(const std::vector<std::string>& args)
   // Implements
   //
   //   $(CMAKE_COMMAND) -E cmake_copy_f90_mod input.mod output.mod.stamp
+  //                                          [compiler-id]
   //
   // Note that the case of the .mod file depends on the compiler.  In
   // the future this copy could also account for the fact that some
@@ -608,6 +635,11 @@ bool cmDependsFortran::CopyModule(const std::vector<std::string>& args)
 
   std::string mod = args[2];
   std::string stamp = args[3];
+  std::string compilerId;
+  if(args.size() >= 5)
+    {
+    compilerId = args[4];
+    }
   std::string mod_dir = cmSystemTools::GetFilenamePath(mod);
   if(!mod_dir.empty()) { mod_dir += "/"; }
   std::string mod_upper = mod_dir;
@@ -619,23 +651,31 @@ bool cmDependsFortran::CopyModule(const std::vector<std::string>& args)
   mod_lower += ".mod";
   if(cmSystemTools::FileExists(mod_upper.c_str(), true))
     {
-    if(!cmSystemTools::CopyFileIfDifferent(mod_upper.c_str(), stamp.c_str()))
+    if(cmDependsFortran::ModulesDiffer(mod_upper.c_str(), stamp.c_str(),
+                                       compilerId.c_str()))
       {
-      std::cerr << "Error copying Fortran module from \""
-                << mod_upper.c_str() << "\" to \"" << stamp.c_str()
-                << "\".\n";
-      return false;
+      if(!cmSystemTools::CopyFileAlways(mod_upper.c_str(), stamp.c_str()))
+        {
+        std::cerr << "Error copying Fortran module from \""
+                  << mod_upper.c_str() << "\" to \"" << stamp.c_str()
+                  << "\".\n";
+        return false;
+        }
       }
     return true;
     }
   else if(cmSystemTools::FileExists(mod_lower.c_str(), true))
     {
-    if(!cmSystemTools::CopyFileIfDifferent(mod_lower.c_str(), stamp.c_str()))
+    if(cmDependsFortran::ModulesDiffer(mod_lower.c_str(), stamp.c_str(),
+                                       compilerId.c_str()))
       {
-      std::cerr << "Error copying Fortran module from \""
-                << mod_lower.c_str() << "\" to \"" << stamp.c_str()
-                << "\".\n";
-      return false;
+      if(!cmSystemTools::CopyFileAlways(mod_lower.c_str(), stamp.c_str()))
+        {
+        std::cerr << "Error copying Fortran module from \""
+                  << mod_lower.c_str() << "\" to \"" << stamp.c_str()
+                  << "\".\n";
+        return false;
+        }
       }
     return true;
     }
@@ -644,6 +684,181 @@ bool cmDependsFortran::CopyModule(const std::vector<std::string>& args)
             << "\".  Tried \"" << mod_upper.c_str()
             << "\" and \"" << mod_lower.c_str() << "\".\n";
   return false;
+}
+
+//----------------------------------------------------------------------------
+// Helper function to look for a short sequence in a stream.  If this
+// is later used for longer sequences it should be re-written using an
+// efficient string search algorithm such as Boyer-Moore.
+static
+bool cmDependsFortranStreamContainsSequence(std::ifstream& ifs,
+                                            const char* seq, int len)
+{
+  assert(len > 0);
+
+  int cur = 0;
+  while(cur < len)
+    {
+    // Get the next character.
+    int token = ifs.get();
+    if(!ifs)
+      {
+      return false;
+      }
+
+    // Check the character.
+    if(token == static_cast<int>(seq[cur]))
+      {
+      ++cur;
+      }
+    else
+      {
+      // Assume the sequence has no repeating subsequence.
+      cur = 0;
+      }
+    }
+
+  // The entire sequence was matched.
+  return true;
+}
+
+//----------------------------------------------------------------------------
+// Helper function to compare the remaining content in two streams.
+static bool cmDependsFortranStreamsDiffer(std::ifstream& ifs1,
+                                          std::ifstream& ifs2)
+{
+  // Compare the remaining content.
+  for(;;)
+    {
+    int ifs1_c = ifs1.get();
+    int ifs2_c = ifs2.get();
+    if(!ifs1 && !ifs2)
+      {
+      // We have reached the end of both streams simultaneously.
+      // The streams are identical.
+      return false;
+      }
+
+    if(!ifs1 || !ifs2 || ifs1_c != ifs2_c)
+      {
+      // We have reached the end of one stream before the other or
+      // found differing content.  The streams are different.
+      break;
+      }
+    }
+
+  return true;
+}
+
+//----------------------------------------------------------------------------
+bool cmDependsFortran::ModulesDiffer(const char* modFile,
+                                     const char* stampFile,
+                                     const char* compilerId)
+{
+  /*
+  gnu:
+    A mod file is an ascii file.
+    <bar.mod>
+    FORTRAN module created from /path/to/foo.f90 on Sun Dec 30 22:47:58 2007
+    If you edit this, you'll get what you deserve.
+    ...
+    </bar.mod>
+    As you can see the first line contains the date.
+
+  intel:
+    A mod file is a binary file.
+    However, looking into both generated bar.mod files with a hex editor
+    shows that they differ only before a sequence linefeed-zero (0x0A 0x00)
+    which is located some bytes in front of the absoulte path to the source
+    file.
+
+  sun:
+    A mod file is a binary file.  Compiling twice produces identical modules.
+
+  others:
+    TODO ...
+  */
+
+
+  /* Compilers which do _not_ produce different mod content when the same
+   * source is compiled twice
+   *   -SunPro
+   */
+  if(strcmp(compilerId, "SunPro") == 0)
+    {
+    return cmSystemTools::FilesDiffer(modFile, stampFile);
+    }
+
+#if defined(_WIN32) || defined(__CYGWIN__)
+  std::ifstream finModFile(modFile, std::ios::in | std::ios::binary);
+  std::ifstream finStampFile(stampFile, std::ios::in | std::ios::binary);
+#else
+  std::ifstream finModFile(modFile, std::ios::in);
+  std::ifstream finStampFile(stampFile, std::ios::in);
+#endif
+  if(!finModFile || !finStampFile)
+    {
+    // At least one of the files does not exist.  The modules differ.
+    return true;
+    }
+
+  /* Compilers which _do_ produce different mod content when the same
+   * source is compiled twice
+   *   -GNU
+   *   -Intel
+   *
+   * Eat the stream content until all recompile only realated changes
+   * are left bedind.
+   */
+  if (strcmp(compilerId, "GNU") == 0 )
+    {
+    const char seq[1] = {'\n'};
+    const int seqlen = 1;
+
+    if(!cmDependsFortranStreamContainsSequence(finModFile, seq, seqlen))
+      {
+      // The module is of unexpected format.  Assume it is different.
+      std::cerr << compilerId << " fortran module " << modFile
+                << " has unexpected format." << std::endl;
+      return true;
+      }
+
+    if(!cmDependsFortranStreamContainsSequence(finStampFile, seq, seqlen))
+      {
+      // The stamp must differ if the sequence is not contained.
+      return true;
+      }
+    }
+  else if(strcmp(compilerId, "Intel") == 0)
+    {
+    const char seq[2] = {'\n', '\0'};
+    const int seqlen = 2;
+
+    if(!cmDependsFortranStreamContainsSequence(finModFile, seq, seqlen))
+      {
+      // The module is of unexpected format.  Assume it is different.
+      std::cerr << compilerId << " fortran module " << modFile
+                << " has unexpected format." << std::endl;
+      return true;
+      }
+
+    if(!cmDependsFortranStreamContainsSequence(finStampFile, seq, seqlen))
+      {
+      // The stamp must differ if the sequence is not contained.
+      return true;
+      }
+    }
+
+  // Compare the remainng content.  If no compiler id matched above,
+  // including the case none was given, this will compare the whole
+  // content.
+  if(!cmDependsFortranStreamsDiffer(finModFile, finStampFile))
+    {
+    return false;
+    }
+
+   // The modules are different.
+   return true;
 }
 
 //----------------------------------------------------------------------------
@@ -690,10 +905,12 @@ bool cmDependsFortran::FindIncludeFile(const char* dir,
 //----------------------------------------------------------------------------
 cmDependsFortranParser_s
 ::cmDependsFortranParser_s(cmDependsFortran* self,
+                           std::set<std::string>& ppDefines,
                            cmDependsFortranSourceInfo& info):
-  Self(self), Info(info)
+  Self(self), PPDefinitions(ppDefines), Info(info)
 {
   this->InInterface = 0;
+  this->InPPFalseBranch = 0;
 
   // Initialize the lexical scanner.
   cmDependsFortran_yylex_init(&this->Scanner);
@@ -794,6 +1011,11 @@ void cmDependsFortranParser_StringAppend(cmDependsFortranParser* parser,
 void cmDependsFortranParser_SetInInterface(cmDependsFortranParser* parser,
                                            bool in)
 {
+  if(parser->InPPFalseBranch)
+    {
+    return;
+    }
+
   parser->InInterface = in;
 }
 
@@ -828,13 +1050,21 @@ void cmDependsFortranParser_Error(cmDependsFortranParser*, const char*)
 void cmDependsFortranParser_RuleUse(cmDependsFortranParser* parser,
                                     const char* name)
 {
-  parser->Info.Requires.insert(cmSystemTools::LowerCase(name) );
+  if(!parser->InPPFalseBranch)
+    {
+    parser->Info.Requires.insert(cmSystemTools::LowerCase(name) );
+    }
 }
 
 //----------------------------------------------------------------------------
 void cmDependsFortranParser_RuleInclude(cmDependsFortranParser* parser,
                                         const char* name)
 {
+  if(parser->InPPFalseBranch)
+    {
+    return;
+    }
+
   // If processing an include statement there must be an open file.
   assert(!parser->FileStack.empty());
 
@@ -861,48 +1091,163 @@ void cmDependsFortranParser_RuleInclude(cmDependsFortranParser* parser,
 void cmDependsFortranParser_RuleModule(cmDependsFortranParser* parser,
                                        const char* name)
 {
-  if(!parser->InInterface )
+  if(!parser->InPPFalseBranch && !parser->InInterface)
     {
     parser->Info.Provides.insert(cmSystemTools::LowerCase(name));
     }
 }
 
 //----------------------------------------------------------------------------
-void cmDependsFortranParser_RuleDefine(cmDependsFortranParser*, const char*)
+void cmDependsFortranParser_RuleDefine(cmDependsFortranParser* parser,
+                                       const char* macro)
 {
+  if(!parser->InPPFalseBranch)
+    {
+    parser->PPDefinitions.insert(macro);
+    }
 }
 
 //----------------------------------------------------------------------------
-void cmDependsFortranParser_RuleUndef(cmDependsFortranParser*, const char*)
+void cmDependsFortranParser_RuleUndef(cmDependsFortranParser* parser,
+                                      const char* macro)
 {
+  if(!parser->InPPFalseBranch)
+    {
+    std::set<std::string>::iterator match;
+    match = parser->PPDefinitions.find(macro);
+    if(match != parser->PPDefinitions.end())
+      {
+      parser->PPDefinitions.erase(match);
+      }
+    }
 }
 
 //----------------------------------------------------------------------------
-void cmDependsFortranParser_RuleIfdef(cmDependsFortranParser*, const char*)
+void cmDependsFortranParser_RuleIfdef(cmDependsFortranParser* parser,
+                                      const char* macro)
 {
+  // A new PP branch has been opened
+  parser->SkipToEnd.push(false);
+
+  if (parser->InPPFalseBranch)
+    {
+    parser->InPPFalseBranch++;
+    }
+  else if(parser->PPDefinitions.find(macro) == parser->PPDefinitions.end())
+    {
+    parser->InPPFalseBranch=1;
+    }
+  else
+    {
+    parser->SkipToEnd.top() = true;
+    }
 }
 
 //----------------------------------------------------------------------------
-void cmDependsFortranParser_RuleIfndef(cmDependsFortranParser*, const char*)
+void cmDependsFortranParser_RuleIfndef(cmDependsFortranParser* parser,
+  const char* macro)
 {
+  // A new PP branch has been opened
+  parser->SkipToEnd.push(false);
+
+  if (parser->InPPFalseBranch)
+    {
+    parser->InPPFalseBranch++;
+    }
+  else if(parser->PPDefinitions.find(macro) != parser->PPDefinitions.end())
+    {
+    parser->InPPFalseBranch = 1;
+    }
+  else
+    {
+    // ignore other branches
+    parser->SkipToEnd.top() = true;
+    }
 }
 
 //----------------------------------------------------------------------------
-void cmDependsFortranParser_RuleIf(cmDependsFortranParser*)
+void cmDependsFortranParser_RuleIf(cmDependsFortranParser* parser)
 {
+  /* Note: The current parser is _not_ able to get statements like
+   *   #if 0
+   *   #if 1
+   *   #if MYSMBOL
+   *   #if defined(MYSYMBOL)
+   *   #if defined(MYSYMBOL) && ...
+   * right.  The same for #elif.  Thus in
+   *   #if SYMBOL_1
+   *     ..
+   *   #elif SYMBOL_2
+   *     ...
+   *     ...
+   *   #elif SYMBOL_N
+   *     ..
+   *   #else
+   *     ..
+   *   #endif
+   * _all_ N+1 branches are considered.  If you got something like this
+   *   #if defined(MYSYMBOL)
+   *   #if !defined(MYSYMBOL)
+   * use
+   *   #ifdef MYSYMBOL
+   *   #ifndef MYSYMBOL
+   * instead.
+   */
+
+  // A new PP branch has been opened
+  // Never skip!  See note above.
+  parser->SkipToEnd.push(false);
 }
 
 //----------------------------------------------------------------------------
-void cmDependsFortranParser_RuleElif(cmDependsFortranParser*)
+void cmDependsFortranParser_RuleElif(cmDependsFortranParser* parser)
 {
+  /* Note: There are parser limitations.  See the note at
+   * cmDependsFortranParser_RuleIf(..)
+   */
+
+  // Allways taken unless an #ifdef or #ifndef-branch has been taken
+  // already.  If the second condition isn't meet already
+  // (parser->InPPFalseBranch == 0) correct it.
+  if(parser->SkipToEnd.top() && !parser->InPPFalseBranch)
+    {
+    parser->InPPFalseBranch = 1;
+    }
 }
 
 //----------------------------------------------------------------------------
-void cmDependsFortranParser_RuleElse(cmDependsFortranParser*)
+void cmDependsFortranParser_RuleElse(cmDependsFortranParser* parser)
 {
+  // if the parent branch is false do nothing!
+  if(parser->InPPFalseBranch > 1)
+    {
+    return;
+    }
+
+  // parser->InPPFalseBranch is either 0 or 1.  We change it denpending on
+  // parser->SkipToEnd.top()
+  if(parser->SkipToEnd.top())
+    {
+    parser->InPPFalseBranch = 1;
+    }
+  else
+    {
+    parser->InPPFalseBranch = 0;
+    }
 }
 
 //----------------------------------------------------------------------------
-void cmDependsFortranParser_RuleEndif(cmDependsFortranParser*)
+void cmDependsFortranParser_RuleEndif(cmDependsFortranParser* parser)
 {
+  if(!parser->SkipToEnd.empty())
+    {
+    parser->SkipToEnd.pop();
+    }
+
+  // #endif doesn't know if there was a "#else" in before, so it
+  // always decreases InPPFalseBranch
+  if(parser->InPPFalseBranch)
+    {
+    parser->InPPFalseBranch--;
+    }
 }

@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmSystemTools.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/19 22:15:41 $
-  Version:   $Revision: 1.357 $
+  Date:      $Date: 2008/01/25 13:11:04 $
+  Version:   $Revision: 1.361 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -563,29 +563,16 @@ std::vector<cmStdString> cmSystemTools::ParseArguments(const char* command)
   return args;
 }
 
-bool cmSystemTools::RunSingleCommand(
-  const char* command, 
-  std::string* output,
-  int *retVal, 
-  const char* dir,
-  bool verbose,
-  double timeout)
+
+bool cmSystemTools::RunSingleCommand(std::vector<cmStdString>const& command,
+                                     std::string* output ,
+                                     int* retVal , const char* dir , 
+                                     bool verbose ,
+                                     double timeout )
 {
-  if(s_DisableRunCommandOutput)
-    {
-    verbose = false;
-    }
-
-  std::vector<cmStdString> args = cmSystemTools::ParseArguments(command);
-
-  if(args.size() < 1)
-    {
-    return false;
-    }
-  
   std::vector<const char*> argv;
-  for(std::vector<cmStdString>::const_iterator a = args.begin();
-      a != args.end(); ++a)
+  for(std::vector<cmStdString>::const_iterator a = command.begin();
+      a != command.end(); ++a)
     {
     argv.push_back(a->c_str());
     }
@@ -699,6 +686,29 @@ bool cmSystemTools::RunSingleCommand(
   
   cmsysProcess_Delete(cp);
   return result;
+}
+
+bool cmSystemTools::RunSingleCommand(
+  const char* command, 
+  std::string* output,
+  int *retVal, 
+  const char* dir,
+  bool verbose,
+  double timeout)
+{
+  if(s_DisableRunCommandOutput)
+    {
+    verbose = false;
+    }
+
+  std::vector<cmStdString> args = cmSystemTools::ParseArguments(command);
+
+  if(args.size() < 1)
+    {
+    return false;
+    }
+  return cmSystemTools::RunSingleCommand(args, output,retVal, 
+                                         dir, verbose, timeout);
 }
 bool cmSystemTools::RunCommand(const char* command, 
                                std::string& output,
@@ -1116,6 +1126,23 @@ bool cmSystemTools::ComputeFileMD5(const char* source, char* md5out)
   (void)md5out;
   cmSystemTools::Message("md5sum not supported in bootstrapping mode","Error");
   return false;
+#endif
+}
+
+std::string cmSystemTools::ComputeStringMD5(const char* input)
+{
+#if defined(CMAKE_BUILD_WITH_CMAKE)
+  char md5out[32];
+  cmsysMD5* md5 = cmsysMD5_New();
+  cmsysMD5_Initialize(md5);
+  cmsysMD5_Append(md5, reinterpret_cast<unsigned char const*>(input), -1);
+  cmsysMD5_FinalizeHex(md5, md5out);
+  cmsysMD5_Delete(md5);
+  return std::string(md5out, 32);
+#else
+  (void)input;
+  cmSystemTools::Message("md5sum not supported in bootstrapping mode","Error");
+  return "";
 #endif
 }
 

@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmProperty.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/12/01 18:35:02 $
-  Version:   $Revision: 1.1 $
+  Date:      $Date: 2008/01/17 23:13:55 $
+  Version:   $Revision: 1.2 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -21,6 +21,17 @@ void cmProperty::Set(const char *name, const char *value)
 {
   this->Name = name;
   this->Value = value;
+  this->ValueHasBeenSet = true;
+}
+
+void cmProperty::Append(const char *name, const char *value)
+{
+  this->Name = name;
+  if(!this->Value.empty() && *value)
+    {
+    this->Value += ";";
+    }
+  this->Value += value;
   this->ValueHasBeenSet = true;
 }
 

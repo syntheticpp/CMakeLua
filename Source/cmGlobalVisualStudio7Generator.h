@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmGlobalVisualStudio7Generator.h,v $
   Language:  C++
-  Date:      $Date: 2007/06/28 13:09:26 $
-  Version:   $Revision: 1.43 $
+  Date:      $Date: 2008/01/31 21:38:45 $
+  Version:   $Revision: 1.45 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -114,11 +114,30 @@ protected:
   virtual void WriteSLNHeader(std::ostream& fout);
   virtual void AddPlatformDefinitions(cmMakefile* mf);
 
+  virtual void WriteTargetsToSolution(
+    std::ostream& fout,
+    cmLocalGenerator* root,
+    cmGlobalGenerator::TargetDependSet& projectTargets,
+    cmGlobalGenerator::TargetDependSet& originalTargets);
+  virtual void WriteTargetDepends(
+    std::ostream& fout,
+    cmGlobalGenerator::TargetDependSet& projectTargets);
+  virtual void WriteTargetConfigurations(
+    std::ostream& fout,
+    cmLocalGenerator* root,
+    cmGlobalGenerator::TargetDependSet& projectTargets);
+  
+  void AddAllBuildDepends(cmLocalGenerator* root,
+                          cmTarget* target,
+                          cmGlobalGenerator::TargetDependSet& targets);
+                                       
   void GenerateConfigurations(cmMakefile* mf);
 
-  void WriteExternalProject(std::ostream& fout, 
-                            const char* name, const char* path,
-                            const std::vector<std::string>& dependencies);
+  virtual void WriteExternalProject(std::ostream& fout, 
+                                    const char* name, 
+                                    const char* path,
+                                    const std::vector<std::string>&
+                                    dependencies);
 
   std::string ConvertToSolutionPath(const char* path);
 

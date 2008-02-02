@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmVariableWatchCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/04/12 19:50:39 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2008/01/23 15:27:59 $
+  Version:   $Revision: 1.3 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -35,7 +35,8 @@ cmVariableWatchCommand::cmVariableWatchCommand()
 }
 
 //----------------------------------------------------------------------------
-bool cmVariableWatchCommand::InitialPass(std::vector<std::string> const& args)
+bool cmVariableWatchCommand
+::InitialPass(std::vector<std::string> const& args, cmExecutionStatus &)
 {
   if ( args.size() < 1 )
     {
@@ -102,7 +103,8 @@ void cmVariableWatchCommand::VariableAccessed(const std::string& variable,
     newLFF.Name = command; 
     newLFF.FilePath = "Some weird path";
     newLFF.Line = 9999;
-    if(!makefile->ExecuteCommand(newLFF))
+    cmExecutionStatus status;
+    if(!makefile->ExecuteCommand(newLFF,status))
       {
       arg.FilePath =  "Unknown";
       arg.Line = 0;

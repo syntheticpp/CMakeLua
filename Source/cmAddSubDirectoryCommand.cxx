@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmAddSubDirectoryCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/03/12 14:26:59 $
-  Version:   $Revision: 1.10 $
+  Date:      $Date: 2008/01/23 15:27:59 $
+  Version:   $Revision: 1.11 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -18,7 +18,7 @@
 
 // cmAddSubDirectoryCommand
 bool cmAddSubDirectoryCommand::InitialPass
-(std::vector<std::string> const& args)
+(std::vector<std::string> const& args, cmExecutionStatus &)
 {
   if(args.size() < 1 )
     {

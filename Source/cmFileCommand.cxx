@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmFileCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/10/05 13:46:28 $
-  Version:   $Revision: 1.89 $
+  Date:      $Date: 2008/01/23 15:27:59 $
+  Version:   $Revision: 1.96 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -54,7 +54,8 @@ static mode_t mode_setgid = S_ISGID;
 #endif
 
 // cmLibraryCommand
-bool cmFileCommand::InitialPass(std::vector<std::string> const& args)
+bool cmFileCommand
+::InitialPass(std::vector<std::string> const& args, cmExecutionStatus &)
 {
   if(args.size() < 2 )
     {
@@ -205,15 +206,39 @@ bool cmFileCommand::HandleReadCommand(std::vector<std::string> const& args)
     return false;
     }
 
-  std::string fileName = args[1];
-  if ( !cmsys::SystemTools::FileIsFullPath(args[1].c_str()) )
+  cmCommandArgumentsHelper argHelper;
+  cmCommandArgumentGroup group;
+
+  cmCAString readArg    (&argHelper, "READ");
+  cmCAString fileNameArg    (&argHelper, 0);
+  cmCAString resultArg      (&argHelper, 0);
+
+  cmCAString offsetArg      (&argHelper, "OFFSET", &group);
+  cmCAString limitArg       (&argHelper, "LIMIT", &group);
+  cmCAEnabler hexOutputArg  (&argHelper, "HEX", &group);
+  readArg.Follows(0);
+  fileNameArg.Follows(&readArg);
+  resultArg.Follows(&fileNameArg);
+  group.Follows(&resultArg);
+  argHelper.Parse(&args, 0);
+
+  std::string fileName = fileNameArg.GetString();
+  if ( !cmsys::SystemTools::FileIsFullPath(fileName.c_str()) )
     {
     fileName = this->Makefile->GetCurrentDirectory();
-    fileName += "/" + args[1];
+    fileName += "/" + fileNameArg.GetString();
     }
 
-  std::string variable = args[2];
+  std::string variable = resultArg.GetString();
+
+  // Open the specified file.
+#if defined(_WIN32) || defined(__CYGWIN__)
+  std::ifstream file(fileName.c_str(), std::ios::in | 
+               (hexOutputArg.IsEnabled() ? std::ios::binary : std::ios::in));
+#else
   std::ifstream file(fileName.c_str(), std::ios::in);
+#endif
+
   if ( !file )
     {
     std::string error = "Internal CMake error when trying to open file: ";
@@ -223,36 +248,64 @@ bool cmFileCommand::HandleReadCommand(std::vector<std::string> const& args)
     return false;
     }
 
-  // if there a limit?
+  // is there a limit?
   long sizeLimit = -1;
-  if (args.size() >= 5 && args[3] == "LIMIT")
+  if (limitArg.GetString().size() > 0)
     {
-    sizeLimit = atoi(args[4].c_str());
+    sizeLimit = atoi(limitArg.GetCString());
     }
 
-  std::string output;
-  std::string line;
-  bool has_newline = false;
-  while (sizeLimit != 0 &&
-         cmSystemTools::GetLineFromStream(file, line, &has_newline,
-                                          sizeLimit) )
+  // is there an offset?
+  long offset = 0;
+  if (offsetArg.GetString().size() > 0)
     {
-    if (sizeLimit > 0)
+    offset = atoi(offsetArg.GetCString());
+    }
+
+  file.seekg(offset);
+
+  std::string output;
+
+  if (hexOutputArg.IsEnabled())
+    {
+    // Convert part of the file into hex code
+    int c;
+    while((sizeLimit != 0) && (c = file.get(), file))
       {
-      sizeLimit = sizeLimit - static_cast<long>(line.size());
-      if (has_newline)
+      char hex[4];
+      sprintf(hex, "%x", c&0xff);
+      output += hex;
+      if (sizeLimit > 0)
         {
         sizeLimit--;
         }
-      if (sizeLimit < 0)
-        {
-        sizeLimit = 0;
-        }
       }
-    output += line;
-    if ( has_newline )
+    }
+  else
+    {
+    std::string line;
+    bool has_newline = false;
+    while (sizeLimit != 0 &&
+          cmSystemTools::GetLineFromStream(file, line, &has_newline,
+                                            sizeLimit) )
       {
-      output += "\n";
+      if (sizeLimit > 0)
+        {
+        sizeLimit = sizeLimit - static_cast<long>(line.size());
+        if (has_newline)
+          {
+          sizeLimit--;
+          }
+        if (sizeLimit < 0)
+          {
+          sizeLimit = 0;
+          }
+        }
+      output += line;
+      if ( has_newline )
+        {
+        output += "\n";
+        }
       }
     }
   this->Makefile->AddDefinition(variable.c_str(), output.c_str());
@@ -702,7 +755,7 @@ struct cmFileInstaller
 
   // All instances need the file command and makefile using them.
   cmFileInstaller(cmFileCommand* fc, cmMakefile* mf):
-    FileCommand(fc), Makefile(mf), DestDirLength(0)
+    FileCommand(fc), Makefile(mf), DestDirLength(0), MatchlessFiles(true)
     {
     // Get the current manifest.
     this->Manifest =
@@ -723,6 +776,9 @@ public:
 
   // The length of the destdir setting.
   int DestDirLength;
+
+  // Whether to install a file not matching any expression.
+  bool MatchlessFiles;
 
   // The current file manifest (semicolon separated list).
   std::string Manifest;
@@ -749,7 +805,8 @@ public:
   std::vector<MatchRule> MatchRules;
 
   // Get the properties from rules matching this input file.
-  MatchProperties CollectMatchProperties(const char* file)
+  MatchProperties CollectMatchProperties(const char* file,
+                                         bool isDirectory)
     {
     // Match rules are case-insensitive on some platforms.
 #if defined(_WIN32) || defined(__APPLE__) || defined(__CYGWIN__)
@@ -758,15 +815,21 @@ public:
 #endif
 
     // Collect properties from all matching rules.
+    bool matched = false;
     MatchProperties result;
     for(std::vector<MatchRule>::iterator mr = this->MatchRules.begin();
         mr != this->MatchRules.end(); ++mr)
       {
       if(mr->Regex.find(file))
         {
+        matched = true;
         result.Exclude |= mr->Properties.Exclude;
         result.Permissions |= mr->Properties.Permissions;
         }
+      }
+    if(!matched && !this->MatchlessFiles && !isDirectory)
+      {
+      result.Exclude = true;
       }
     return result;
     }
@@ -868,7 +931,8 @@ bool cmFileInstaller::InstallFile(const char* fromFile, const char* toFile,
                                   bool always)
 {
   // Collect any properties matching this file name.
-  MatchProperties match_properties = this->CollectMatchProperties(fromFile);
+  MatchProperties match_properties =
+    this->CollectMatchProperties(fromFile, false);
 
   // Skip the file if it is excluded.
   if(match_properties.Exclude)
@@ -886,11 +950,8 @@ bool cmFileInstaller::InstallFile(const char* fromFile, const char* toFile,
   bool copy = true;
   if(!always)
     {
-    // If both files exist and "fromFile" is not newer than "toFile"
-    // do not copy.
-    int timeResult;
-    if(this->FileTimes.FileTimeCompare(fromFile, toFile, &timeResult) &&
-       timeResult <= 0)
+    // If both files exist with the same time do not copy.
+    if(!this->FileTimes.FileTimesDiffer(fromFile, toFile))
       {
       copy = false;
       }
@@ -946,7 +1007,8 @@ bool cmFileInstaller::InstallDirectory(const char* source,
                                        bool always)
 {
   // Collect any properties matching this directory name.
-  MatchProperties match_properties = this->CollectMatchProperties(source);
+  MatchProperties match_properties =
+    this->CollectMatchProperties(source, true);
 
   // Skip the directory if it is excluded.
   if(match_properties.Exclude)
@@ -1463,6 +1525,22 @@ bool cmFileCommand::ParseInstallArgs(std::vector<std::string> const& args,
         doing_permissions_dir = false;
         use_source_permissions = true;
         }
+      else if ( *cstr == "FILES_MATCHING" )
+        {
+        if(current_match_rule)
+          {
+          cmOStringStream e;
+          e << "INSTALL does not allow \"" << *cstr << "\" after REGEX.";
+          this->SetError(e.str().c_str());
+          return false;
+          }
+
+        doing_properties = false;
+        doing_files = false;
+        doing_permissions_file = false;
+        doing_permissions_dir = false;
+        installer.MatchlessFiles = false;
+        }
       else if ( *cstr == "COMPONENTS"  )
         {
         cmOStringStream e;
@@ -1537,9 +1615,11 @@ bool cmFileCommand::ParseInstallArgs(std::vector<std::string> const& args,
     // now check and postprocess what has been parsed
     if ( files.size() == 0 )
       {
-      this->SetError(
-                     "called with inapropriate arguments. No FILES provided.");
-      return false;
+      // nothing to do, no files were listed.
+      // if this is handled as error, INSTALL_FILES() creates an invalid
+      // cmake_install.cmake script with no FILES() arguments if no files were
+      // given to INSTALL_FILES(). This was accepted with CMake 2.4.x.
+      return true;
       }
 
     // Check rename form.

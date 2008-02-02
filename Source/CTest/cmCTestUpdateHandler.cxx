@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCTestUpdateHandler.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/08/03 20:42:47 $
-  Version:   $Revision: 1.38 $
+  Date:      $Date: 2008/01/31 21:38:14 $
+  Version:   $Revision: 1.41 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -541,6 +541,8 @@ int cmCTestUpdateHandler::ProcessHandler()
     return -1;
     }
   std::string start_time = this->CTest->CurrentTime();
+  unsigned int start_time_time =
+    static_cast<unsigned int>(cmSystemTools::GetTime());
   double elapsed_time_start = cmSystemTools::GetTime();
 
   cmCTestLog(this->CTest, HANDLER_VERBOSE_OUTPUT, "* Update repository: "
@@ -606,6 +608,7 @@ int cmCTestUpdateHandler::ProcessHandler()
     << "\t<BuildStamp>" << this->CTest->GetCurrentTag() << "-"
     << this->CTest->GetTestModelString() << "</BuildStamp>" << std::endl;
   os << "\t<StartDateTime>" << start_time << "</StartDateTime>\n"
+    << "\t<StartTime>" << start_time_time << "</StartTime>\n"
     << "\t<UpdateCommand>" << this->CTest->MakeXMLSafe(command)
     << "</UpdateCommand>\n"
     << "\t<UpdateType>" << this->CTest->MakeXMLSafe(
@@ -1076,6 +1079,8 @@ int cmCTestUpdateHandler::ProcessHandler()
   cmCTestLog(this->CTest, DEBUG, "End" << std::endl);
   std::string end_time = this->CTest->CurrentTime();
   os << "\t<EndDateTime>" << end_time << "</EndDateTime>\n"
+     << "\t<EndTime>" << static_cast<unsigned int>(cmSystemTools::GetTime())
+     << "</EndTime>\n"
     << "<ElapsedMinutes>" <<
     static_cast<int>((cmSystemTools::GetTime() - elapsed_time_start)/6)/10.0
     << "</ElapsedMinutes>\n"

@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCTestEmptyBinaryDirectoryCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/07/12 14:40:14 $
-  Version:   $Revision: 1.3 $
+  Date:      $Date: 2008/01/23 15:28:01 $
+  Version:   $Revision: 1.4 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -18,8 +18,8 @@
 
 #include "cmCTestScriptHandler.h"
 
-bool cmCTestEmptyBinaryDirectoryCommand::InitialPass(
-  std::vector<std::string> const& args)
+bool cmCTestEmptyBinaryDirectoryCommand
+::InitialPass(std::vector<std::string> const& args, cmExecutionStatus &)
 {
   if(args.size() != 1 )
     {

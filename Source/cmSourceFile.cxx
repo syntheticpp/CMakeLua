@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmSourceFile.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/17 15:12:19 $
-  Version:   $Revision: 1.39 $
+  Date:      $Date: 2008/01/30 16:21:54 $
+  Version:   $Revision: 1.45 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -271,6 +271,43 @@ void cmSourceFile::SetProperty(const char* prop, const char* value)
 }
 
 //----------------------------------------------------------------------------
+void cmSourceFile::AppendProperty(const char* prop, const char* value)
+{
+  if (!prop)
+    {
+    return;
+    }
+  this->Properties.AppendProperty(prop, value, cmProperty::SOURCE_FILE);
+}
+
+//----------------------------------------------------------------------------
+const char* cmSourceFile::GetPropertyForUser(const char *prop)
+{
+  // This method is a consequence of design history and backwards
+  // compatibility.  GetProperty is (and should be) a const method.
+  // Computed properties should not be stored back in the property map
+  // but instead reference information already known.  If they need to
+  // cache information in a mutable ivar to provide the return string
+  // safely then so be it.
+  //
+  // The LOCATION property is particularly problematic.  The CMake
+  // language has very loose restrictions on the names that will match
+  // a given source file (for historical reasons).  Implementing
+  // lookups correctly with such loose naming requires the
+  // cmSourceFileLocation class to commit to a particular full path to
+  // the source file as late as possible.  If the users requests the
+  // LOCATION property we must commit now.
+  if(strcmp(prop, "LOCATION") == 0)
+    {
+    // Commit to a location.
+    this->GetFullPath();
+    }
+
+  // Perform the normal property lookup.
+  return this->GetProperty(prop);
+}
+
+//----------------------------------------------------------------------------
 const char* cmSourceFile::GetProperty(const char* prop) const
 {
   // Check for computed properties.
@@ -331,16 +368,51 @@ void cmSourceFile::DefineProperties(cmake *cm)
   cm->DefineProperty
     ("ABSTRACT", cmProperty::SOURCE_FILE, 
      "Is this source file an abstract class.",
-     "A property ona source file that indicates if the source file "
+     "A property on a source file that indicates if the source file "
      "represents a class that is abstract. This only makes sense for "
      "languages that have a notion of an abstract class and it is "
-     "only used by somw tools that wrap classes into other languages.");
+     "only used by some tools that wrap classes into other languages.");
 
   cm->DefineProperty
     ("COMPILE_FLAGS", cmProperty::SOURCE_FILE, 
      "Additional flags to be added when compiling this source file.",
      "These flags will be added to the list of compile flags when "
-     "this source file.");
+     "this source file builds.  Use COMPILE_DEFINITIONS to pass additional "
+     "preprocessor definitions.");
+
+  cm->DefineProperty
+    ("COMPILE_DEFINITIONS", cmProperty::SOURCE_FILE,
+     "Preprocessor definitions for compiling a source file.",
+     "The COMPILE_DEFINITIONS property may be set to a list of preprocessor "
+     "definitions using the syntax VAR or VAR=value.  Function-style "
+     "definitions are not supported.  CMake will automatically escape "
+     "the value correctly for the native build system (note that CMake "
+     "language syntax may require escapes to specify some values).  "
+     "This property may be set on a per-configuration basis using the name "
+     "COMPILE_DEFINITIONS_<CONFIG> where <CONFIG> is an upper-case name "
+     "(ex. \"COMPILE_DEFINITIONS_DEBUG\").\n"
+     "CMake will automatically drop some definitions that "
+     "are not supported by the native build tool.  "
+     "The VS6 IDE does not support definitions with values "
+     "(but NMake does).  Xcode does not support per-configuration "
+     "definitions on source files.\n"
+     "Dislaimer: Most native build tools have poor support for escaping "
+     "certain values.  CMake has work-arounds for many cases but some "
+     "values may just not be possible to pass correctly.  If a value "
+     "does not seem to be escaped correctly, do not attempt to "
+     "work-around the problem by adding escape sequences to the value.  "
+     "Your work-around may break in a future version of CMake that "
+     "has improved escape support.  Instead consider defining the macro "
+     "in a (configured) header file.  Then report the limitation.");
+
+
+  cm->DefineProperty
+    ("COMPILE_DEFINITIONS_<CONFIG>", cmProperty::SOURCE_FILE,
+     "Per-configuration preprocessor definitions on a source file.",
+     "This is the configuration-specific version of "
+     "COMPILE_DEFINITIONS.  Note that Xcode does not support "
+     "per-configuration source file flags so this property will "
+     "be ignored by the Xcode generator.");
 
   cm->DefineProperty
     ("EXTERNAL_OBJECT", cmProperty::SOURCE_FILE, 
@@ -366,7 +438,7 @@ void cmSourceFile::DefineProperties(cmake *cm)
   cm->DefineProperty
     ("HEADER_FILE_ONLY", cmProperty::SOURCE_FILE, 
      "Is this source file only a header file.",
-     "A property ona source file that indicates if the source file "
+     "A property on a source file that indicates if the source file "
      "is a header file with no associated implementation. This is "
      "set automatically based on the file extension and is used by "
      "CMake to determine is certain dependency information should be "
@@ -374,7 +446,7 @@ void cmSourceFile::DefineProperties(cmake *cm)
 
   cm->DefineProperty
     ("KEEP_EXTENSION", cmProperty::SOURCE_FILE, 
-     "Make th eoutput file have the same extension as the source file.",
+     "Make the output file have the same extension as the source file.",
      "If this property is set then the file extension of the output "
      "file will be the same as that of the source file. Normally "
      "the output file extension is computed based on the language "

@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmEndFunctionCommand.h,v $
   Language:  C++
-  Date:      $Date: 2007/12/03 17:47:22 $
-  Version:   $Revision: 1.1 $
+  Date:      $Date: 2008/01/23 15:27:59 $
+  Version:   $Revision: 1.2 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -39,13 +39,15 @@ public:
    * Override cmCommand::InvokeInitialPass to get arguments before
    * expansion.
    */
-  virtual bool InvokeInitialPass(std::vector<cmListFileArgument> const&);
+  virtual bool InvokeInitialPass(std::vector<cmListFileArgument> const&,
+                                 cmExecutionStatus &);
   
   /**
    * This is called when the command is first encountered in
    * the CMakeLists.txt file.
    */
-  virtual bool InitialPass(std::vector<std::string> const&) {return false;}
+  virtual bool InitialPass(std::vector<std::string> const&,
+                           cmExecutionStatus &) {return false;}
 
   /**
    * This determines if the command is invoked when in script mode.

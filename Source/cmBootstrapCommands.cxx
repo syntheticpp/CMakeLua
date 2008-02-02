@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmBootstrapCommands.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/03 18:35:33 $
-  Version:   $Revision: 1.19 $
+  Date:      $Date: 2008/01/23 15:27:59 $
+  Version:   $Revision: 1.23 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -27,6 +27,7 @@
 #include "cmAddLibraryCommand.cxx"
 #include "cmAddSubDirectoryCommand.cxx"
 #include "cmAddTestCommand.cxx"
+#include "cmBreakCommand.cxx"
 #include "cmBuildCommand.cxx"
 #include "cmCMakeMinimumRequired.cxx"
 #include "cmCommandArgumentsHelper.cxx"
@@ -42,6 +43,7 @@
 #include "cmExecProgramCommand.cxx"
 #include "cmExternalMakefileProjectGenerator.cxx"
 #include "cmFindBase.cxx"
+#include "cmFindCommon.cxx"
 #include "cmFileCommand.cxx"
 #include "cmFindFileCommand.cxx"
 #include "cmFindLibraryCommand.cxx"
@@ -69,9 +71,9 @@
 #include "cmMessageCommand.cxx"
 #include "cmOptionCommand.cxx"
 #include "cmProjectCommand.cxx"
-#include "cmRaiseScopeCommand.cxx"
+#include "cmReturnCommand.cxx"
 #include "cmSetCommand.cxx"
-#include "cmSetPropertiesCommand.cxx"
+#include "cmSetPropertyCommand.cxx"
 #include "cmSetSourceFilesPropertiesCommand.cxx"
 #include "cmSetTargetPropertiesCommand.cxx"
 #include "cmSetTestsPropertiesCommand.cxx"
@@ -92,6 +94,7 @@ void GetBootstrapCommands(std::list<cmCommand*>& commands)
   commands.push_back(new cmAddLibraryCommand);
   commands.push_back(new cmAddSubDirectoryCommand);
   commands.push_back(new cmAddTestCommand);
+  commands.push_back(new cmBreakCommand);
   commands.push_back(new cmBuildCommand);
   commands.push_back(new cmCMakeMinimumRequired);
   commands.push_back(new cmConfigureFileCommand);
@@ -129,9 +132,9 @@ void GetBootstrapCommands(std::list<cmCommand*>& commands)
   commands.push_back(new cmMessageCommand);
   commands.push_back(new cmOptionCommand);
   commands.push_back(new cmProjectCommand);
-  commands.push_back(new cmRaiseScopeCommand);
+  commands.push_back(new cmReturnCommand);
   commands.push_back(new cmSetCommand);
-  commands.push_back(new cmSetPropertiesCommand);
+  commands.push_back(new cmSetPropertyCommand);
   commands.push_back(new cmSetSourceFilesPropertiesCommand);
   commands.push_back(new cmSetTargetPropertiesCommand);
   commands.push_back(new cmSetTestsPropertiesCommand);

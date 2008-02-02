@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalVisualStudio6Generator.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/11/20 16:18:04 $
-  Version:   $Revision: 1.133 $
+  Date:      $Date: 2008/01/29 22:30:34 $
+  Version:   $Revision: 1.141 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -21,6 +21,8 @@
 #include "cmSourceFile.h"
 #include "cmCacheManager.h"
 #include "cmake.h"
+
+#include "cmComputeLinkInformation.h"
 
 #include <cmsys/RegularExpression.hxx>
 
@@ -349,7 +351,7 @@ void cmLocalVisualStudio6Generator::WriteDSPFile(std::ostream& fout,
 }
 
 void cmLocalVisualStudio6Generator
-::WriteGroup(const cmSourceGroup *sg, cmTarget target, 
+::WriteGroup(const cmSourceGroup *sg, cmTarget& target,
              std::ostream &fout, const char *libName)
 {
   const std::vector<const cmSourceFile *> &sourceFiles = 
@@ -420,12 +422,35 @@ void cmLocalVisualStudio6Generator
         {
         // force a C++ file type
         compileFlags += " /TP ";
-        } 
+        }
       else if(strcmp(lang, "C") == 0)
         {
         // force to c file type
         compileFlags += " /TC ";
         }
+      }
+
+    // Add per-source and per-configuration preprocessor definitions.
+    std::map<cmStdString, cmStdString> cdmap;
+    this->AppendDefines(compileFlags,
+                        (*sf)->GetProperty("COMPILE_DEFINITIONS"), lang);
+    if(const char* cdefs = (*sf)->GetProperty("COMPILE_DEFINITIONS_DEBUG"))
+      {
+      this->AppendDefines(cdmap["DEBUG"], cdefs, lang);
+      }
+    if(const char* cdefs = (*sf)->GetProperty("COMPILE_DEFINITIONS_RELEASE"))
+      {
+      this->AppendDefines(cdmap["RELEASE"], cdefs, lang);
+      }
+    if(const char* cdefs =
+       (*sf)->GetProperty("COMPILE_DEFINITIONS_MINSIZEREL"))
+      {
+      this->AppendDefines(cdmap["MINSIZEREL"], cdefs, lang);
+      }
+    if(const char* cdefs =
+       (*sf)->GetProperty("COMPILE_DEFINITIONS_RELWITHDEBINFO"))
+      {
+      this->AppendDefines(cdmap["RELWITHDEBINFO"], cdefs, lang);
       }
 
     bool excludedFromBuild =
@@ -464,12 +489,14 @@ void cmLocalVisualStudio6Generator
         this->WriteCustomRule(fout, source.c_str(), *command, flags);
         }
       else if(!compileFlags.empty() || !objectNameDir.empty() ||
-              excludedFromBuild)
+              excludedFromBuild || !cdmap.empty())
         {
         for(std::vector<std::string>::iterator i
               = this->Configurations.begin(); 
             i != this->Configurations.end(); ++i)
           { 
+          // Strip the subdirectory name out of the configuration name.
+          std::string config = this->GetConfigName(*i);
           if (i == this->Configurations.begin())
             {
             fout << "!IF  \"$(CFG)\" == " << i->c_str() << std::endl;
@@ -486,11 +513,14 @@ void cmLocalVisualStudio6Generator
             {
             fout << "\n# ADD CPP " << compileFlags << "\n\n";
             }
+          std::map<cmStdString, cmStdString>::iterator cdi =
+            cdmap.find(cmSystemTools::UpperCase(config));
+          if(cdi != cdmap.end() && !cdi->second.empty())
+            {
+            fout << "\n# ADD CPP " << cdi->second << "\n\n";
+            }
           if(!objectNameDir.empty())
             {
-            // Strip the subdirectory name out of the configuration name.
-            std::string config = this->GetConfigName(*i);
-
             // Setup an alternate object file directory.
             fout << "\n# PROP Intermediate_Dir \""
                  << config << "/" << objectNameDir << "\"\n\n";
@@ -1031,8 +1061,7 @@ void cmLocalVisualStudio6Generator
       // Compute the proper name to use to link this library.
       std::string lib;
       std::string libDebug;
-      cmTarget* tgt = this->GlobalGenerator->FindTarget(0, j->first.c_str(),
-                                                        false);
+      cmTarget* tgt = this->GlobalGenerator->FindTarget(0, j->first.c_str());
       if(tgt)
         {
         lib = cmSystemTools::GetFilenameWithoutExtension
@@ -1474,6 +1503,33 @@ void cmLocalVisualStudio6Generator
       flags += targetFlags;
       }
 
+    // Add per-target and per-configuration preprocessor definitions.
+    this->AppendDefines
+      (flags, this->Makefile->GetProperty("COMPILE_DEFINITIONS"), 0);
+    this->AppendDefines(flags, target.GetProperty("COMPILE_DEFINITIONS"), 0);
+    this->AppendDefines
+      (flagsDebug,
+       this->Makefile->GetProperty("COMPILE_DEFINITIONS_DEBUG"), 0);
+    this->AppendDefines(flagsDebug,
+                        target.GetProperty("COMPILE_DEFINITIONS_DEBUG"), 0);
+    this->AppendDefines
+      (flagsRelease,
+       this->Makefile->GetProperty("COMPILE_DEFINITIONS_RELEASE"), 0);
+    this->AppendDefines(flagsRelease,
+                        target.GetProperty("COMPILE_DEFINITIONS_RELEASE"), 0);
+    this->AppendDefines
+      (flagsMinSize,
+       this->Makefile->GetProperty("COMPILE_DEFINITIONS_MINSIZEREL"), 0);
+    this->AppendDefines
+      (flagsMinSize,
+       target.GetProperty("COMPILE_DEFINITIONS_MINSIZEREL"), 0);
+    this->AppendDefines
+      (flagsDebugRel,
+       this->Makefile->GetProperty("COMPILE_DEFINITIONS_RELWITHDEBINFO"), 0);
+    this->AppendDefines
+      (flagsDebugRel,
+       target.GetProperty("COMPILE_DEFINITIONS_RELWITHDEBINFO"), 0);
+
     // The template files have CXX FLAGS in them, that need to be replaced.
     // There are not separate CXX and C template files, so we use the same
     // variable names.   The previous code sets up flags* variables to contain
@@ -1514,12 +1570,18 @@ void cmLocalVisualStudio6Generator
                      std::string& options)
 {
   // Compute the link information for this configuration.
-  std::vector<cmStdString> linkLibs;
-  std::vector<cmStdString> linkDirs;
-  this->ComputeLinkInformation(target, configName, linkLibs, linkDirs);
+  cmComputeLinkInformation* pcli = target.GetLinkInformation(configName);
+  if(!pcli)
+    {
+    return;
+    }
+  cmComputeLinkInformation& cli = *pcli;
+  typedef cmComputeLinkInformation::ItemVector ItemVector;
+  ItemVector const& linkLibs = cli.GetItems();
+  std::vector<std::string> const& linkDirs = cli.GetDirectories();
 
   // Build the link options code.
-  for(std::vector<cmStdString>::const_iterator d = linkDirs.begin();
+  for(std::vector<std::string>::const_iterator d = linkDirs.begin();
       d != linkDirs.end(); ++d)
     {
     std::string dir = *d;
@@ -1537,11 +1599,19 @@ void cmLocalVisualStudio6Generator
       options += "\n";
       }
     }
-  for(std::vector<cmStdString>::const_iterator l = linkLibs.begin();
+  for(ItemVector::const_iterator l = linkLibs.begin();
       l != linkLibs.end(); ++l)
     {
     options += "# ADD LINK32 ";
-    options += this->ConvertToOptionallyRelativeOutputPath(l->c_str());
+    if(l->IsPath)
+      {
+      options +=
+        this->ConvertToOptionallyRelativeOutputPath(l->Value.c_str());
+      }
+    else
+      {
+      options += l->Value;
+      }
     options += "\n";
     }
 
@@ -1583,4 +1653,31 @@ cmLocalVisualStudio6Generator
   config = config.substr(pos+1, std::string::npos);
   config = config.substr(0, config.size()-1);
   return config;
+}
+
+//----------------------------------------------------------------------------
+bool
+cmLocalVisualStudio6Generator
+::CheckDefinition(std::string const& define) const
+{
+  // Perform the standard check first.
+  if(!this->cmLocalGenerator::CheckDefinition(define))
+    {
+    return false;
+    }
+
+  // Now do the VS6-specific check.
+  if(define.find_first_of("=") != define.npos)
+    {
+    cmOStringStream e;
+    e << "WARNING: The VS6 IDE does not support preprocessor definitions "
+      << "with values.\n"
+      << "CMake is dropping a preprocessor definition: " << define << "\n"
+      << "Consider defining the macro in a (configured) header file.\n";
+    cmSystemTools::Message(e.str().c_str());
+    return false;
+    }
+
+  // Assume it is supported.
+  return true;
 }

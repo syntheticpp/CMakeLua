@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmSetTargetPropertiesCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/05/22 14:24:59 $
-  Version:   $Revision: 1.7 $
+  Date:      $Date: 2008/01/28 13:38:36 $
+  Version:   $Revision: 1.9 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -19,8 +19,8 @@
 #include "cmGlobalGenerator.h"
 
 // cmSetTargetPropertiesCommand
-bool cmSetTargetPropertiesCommand::InitialPass(
-  std::vector<std::string> const& args)
+bool cmSetTargetPropertiesCommand
+::InitialPass(std::vector<std::string> const& args, cmExecutionStatus &)
 {
   if(args.size() < 2 )
     {
@@ -95,9 +95,7 @@ bool cmSetTargetPropertiesCommand
                std::vector<std::string> &propertyPairs,
                cmMakefile *mf)
 {
-  cmTarget* target = 
-    mf->GetLocalGenerator()->GetGlobalGenerator()->FindTarget(0, tname, true);
-  if ( target)
+  if(cmTarget* target = mf->FindTargetToUse(tname))
     {
     // now loop through all the props and set them
     unsigned int k;

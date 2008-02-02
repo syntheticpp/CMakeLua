@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmGlobalVisualStudio6Generator.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/10/22 16:48:39 $
-  Version:   $Revision: 1.74 $
+  Date:      $Date: 2008/01/28 13:38:35 $
+  Version:   $Revision: 1.75 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -399,7 +399,7 @@ void cmGlobalVisualStudio6Generator::WriteProject(std::ostream& fout,
       if(j->first != dspname)
         {
         // is the library part of this DSW ? If so add dependency
-        if(this->FindTarget(0, j->first.c_str(), false))
+        if(this->FindTarget(0, j->first.c_str()))
           {
           fout << "Begin Project Dependency\n";
           fout << "Project_Dep_Name " << j->first.c_str() << "\n";

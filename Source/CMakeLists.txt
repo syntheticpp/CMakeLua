@@ -89,6 +89,10 @@ SET(SRCS
   cmCommandArgumentLexer.cxx
   cmCommandArgumentParser.cxx
   cmCommandArgumentParserHelper.cxx
+  cmComputeLinkDepends.cxx
+  cmComputeLinkDepends.h
+  cmComputeLinkInformation.cxx
+  cmComputeLinkInformation.h
   cmCustomCommand.cxx
   cmCustomCommand.h
   cmDepends.cxx
@@ -119,6 +123,12 @@ SET(SRCS
   cmExprLexer.cxx
   cmExprParser.cxx
   cmExprParserHelper.cxx
+  cmExportBuildFileGenerator.h
+  cmExportBuildFileGenerator.cxx
+  cmExportFileGenerator.h
+  cmExportFileGenerator.cxx
+  cmExportInstallFileGenerator.h
+  cmExportInstallFileGenerator.cxx
   cmExtraEclipseCDT4Generator.cxx
   cmExtraEclipseCDT4Generator.h
   cmFileTimeComparison.cxx
@@ -153,7 +163,8 @@ SET(SRCS
   cmMakefileExecutableTargetGenerator.cxx
   cmMakefileLibraryTargetGenerator.cxx
   cmMakefileUtilityTargetGenerator.cxx
-  cmOrderLinkDirectories.cxx
+  cmOrderRuntimeDirectories.cxx
+  cmOrderRuntimeDirectories.h
   cmProperty.cxx
   cmProperty.h
   cmPropertyDefinition.cxx

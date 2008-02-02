@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmRemoveDefinitionsCommand.h,v $
   Language:  C++
-  Date:      $Date: 2007/10/10 15:47:43 $
-  Version:   $Revision: 1.5 $
+  Date:      $Date: 2008/01/23 15:27:59 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -41,7 +41,8 @@ public:
    * This is called when the command is first encountered in
    * the CMakeLists.txt file.
    */
-  virtual bool InitialPass(std::vector<std::string> const& args);
+  virtual bool InitialPass(std::vector<std::string> const& args,
+                           cmExecutionStatus &status);
 
   /**
    * The name of the command as specified in CMakeList.txt.
@@ -53,8 +54,7 @@ public:
    */
   virtual const char* GetTerseDocumentation() 
     {
-    return 
-      "Removes -D define flags to the command line of C and C++ compilers.";
+    return "Removes -D define flags added by add_definitions.";
     }
   
   /**
@@ -64,10 +64,8 @@ public:
     {
     return
       "  remove_definitions(-DFOO -DBAR ...)\n"
-      "Removes flags from command line of C and C++ compilers.  "
-      "This command can be used to remove any flag from a compile line, "
-      "but the -D flag is accepted by most C/C++ compilers.  "
-      "Other flags may not be as portable.";
+      "Removes flags (added by add_definitions) from the compiler command "
+      "line for sources in the current directory and below.";
     }
   
   cmTypeMacro(cmRemoveDefinitionsCommand, cmCommand);

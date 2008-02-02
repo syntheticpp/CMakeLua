@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmGlobalGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/24 16:15:45 $
-  Version:   $Revision: 1.216 $
+  Date:      $Date: 2008/02/01 21:05:40 $
+  Version:   $Revision: 1.224 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -25,7 +25,9 @@
 #include "cmMakefile.h"
 #include "cmSourceFile.h"
 #include "cmVersion.h"
-#include "cmInstallExportGenerator.h"
+#include "cmExportInstallFileGenerator.h"
+
+#include <cmsys/Directory.hxx>
 
 #include <stdlib.h> // required for atof
 
@@ -691,7 +693,6 @@ void cmGlobalGenerator::Configure()
   this->LocalGenerators.clear();
   this->TargetDependencies.clear();
   this->TotalTargets.clear();
-  this->ImportedTotalTargets.clear();
   this->LocalGeneratorToTargetMap.clear();
   this->ProjectMap.clear();
 
@@ -784,7 +785,7 @@ void cmGlobalGenerator::Generate()
   // Compute the manifest of main targets generated.
   for (i = 0; i < this->LocalGenerators.size(); ++i)
     {
-    this->LocalGenerators[i]->GenerateTargetManifest(this->TargetManifest);
+    this->LocalGenerators[i]->GenerateTargetManifest();
     }
 
   // Create a map from local generator to the complete set of targets
@@ -997,31 +998,49 @@ int cmGlobalGenerator::Build(
   bool clean, bool fast,
   double timeout)
 {
-  *output += "\nTesting TryCompileWithoutMakefile\n";
-
   /**
    * Run an executable command and put the stdout in output.
    */
   std::string cwd = cmSystemTools::GetCurrentWorkingDirectory();
   cmSystemTools::ChangeDirectory(bindir);
+  if(output)
+    {
+    *output += "Change Dir: ";
+    *output += bindir;
+    *output += "\n";
+    }
 
   int retVal;
   bool hideconsole = cmSystemTools::GetRunCommandHideConsole();
   cmSystemTools::SetRunCommandHideConsole(true);
-
+  std::string outputBuffer;
+  std::string* outputPtr = 0;
+  if(output)
+    {
+    outputPtr = &outputBuffer;
+    }
+    
   // should we do a clean first?
   if (clean)
     {
     std::string cleanCommand =
       this->GenerateBuildCommand(makeCommandCSTR, projectName,
       0, "clean", config, false, fast);
-    if (!cmSystemTools::RunSingleCommand(cleanCommand.c_str(), output,
+    if(output)
+      {
+      *output += "\nRun Clean Command:";
+      *output += cleanCommand;
+      *output += "\n";
+      }
+
+    if (!cmSystemTools::RunSingleCommand(cleanCommand.c_str(), outputPtr,
                                          &retVal, 0, false, timeout))
       {
       cmSystemTools::SetRunCommandHideConsole(hideconsole);
       cmSystemTools::Error("Generator: execution of make clean failed.");
       if (output)
         {
+        *output += *outputPtr;
         *output += "\nGenerator: execution of make clean failed.\n";
         }
 
@@ -1029,14 +1048,24 @@ int cmGlobalGenerator::Build(
       cmSystemTools::ChangeDirectory(cwd.c_str());
       return 1;
       }
+    if (output)
+      {
+      *output += *outputPtr;
+      }
     }
 
   // now build
   std::string makeCommand =
     this->GenerateBuildCommand(makeCommandCSTR, projectName,
                                0, target, config, false, fast);
-
-  if (!cmSystemTools::RunSingleCommand(makeCommand.c_str(), output,
+  if(output)
+    {
+    *output += "\nRun Build Command:";
+    *output += makeCommand;
+    *output += "\n";
+    }
+  
+  if (!cmSystemTools::RunSingleCommand(makeCommand.c_str(), outputPtr,
                                        &retVal, 0, false, timeout))
     {
     cmSystemTools::SetRunCommandHideConsole(hideconsole);
@@ -1045,6 +1074,7 @@ int cmGlobalGenerator::Build(
        makeCommand.c_str());
     if (output)
       {
+      *output += *outputPtr;
       *output += "\nGenerator: execution of make failed. Make command was: "
         + makeCommand + "\n";
       }
@@ -1053,7 +1083,10 @@ int cmGlobalGenerator::Build(
     cmSystemTools::ChangeDirectory(cwd.c_str());
     return 1;
     }
-
+  if (output)
+    {
+    *output += *outputPtr;
+    }
   cmSystemTools::SetRunCommandHideConsole(hideconsole);
 
   // The SGI MipsPro 7.3 compiler does not return an error code when
@@ -1283,14 +1316,14 @@ void cmGlobalGenerator::FillLocalGeneratorToTargetMap()
           clg = clg->GetParent())
         {
         // This local generator includes the target.
-        std::set<cmTarget const*>& targetSet =
+        std::set<cmTarget*>& targetSet =
           this->LocalGeneratorToTargetMap[clg];
         targetSet.insert(&target);
 
         // Add dependencies of the included target.  An excluded
         // target may still be included if it is a dependency of a
         // non-excluded target.
-        TargetDependSet const& tgtdeps = this->GetTargetDepends(target);
+        TargetDependSet & tgtdeps = this->GetTargetDirectDepends(target);
         for(TargetDependSet::const_iterator ti = tgtdeps.begin();
             ti != tgtdeps.end(); ++ti)
           {
@@ -1319,9 +1352,8 @@ cmLocalGenerator* cmGlobalGenerator::FindLocalGenerator(const char* start_dir)
 
 
 //----------------------------------------------------------------------------
-cmTarget* cmGlobalGenerator::FindTarget(const char* project,
-                                        const char* name,
-                                        bool useImportedTargets)
+cmTarget*
+cmGlobalGenerator::FindTarget(const char* project, const char* name)
 {
   // if project specific
   if(project)
@@ -1329,8 +1361,7 @@ cmTarget* cmGlobalGenerator::FindTarget(const char* project,
     std::vector<cmLocalGenerator*>* gens = &this->ProjectMap[project];
     for(unsigned int i = 0; i < gens->size(); ++i)
       {
-      cmTarget* ret = (*gens)[i]->GetMakefile()->FindTarget(name,
-                                                           useImportedTargets);
+      cmTarget* ret = (*gens)[i]->GetMakefile()->FindTarget(name);
       if(ret)
         {
         return ret;
@@ -1346,16 +1377,6 @@ cmTarget* cmGlobalGenerator::FindTarget(const char* project,
       {
       return i->second;
       }
-
-    if ( useImportedTargets )
-      {
-      std::map<cmStdString,cmTarget *>::iterator importedTarget =
-        this->ImportedTotalTargets.find ( name );
-      if ( importedTarget != this->ImportedTotalTargets.end() )
-        {
-        return importedTarget->second;
-        }
-      }
     }
   return 0;
 }
@@ -1368,10 +1389,9 @@ bool cmGlobalGenerator::NameResolvesToFramework(const std::string& libname)
     return true;
     }
 
-  if(cmTarget* tgt = this->FindTarget(0, libname.c_str(), true))
+  if(cmTarget* tgt = this->FindTarget(0, libname.c_str()))
     {
-    if(tgt->GetType() == cmTarget::SHARED_LIBRARY &&
-       tgt->GetPropertyAsBool("FRAMEWORK"))
+    if(tgt->IsFrameworkOnApple())
        {
        return true;
        }
@@ -1420,6 +1440,15 @@ void cmGlobalGenerator::CreateDefaultGlobalTargets(cmTargets* targets)
   if ( this->GetPreinstallTargetName() )
     {
     depends.push_back("preinstall");
+    }
+  else
+    {
+    const char* noPackageAll =
+      mf->GetDefinition("CMAKE_SKIP_PACKAGE_ALL_DEPENDENCY");
+    if(!noPackageAll || cmSystemTools::IsOff(noPackageAll))
+      {
+      depends.push_back(this->GetAllTargetName());
+      }
     }
   if(cmSystemTools::FileExists(configFile.c_str()))
     {
@@ -1686,14 +1715,14 @@ void cmGlobalGenerator::AppendDirectoryForConfig(const char*, const char*,
 }
 
 //----------------------------------------------------------------------------
-cmGlobalGenerator::TargetDependSet const&
-cmGlobalGenerator::GetTargetDepends(cmTarget const& target)
+cmGlobalGenerator::TargetDependSet &
+cmGlobalGenerator::GetTargetDirectDepends(cmTarget & target)
 {
   // Clarify the role of the input target.
-  cmTarget const* depender = &target;
+  cmTarget * depender = &target;
 
   // if the depends are already in the map then return
-  TargetDependMap::const_iterator tgtI =
+  TargetDependMap::iterator tgtI =
     this->TargetDependencies.find(depender);
   if(tgtI != this->TargetDependencies.end())
     {
@@ -1741,18 +1770,18 @@ cmGlobalGenerator::GetTargetDepends(cmTarget const& target)
 
 //----------------------------------------------------------------------------
 bool
-cmGlobalGenerator::ConsiderTargetDepends(cmTarget const* depender,
+cmGlobalGenerator::ConsiderTargetDepends(cmTarget * depender,
                                          TargetDependSet& depender_depends,
                                          const char* dependee_name)
 {
   // Check the target's makefile first.
-  cmTarget const* dependee =
-    depender->GetMakefile()->FindTarget(dependee_name, false);
+  cmTarget * dependee =
+    depender->GetMakefile()->FindTarget(dependee_name);
 
   // Then search globally.
   if(!dependee)
     {
-    dependee = this->FindTarget(0, dependee_name, false);
+    dependee = this->FindTarget(0, dependee_name);
     }
 
   // If not found then skip then the dependee.
@@ -1762,7 +1791,7 @@ cmGlobalGenerator::ConsiderTargetDepends(cmTarget const* depender,
     }
 
   // Check whether the depender is among the dependee's dependencies.
-  std::vector<cmTarget const*> steps;
+  std::vector<cmTarget *> steps;
   if(this->FindDependency(depender, dependee, steps))
     {
     // This creates a cyclic dependency.
@@ -1773,7 +1802,7 @@ cmGlobalGenerator::ConsiderTargetDepends(cmTarget const* depender,
     for(unsigned int i = static_cast<unsigned int>(steps.size());
         i > 0; --i)
       {
-      cmTarget const* step = steps[i-1];
+      cmTarget * step = steps[i-1];
       e << "    -> " << step->GetName() << "\n";
       isStatic = isStatic && step->GetType() == cmTarget::STATIC_LIBRARY;
       }
@@ -1803,21 +1832,21 @@ cmGlobalGenerator::ConsiderTargetDepends(cmTarget const* depender,
 //----------------------------------------------------------------------------
 bool
 cmGlobalGenerator
-::FindDependency(cmTarget const* goal, cmTarget const* current,
-                 std::vector<cmTarget const*>& steps)
+::FindDependency(cmTarget * goal, cmTarget * current,
+                 std::vector<cmTarget*>& steps)
 {
   if(current == goal)
     {
     steps.push_back(current);
     return true;
     }
-  TargetDependMap::const_iterator i = this->TargetDependencies.find(current);
+  TargetDependMap::iterator i = this->TargetDependencies.find(current);
   if(i == this->TargetDependencies.end())
     {
     return false;
     }
-  TargetDependSet const& depends = i->second;
-  for(TargetDependSet::const_iterator j = depends.begin();
+  TargetDependSet & depends = i->second;
+  for(TargetDependSet::iterator j = depends.begin();
       j != depends.end(); ++j)
     {
     if(this->FindDependency(goal, *j, steps))
@@ -1831,14 +1860,8 @@ cmGlobalGenerator
 
 void cmGlobalGenerator::AddTarget(cmTargets::value_type &v)
 {
-  if (v.second.IsImported())
-    {
-    this->ImportedTotalTargets[v.first] = &v.second;
-    }
-  else
-    {
-    this->TotalTargets[v.first] = &v.second;
-    }
+  assert(!v.second.IsImported());
+  this->TotalTargets[v.first] = &v.second;
 }
 
 void cmGlobalGenerator::SetExternalMakefileProjectGenerator(
@@ -1871,3 +1894,99 @@ cmGlobalGenerator
     this->FilesReplacedDuringGenerate.end(),
     std::back_inserter(filenames));
 }
+
+void
+cmGlobalGenerator
+::GetTargetSets(cmGlobalGenerator::TargetDependSet& projectTargets,
+                cmGlobalGenerator::TargetDependSet& originalTargets,
+                cmLocalGenerator* root,
+                std::vector<cmLocalGenerator*> const& generators)
+{
+  // loop over all local generators
+  for(std::vector<cmLocalGenerator*>::const_iterator i = generators.begin();
+      i != generators.end(); ++i)
+    {
+    // check to make sure generator is not excluded
+    if(this->IsExcluded(root, *i))
+      {
+      continue;
+      }
+    cmMakefile* mf = (*i)->GetMakefile();
+    // Get the targets in the makefile
+    cmTargets &tgts = mf->GetTargets();  
+    // loop over all the targets
+    for (cmTargets::iterator l = tgts.begin(); l != tgts.end(); ++l)
+      {
+      cmTarget* target = &l->second;
+      // put the target in the set of original targets
+      originalTargets.insert(target);
+      // Get the set of targets that depend on target
+      this->AddTargetDepends(target,
+                             projectTargets);
+      }
+    }
+}
+                
+void
+cmGlobalGenerator::AddTargetDepends(cmTarget* target,
+                                    cmGlobalGenerator::TargetDependSet&
+                                    projectTargets)
+{
+  // add the target itself
+  projectTargets.insert(target);
+  // get the direct depends of target
+  cmGlobalGenerator::TargetDependSet const& tset 
+    = this->GetTargetDirectDepends(*target);
+  if(tset.size())
+    {
+    // if there are targets that depend on target 
+    // add them and their depends as well
+    for(cmGlobalGenerator::TargetDependSet::const_iterator i =
+          tset.begin(); i != tset.end(); ++i)
+      {
+      cmTarget* dtarget = *i;
+      this->AddTargetDepends(dtarget, projectTargets);
+      }
+    }
+}
+
+
+//----------------------------------------------------------------------------
+void cmGlobalGenerator::AddToManifest(const char* config,
+                                      std::string const& f)
+{
+  // Add to the main manifest for this configuration.
+  this->TargetManifest[config].insert(f);
+
+  // Add to the content listing for the file's directory.
+  std::string dir = cmSystemTools::GetFilenamePath(f);
+  std::string file = cmSystemTools::GetFilenameName(f);
+  this->DirectoryContentMap[dir].insert(file);
+}
+
+//----------------------------------------------------------------------------
+std::set<cmStdString> const&
+cmGlobalGenerator::GetDirectoryContent(std::string const& dir, bool needDisk)
+{
+  DirectoryContent& dc = this->DirectoryContentMap[dir];
+  if(needDisk && !dc.LoadedFromDisk)
+    {
+    // Load the directory content from disk.
+    cmsys::Directory d;
+    if(d.Load(dir.c_str()))
+      {
+      unsigned long n = d.GetNumberOfFiles();
+      for(unsigned long i = 0; i < n; ++i)
+        {
+        const char* f = d.GetFile(i);
+        if(strcmp(f, ".") != 0 && strcmp(f, "..") != 0)
+          {
+          dc.insert(f);
+          }
+        }
+      }
+    dc.LoadedFromDisk = true;
+    }
+  return dc;
+}
+

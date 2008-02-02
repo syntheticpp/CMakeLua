@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefileTargetGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/30 21:11:38 $
-  Version:   $Revision: 1.81 $
+  Date:      $Date: 2008/01/30 01:46:25 $
+  Version:   $Revision: 1.88 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -254,6 +254,7 @@ void cmMakefileTargetGenerator::WriteTargetLanguageFlags()
     {
     const char *lang = l->c_str();
     std::string flags;
+    std::string defines;
     bool shared = ((this->Target->GetType() == cmTarget::SHARED_LIBRARY) ||
                    (this->Target->GetType() == cmTarget::MODULE_LIBRARY));
 
@@ -263,6 +264,19 @@ void cmMakefileTargetGenerator::WriteTargetLanguageFlags()
       flags += "-D";
       flags += exportMacro;
       }
+
+    // Add preprocessor definitions for this target and configuration.
+    this->LocalGenerator->AppendDefines
+      (defines, this->Makefile->GetProperty("COMPILE_DEFINITIONS"), lang);
+    this->LocalGenerator->AppendDefines
+      (defines, this->Target->GetProperty("COMPILE_DEFINITIONS"), lang);
+    std::string defPropName = "COMPILE_DEFINITIONS_";
+    defPropName +=
+      cmSystemTools::UpperCase(this->LocalGenerator->ConfigurationName);
+    this->LocalGenerator->AppendDefines
+      (defines, this->Makefile->GetProperty(defPropName.c_str()), lang);
+    this->LocalGenerator->AppendDefines
+      (defines, this->Target->GetProperty(defPropName.c_str()), lang);
 
     // Add language-specific flags.
     this->LocalGenerator
@@ -286,6 +300,7 @@ void cmMakefileTargetGenerator::WriteTargetLanguageFlags()
       AppendFlags(flags,this->GetFrameworkFlags().c_str());
 
     *this->FlagFileStream << lang << "_FLAGS = " << flags << "\n\n";
+    *this->FlagFileStream << lang << "_DEFINES = " << defines << "\n\n";
     }
 
   // Add target-specific flags.
@@ -310,10 +325,12 @@ void cmMakefileTargetGenerator::WriteObjectRuleFiles(cmSourceFile& source)
     }
 
   // Get the full path name of the object file.
+  bool hasSourceExtension;
   std::string objNoTargetDir;
   std::string obj =
     this->LocalGenerator->GetObjectFileName(*this->Target, source,
-                                            &objNoTargetDir);
+                                            &objNoTargetDir,
+                                            &hasSourceExtension);
 
   // Avoid generating duplicate rules.
   if(this->ObjectFiles.find(obj) == this->ObjectFiles.end())
@@ -377,10 +394,12 @@ void cmMakefileTargetGenerator::WriteObjectRuleFiles(cmSourceFile& source)
     {
     objNoTargetDir = cmSystemTools::GetFilenameName(objNoTargetDir);
     }
-  this->LocalGenerator->LocalObjectFiles[objNoTargetDir].
-    push_back(
-      cmLocalUnixMakefileGenerator3::LocalObjectEntry(this->Target, lang)
-      );
+  cmLocalUnixMakefileGenerator3::LocalObjectInfo& info =
+    this->LocalGenerator->LocalObjectFiles[objNoTargetDir];
+  info.HasSourceExtension = hasSourceExtension;
+  info.push_back(
+    cmLocalUnixMakefileGenerator3::LocalObjectEntry(this->Target, lang)
+    );
 }
 
 //----------------------------------------------------------------------------
@@ -431,6 +450,35 @@ cmMakefileTargetGenerator
                           << source.GetProperty("COMPILE_FLAGS")
                           << "\n"
                           << "\n";
+    }
+
+  // Add language-specific defines.
+  std::string defines = "$(";
+  defines += lang;
+  defines += "_DEFINES)";
+
+  // Add source-sepcific preprocessor definitions.
+  if(const char* compile_defs = source.GetProperty("COMPILE_DEFINITIONS"))
+    {
+    this->LocalGenerator->AppendDefines(defines, compile_defs, lang);
+    *this->FlagFileStream << "# Custom defines: "
+                          << relativeObj << "_DEFINES = "
+                          << compile_defs << "\n"
+                          << "\n";
+    }
+  std::string configUpper =
+    cmSystemTools::UpperCase(this->LocalGenerator->ConfigurationName);
+  std::string defPropName = "COMPILE_DEFINITIONS_";
+  defPropName += configUpper;
+  if(const char* config_compile_defs =
+     source.GetProperty(defPropName.c_str()))
+    {
+    this->LocalGenerator->AppendDefines(defines, config_compile_defs, lang);
+    *this->FlagFileStream
+      << "# Custom defines: "
+      << relativeObj << "_DEFINES_" << configUpper
+      << " = " << config_compile_defs << "\n"
+      << "\n";
     }
 
   // Get the output paths for source and object files.
@@ -518,6 +566,7 @@ cmMakefileTargetGenerator
   std::string objectDir = cmSystemTools::GetFilenamePath(obj);
   vars.ObjectDir = objectDir.c_str();
   vars.Flags = flags.c_str();
+  vars.Defines = defines.c_str();
 
   // Expand placeholders in the commands.
   for(std::vector<std::string>::iterator i = commands.begin();
@@ -597,7 +646,11 @@ cmMakefileTargetGenerator
                         preprocessCommands.begin(),
                         preprocessCommands.end());
 
-        vars.PreprocessedSource = objI.c_str();
+        std::string shellObjI =
+          this->Convert(objI.c_str(),
+                        cmLocalGenerator::NONE,
+                        cmLocalGenerator::SHELL).c_str();
+        vars.PreprocessedSource = shellObjI.c_str();
 
         // Expand placeholders in the commands.
         for(std::vector<std::string>::iterator i = commands.begin();
@@ -649,7 +702,11 @@ cmMakefileTargetGenerator
                         assemblyCommands.begin(),
                         assemblyCommands.end());
 
-        vars.AssemblySource = objS.c_str();
+        std::string shellObjS =
+          this->Convert(objS.c_str(),
+                        cmLocalGenerator::NONE,
+                        cmLocalGenerator::SHELL).c_str();
+        vars.AssemblySource = shellObjS.c_str();
 
         // Expand placeholders in the commands.
         for(std::vector<std::string>::iterator i = commands.begin();
@@ -812,7 +869,7 @@ void cmMakefileTargetGenerator::WriteTargetDependRules()
   for(cmTarget::LinkLibraryVectorType::const_iterator j = libs.begin();
       j != libs.end(); ++j)
     {
-    if(cmTarget const* linkee = gg->FindTarget(0, j->first.c_str(), false))
+    if(cmTarget const* linkee = gg->FindTarget(0, j->first.c_str()))
       {
       if(emitted.insert(linkee).second)
         {
@@ -1143,10 +1200,80 @@ void
 cmMakefileTargetGenerator
 ::WriteObjectsString(std::string& buildObjs)
 {
-  std::string object;
-  const char* no_quoted =
-    this->Makefile->GetDefinition("CMAKE_NO_QUOTED_OBJECTS");
-  const char* space = "";
+  std::vector<std::string> objStrings;
+  this->WriteObjectsStrings(objStrings);
+  buildObjs = objStrings[0];
+}
+
+//----------------------------------------------------------------------------
+class cmMakefileTargetGeneratorObjectStrings
+{
+public:
+  cmMakefileTargetGeneratorObjectStrings(std::vector<std::string>& strings,
+                                         cmMakefile* mf,
+                                         cmLocalUnixMakefileGenerator3* lg,
+                                         std::string::size_type limit):
+    Strings(strings), Makefile(mf), LocalGenerator(lg), LengthLimit(limit)
+    {
+    this->NoQuotes = mf->IsOn("CMAKE_NO_QUOTED_OBJECTS");
+    this->Space = "";
+    }
+  void Feed(std::string const& obj)
+    {
+    // Construct the name of the next object.
+    if(this->NoQuotes)
+      {
+      this->NextObject =
+        this->LocalGenerator->Convert(obj.c_str(),
+                                      cmLocalGenerator::START_OUTPUT,
+                                      cmLocalGenerator::SHELL);
+      }
+    else
+      {
+      this->NextObject =
+        this->LocalGenerator->ConvertToQuotedOutputPath(obj.c_str());
+      }
+
+    // Roll over to next string if the limit will be exceeded.
+    if(this->LengthLimit != std::string::npos &&
+       (this->CurrentString.length() + 1 + this->NextObject.length()
+        > this->LengthLimit))
+      {
+      this->Strings.push_back(this->CurrentString);
+      this->CurrentString = "";
+      this->Space = "";
+      }
+
+    // Separate from previous object.
+    this->CurrentString += this->Space;
+    this->Space = " ";
+
+    // Append this object.
+    this->CurrentString += this->NextObject;
+    }
+  void Done()
+    {
+    this->Strings.push_back(this->CurrentString);
+    }
+private:
+  std::vector<std::string>& Strings;
+  cmMakefile* Makefile;
+  cmLocalUnixMakefileGenerator3* LocalGenerator;
+  std::string::size_type LengthLimit;
+  bool NoQuotes;
+  std::string CurrentString;
+  std::string NextObject;
+  const char* Space;
+};
+
+//----------------------------------------------------------------------------
+void
+cmMakefileTargetGenerator
+::WriteObjectsStrings(std::vector<std::string>& objStrings,
+                      std::string::size_type limit)
+{
+  cmMakefileTargetGeneratorObjectStrings
+    helper(objStrings, this->Makefile, this->LocalGenerator, limit);
   for(std::vector<std::string>::const_iterator i = this->Objects.begin();
       i != this->Objects.end(); ++i)
     {
@@ -1154,38 +1281,15 @@ cmMakefileTargetGenerator
       {
       continue;
       }
-    buildObjs += space;
-    space = " ";
-    if(no_quoted)
-      {
-      buildObjs +=
-        this->Convert(i->c_str(), cmLocalGenerator::START_OUTPUT,
-                      cmLocalGenerator::SHELL);
-      }
-    else
-      {
-      buildObjs +=
-        this->LocalGenerator->ConvertToQuotedOutputPath(i->c_str());
-      }
+    helper.Feed(*i);
     }
   for(std::vector<std::string>::const_iterator i =
         this->ExternalObjects.begin();
       i != this->ExternalObjects.end(); ++i)
     {
-    buildObjs += space;
-    space = " ";
-    if(no_quoted)
-      {
-      buildObjs +=
-        this->Convert(i->c_str(), cmLocalGenerator::START_OUTPUT,
-                      cmLocalGenerator::SHELL);
-      }
-    else
-      {
-      buildObjs +=
-        this->LocalGenerator->ConvertToQuotedOutputPath(i->c_str());
-      }
+    helper.Feed(*i);
     }
+  helper.Done();
 }
 
 //----------------------------------------------------------------------------
@@ -1314,7 +1418,7 @@ void cmMakefileTargetGenerator
       {
       // Depend on other CMake targets.
       if(cmTarget* tgt =
-         this->GlobalGenerator->FindTarget(0, lib->first.c_str(), false))
+         this->GlobalGenerator->FindTarget(0, lib->first.c_str()))
         {
         if(const char* location =
            tgt->GetLocation(this->LocalGenerator->ConfigurationName.c_str()))

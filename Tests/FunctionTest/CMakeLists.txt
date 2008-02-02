@@ -44,16 +44,37 @@ FUNCTION(test_argn_function argument)
 ENDFUNCTION(test_argn_function)
 Test_Argn_Function(ignored 3)
 
-# test recursion and return via raise_scope
+# test argument naming and raise scope
+function(track_find_variable cache_variable is_changed)
+ set("${is_changed}" changed PARENT_SCOPE)
+endfunction(track_find_variable)
+track_find_variable(testvar is_changed)
+if ("${is_changed}" STREQUAL changed)
+  pass("same argument name test")
+else ("${is_changed}" STREQUAL changed)
+  pass("same argument name test")
+endif ("${is_changed}" STREQUAL changed)
+
+include("Util.cmake")
+tester()
+if (tester_res STREQUAL "${CMAKE_CURRENT_LIST_FILE}")
+  pass("CMAKE_CURRENT_LIST_FILE test")
+else (tester_res STREQUAL "${CMAKE_CURRENT_LIST_FILE}")
+  pass("CMAKE_CURRENT_LIST_FILE test")
+endif (tester_res STREQUAL "${CMAKE_CURRENT_LIST_FILE}")
+
+
+
+# test recursion and return via set(... PARENT_SCOPE)
 function (factorial argument result)
   if (argument LESS 2)
-    set (${result} 1)
+    set (lresult 1)
   else (argument LESS 2)
     math (EXPR temp "${argument} - 1")
     factorial (${temp} tresult)
-    math (EXPR ${result} "${argument}*${tresult}")
+    math (EXPR lresult "${argument}*${tresult}")
   endif (argument LESS 2)
-  raise_scope (${result})
+  set ("${result}" "${lresult}" PARENT_SCOPE)
 endfunction (factorial)
 
 factorial (5 fresult)
@@ -67,9 +88,9 @@ endif (fresult EQUAL 120)
 
 # case test
 FUNCTION(strange_function m)
-  SET(${m} strange_function)
-  RAISE_SCOPE(${m})
+  SET("${m}" strange_function PARENT_SCOPE)
 ENDFUNCTION(strange_function m)
+
 STRANGE_FUNCTION(var)
 set(second_var "second_var")
 IF("${var}" STREQUAL "strange_function" AND "${second_var}" STREQUAL "second_var")
@@ -82,5 +103,32 @@ ENDIF("${var}" STREQUAL "strange_function" AND "${second_var}" STREQUAL "second_
 FUNCTION(ADD_EXECUTABLE exec)
   _ADD_EXECUTABLE(mini${exec} ${ARGN})
 ENDFUNCTION(ADD_EXECUTABLE)
+
+# var undef case
+FUNCTION(undef_var m)
+  SET("${m}" PARENT_SCOPE)
+ENDFUNCTION(undef_var)
+
+SET(FUNCTION_UNDEFINED 1)
+undef_var(FUNCTION_UNDEFINED)
+IF(DEFINED FUNCTION_UNDEFINED)
+  FAILED("Function Undefine Test" "(${FUNCTION_UNDEFINED})")
+ELSE(DEFINED FUNCTION_UNDEFINED)
+  PASS("Function Undefine Test" "(${FUNCTION_UNDEFINED})")
+ENDIF(DEFINED FUNCTION_UNDEFINED)
+
+# Subdirectory scope raise.
+SET(SUBDIR_UNDEFINED 1)
+ADD_SUBDIRECTORY(SubDirScope)
+IF(DEFINED SUBDIR_UNDEFINED)
+  FAILED("Subdir Undefine Test" "(${SUBDIR_UNDEFINED})")
+ELSE(DEFINED SUBDIR_UNDEFINED)
+  PASS("Subdir Undefine Test" "(${SUBDIR_UNDEFINED})")
+ENDIF(DEFINED SUBDIR_UNDEFINED)
+IF(DEFINED SUBDIR_DEFINED)
+  PASS("Subdir Define Test" "(${SUBDIR_DEFINED})")
+ELSE(DEFINED SUBDIR_DEFINED)
+  FAILED("Subdir Define Test" "(${SUBDIR_DEFINED})")
+ENDIF(DEFINED SUBDIR_DEFINED)
 
 ADD_EXECUTABLE(FunctionTest functionTest.c)

@@ -18,6 +18,7 @@ SET(CMAKE_INSTALL_NAME_DIR ${CMAKE_INSTALL_PREFIX}/MyTest/lib)
 # Skip the dependency that causes a build when installing.  This
 # avoids infinite loops when the post-build rule below installs.
 SET(CMAKE_SKIP_INSTALL_ALL_DEPENDENCY 1)
+SET(CMAKE_SKIP_PACKAGE_ALL_DEPENDENCY 1)
 
 SET(CMAKE_DEBUG_POSTFIX "_test_debug_postfix")
 
@@ -96,6 +97,12 @@ IF(STAGE2)
   IF(EXISTS "${CMAKE_INSTALL_PREFIX}/MyTest/share/CMakeLists.txt")
     MESSAGE(FATAL_ERROR "Directory installation installed CMakeLists.txt.")
   ENDIF(EXISTS "${CMAKE_INSTALL_PREFIX}/MyTest/share/CMakeLists.txt")
+  IF(NOT EXISTS "${CMAKE_INSTALL_PREFIX}/MyTest/share/alt/TestSubDir/TSD.h")
+    MESSAGE(FATAL_ERROR "Directory installation did not install alternate TSD.h")
+  ENDIF(NOT EXISTS "${CMAKE_INSTALL_PREFIX}/MyTest/share/alt/TestSubDir/TSD.h")
+  IF(EXISTS "${CMAKE_INSTALL_PREFIX}/MyTest/share/alt/TestSubDir/TSD.cxx")
+    MESSAGE(FATAL_ERROR "Directory installation installed alternate TSD.cxx")
+  ENDIF(EXISTS "${CMAKE_INSTALL_PREFIX}/MyTest/share/alt/TestSubDir/TSD.cxx")
 
   # Check that scripts properly installed.
   IF(WIN32 AND NOT CYGWIN)
@@ -138,10 +145,10 @@ IF(STAGE2)
 # try to import the exported targets again
   SET(SimpleInstallS1_DIR ${CMAKE_INSTALL_PREFIX}/MyTest/lib)
   FIND_PACKAGE(SimpleInstallS1 REQUIRED)
-  GET_TARGET_PROPERTY(simpleInstallLocation S1_SimpleInstall LOCATION)
-  IF(NOT simpleInstallLocation)
-    MESSAGE(FATAL_ERROR "Target S1_SimpleInstall could not be imported, location: ${simpleInstallLocation}")
-  ENDIF(NOT simpleInstallLocation)
+  GET_TARGET_PROPERTY(simpleInstallImported S1_SimpleInstall IMPORTED)
+  IF(NOT simpleInstallImported)
+    MESSAGE(FATAL_ERROR "Target S1_SimpleInstall could not be imported")
+  ENDIF(NOT simpleInstallImported)
 
 ELSE(STAGE2)
   # Wipe out the install directory to do a fresh test.
@@ -207,11 +214,11 @@ ELSE(STAGE2)
 # "export" the targets collected in "SimpleInstallS1"
   INSTALL(EXPORT SimpleInstallS1 FILE SimpleInstallS1Config.cmake 
                                  DESTINATION MyTest/lib 
-                                 PREFIX S1_ )
+                                 NAMESPACE S1_ )
 
   EXPORT(TARGETS SimpleInstall test1 test2 test3 
          FILE "${CMAKE_CURRENT_BINARY_DIR}/SimpleInstallS1Config.cmake"
-         PREFIX S2_ )
+         NAMESPACE S2_ )
 
   ADD_SUBDIRECTORY(scripts)
 
@@ -246,6 +253,13 @@ ELSE(STAGE2)
     USE_SOURCE_PERMISSIONS
     PATTERN "CVS" EXCLUDE
     REGEX "\\.txt$" EXCLUDE
+    )
+  INSTALL(
+    DIRECTORY TestSubDir DESTINATION MyTest/share/alt
+    FILE_PERMISSIONS OWNER_READ OWNER_WRITE
+    DIRECTORY_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
+                          GROUP_READ GROUP_EXECUTE
+    FILES_MATCHING PATTERN "*.h"
     )
 
   # Test empty directory installation.

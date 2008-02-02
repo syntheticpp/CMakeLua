@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmFunctionBlocker.h,v $
   Language:  C++
-  Date:      $Date: 2002/12/13 14:18:01 $
-  Version:   $Revision: 1.11 $
+  Date:      $Date: 2008/01/23 15:27:59 $
+  Version:   $Revision: 1.12 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -18,6 +18,7 @@
 #define cmFunctionBlocker_h
 
 #include "cmStandardIncludes.h"
+#include "cmExecutionStatus.h"
 class cmMakefile;
 
 /** \class cmFunctionBlocker
@@ -32,7 +33,8 @@ public:
    * should a function be blocked
    */
   virtual bool IsFunctionBlocked(const cmListFileFunction& lff,
-                                 cmMakefile&mf) = 0;
+                                 cmMakefile&mf,
+                                 cmExecutionStatus &status) = 0;
 
   /**
    * should this function blocker be removed, useful when one function adds a

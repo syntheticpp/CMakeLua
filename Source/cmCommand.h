@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCommand.h,v $
   Language:  C++
-  Date:      $Date: 2007/07/02 19:43:21 $
-  Version:   $Revision: 1.25 $
+  Date:      $Date: 2008/01/23 15:27:59 $
+  Version:   $Revision: 1.26 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -60,18 +60,20 @@ public:
    * encountered in the CMakeLists.txt file.  It expands the command's
    * arguments and then invokes the InitialPass.
    */
-  virtual bool InvokeInitialPass(const std::vector<cmListFileArgument>& args)
+  virtual bool InvokeInitialPass(const std::vector<cmListFileArgument>& args,
+                                 cmExecutionStatus &status)
     {
     std::vector<std::string> expandedArguments;
     this->Makefile->ExpandArguments(args, expandedArguments);
-    return this->InitialPass(expandedArguments);
+    return this->InitialPass(expandedArguments,status);
     }
 
   /**
    * This is called when the command is first encountered in
    * the CMakeLists.txt file.
    */
-  virtual bool InitialPass(std::vector<std::string> const& args) = 0;
+  virtual bool InitialPass(std::vector<std::string> const& args,
+                           cmExecutionStatus &) = 0;
 
   /**
    * This is called at the end after all the information
