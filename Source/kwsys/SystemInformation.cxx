@@ -3,8 +3,8 @@
   Program:   BatchMake
   Module:    $RCSfile: SystemInformation.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/02 21:18:35 $
-  Version:   $Revision: 1.20 $
+  Date:      $Date: 2008/02/03 13:14:38 $
+  Version:   $Revision: 1.21 $
   Copyright (c) 2005 Insight Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
 
@@ -3154,11 +3154,7 @@ bool SystemInformationImplementation::QueryOSInformation()
 /** Return true if the machine is 64 bits */
 bool SystemInformationImplementation::Is64Bits()
 {
-  if(sizeof(long int) == 4)
-    {
-    return false;
-    }
-  return true;
+  return (sizeof(void*) == 8);
 }
 
 } // namespace @KWSYS_NAMESPACE@
