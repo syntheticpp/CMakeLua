@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCTest.h,v $
   Language:  C++
-  Date:      $Date: 2007/12/13 22:56:49 $
-  Version:   $Revision: 1.99 $
+  Date:      $Date: 2008/02/03 13:57:41 $
+  Version:   $Revision: 1.100 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -92,7 +92,7 @@ public:
   int TestDirectory(bool memcheck);
 
   ///! what is the configuraiton type, e.g. Debug, Release etc.
-  std::string GetConfigType();
+  std::string const& GetConfigType();
   double GetTimeOut() { return this->TimeOut; }
   void SetTimeOut(double t) { this->TimeOut = t; }
 
