@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/31 21:10:32 $
-  Version:   $Revision: 1.333 $
+  Date:      $Date: 2008/02/03 13:57:41 $
+  Version:   $Revision: 1.334 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -2261,7 +2261,7 @@ std::string cmCTest::GetBinaryDir()
 }
 
 //----------------------------------------------------------------------
-std::string cmCTest::GetConfigType()
+std::string const& cmCTest::GetConfigType()
 {
   return this->ConfigType;
 }
