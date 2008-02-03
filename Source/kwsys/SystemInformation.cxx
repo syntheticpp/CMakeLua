@@ -3,8 +3,8 @@
   Program:   BatchMake
   Module:    $RCSfile: SystemInformation.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/01 17:35:50 $
-  Version:   $Revision: 1.19 $
+  Date:      $Date: 2008/02/02 21:18:35 $
+  Version:   $Revision: 1.20 $
   Copyright (c) 2005 Insight Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
 
@@ -2176,7 +2176,7 @@ int SystemInformationImplementation::RetreiveInformationFromCpuInfoFile()
   int currentId = -1;
   kwsys_stl::string idc = this->ExtractValueFromCpuInfoFile(buffer,"physical id");
 
-  while(this->CurrentPositionInFile>0)
+  while(this->CurrentPositionInFile != buffer.npos)
     {
     int id = atoi(idc.c_str());
     if(id == currentId)
