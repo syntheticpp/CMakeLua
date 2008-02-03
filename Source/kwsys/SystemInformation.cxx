@@ -3,8 +3,8 @@
   Program:   BatchMake
   Module:    $RCSfile: SystemInformation.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/03 13:14:38 $
-  Version:   $Revision: 1.21 $
+  Date:      $Date: 2008/02/03 13:20:11 $
+  Version:   $Revision: 1.22 $
   Copyright (c) 2005 Insight Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
 
@@ -2927,8 +2927,8 @@ bool SystemInformationImplementation::QueryOSInformation()
   // Try calling GetVersionEx using the OSVERSIONINFOEX structure.
   ZeroMemory (&osvi, sizeof (OSVERSIONINFOEX));
   osvi.dwOSVersionInfoSize = sizeof (OSVERSIONINFOEX);
-
-  if (!(bOsVersionInfoEx = GetVersionEx ((OSVERSIONINFO *) &osvi))) 
+  bOsVersionInfoEx = GetVersionEx ((OSVERSIONINFO *) &osvi);
+  if (!bOsVersionInfoEx) 
     {
     osvi.dwOSVersionInfoSize = sizeof (OSVERSIONINFO);
     if (!GetVersionEx ((OSVERSIONINFO *) &osvi)) 
