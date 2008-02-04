@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmGlobalVisualStudio7Generator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/30 21:22:51 $
-  Version:   $Revision: 1.98 $
+  Date:      $Date: 2008/02/04 21:05:00 $
+  Version:   $Revision: 1.99 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -336,9 +336,11 @@ void cmGlobalVisualStudio7Generator::WriteTargetsToSolution(
       {
       bool skip = false;
       // if it is a global target or the check build system target
+      // or the all_build target
       // then only use the one that is for the root
       if(target->GetType() == cmTarget::GLOBAL_TARGET
-         || !strcmp(target->GetName(), CMAKE_CHECK_BUILD_SYSTEM_TARGET))
+         || !strcmp(target->GetName(), CMAKE_CHECK_BUILD_SYSTEM_TARGET)
+         || !strcmp(target->GetName(), this->GetAllTargetName()))
         {
         if(target->GetMakefile() != root->GetMakefile())
           {
