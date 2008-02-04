@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmInstallCommandArguments.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/28 13:38:35 $
-  Version:   $Revision: 1.3 $
+  Date:      $Date: 2008/02/04 22:03:48 $
+  Version:   $Revision: 1.4 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -37,6 +37,8 @@ cmInstallCommandArguments::cmInstallCommandArguments()
 ,Permissions   (&Parser, "PERMISSIONS"   , &ArgumentGroup)
 ,Configurations(&Parser, "CONFIGURATIONS", &ArgumentGroup)
 ,Optional      (&Parser, "OPTIONAL"      , &ArgumentGroup)
+,NamelinkOnly  (&Parser, "NAMELINK_ONLY" , &ArgumentGroup)
+,NamelinkSkip  (&Parser, "NAMELINK_SKIP" , &ArgumentGroup)
 ,GenericArguments(0)
 {
   this->Component.SetDefaultString("Unspecified");
@@ -103,6 +105,32 @@ bool cmInstallCommandArguments::GetOptional() const
   if (this->GenericArguments!=0)
     {
     return this->GenericArguments->GetOptional();
+    }
+  return false;
+}
+
+bool cmInstallCommandArguments::GetNamelinkOnly() const
+{
+  if (this->NamelinkOnly.IsEnabled())
+    {
+    return true;
+    }
+  if (this->GenericArguments!=0)
+    {
+    return this->GenericArguments->GetNamelinkOnly();
+    }
+  return false;
+}
+
+bool cmInstallCommandArguments::GetNamelinkSkip() const
+{
+  if (this->NamelinkSkip.IsEnabled())
+    {
+    return true;
+    }
+  if (this->GenericArguments!=0)
+    {
+    return this->GenericArguments->GetNamelinkSkip();
     }
   return false;
 }

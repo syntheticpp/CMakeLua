@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmInstallTargetGenerator.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/29 20:07:33 $
-  Version:   $Revision: 1.22 $
+  Date:      $Date: 2008/02/04 22:03:48 $
+  Version:   $Revision: 1.23 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -35,6 +35,16 @@ public:
     bool optional = false
     );
   virtual ~cmInstallTargetGenerator();
+
+  /** Select the policy for installing shared library linkable name
+      symlinks.  */
+  enum NamelinkModeType
+  {
+    NamelinkModeNone,
+    NamelinkModeOnly,
+    NamelinkModeSkip
+  };
+  void SetNamelinkMode(NamelinkModeType mode) { this->NamelinkMode = mode; }
 
   std::string GetInstallFilename(const char* config) const;
   static std::string GetInstallFilename(cmTarget*target, const char* config, 
@@ -72,6 +82,7 @@ protected:
   bool ImportLibrary;
   std::string FilePermissions;
   bool Optional;
+  NamelinkModeType NamelinkMode;
 };
 
 #endif
