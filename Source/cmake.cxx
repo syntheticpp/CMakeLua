@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmake.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/24 19:37:48 $
-  Version:   $Revision: 1.355 $
+  Date:      $Date: 2008/02/04 20:22:10 $
+  Version:   $Revision: 1.356 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -3245,6 +3245,13 @@ void cmake::DefineProperties(cmake *cm)
      "platform supports shared libraries. Basically all current general "
      "general purpose OS do so, the exception are usually embedded systems "
      "with no or special OSs.");
+
+  cm->DefineProperty
+    ("TARGET_ARCHIVES_MAY_BE_SHARED_LIBS", cmProperty::GLOBAL,
+     "Set if shared libraries may be named like archives.",
+     "On AIX shared libraries may be named \"lib<name>.a\".  "
+     "This property is set to true on such platforms.");
+
   cm->DefineProperty
     ("FIND_LIBRARY_USE_LIB64_PATHS", cmProperty::GLOBAL,
      "Whether FIND_LIBRARY should automatically search lib64 directories.",

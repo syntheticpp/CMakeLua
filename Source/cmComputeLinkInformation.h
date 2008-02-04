@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmComputeLinkInformation.h,v $
   Language:  C++
-  Date:      $Date: 2008/02/01 13:56:00 $
-  Version:   $Revision: 1.11 $
+  Date:      $Date: 2008/02/04 20:22:10 $
+  Version:   $Revision: 1.12 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -21,6 +21,7 @@
 
 #include <cmsys/RegularExpression.hxx>
 
+class cmake;
 class cmGlobalGenerator;
 class cmLocalGenerator;
 class cmMakefile;
@@ -79,6 +80,7 @@ private:
   cmMakefile* Makefile;
   cmLocalGenerator* LocalGenerator;
   cmGlobalGenerator* GlobalGenerator;
+  cmake* CMakeInstance;
 
   // Configuration information.
   const char* Config;
@@ -114,6 +116,7 @@ private:
   std::string SharedLinkTypeFlag;
   bool LinkTypeEnabled;
   void SetCurrentLinkType(LinkType lt);
+  bool ArchivesMayBeShared;
 
   // Link item parsing.
   void ComputeItemParserInfo();
