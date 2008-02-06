@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmake.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/04 20:22:10 $
-  Version:   $Revision: 1.356 $
+  Date:      $Date: 2008/02/06 04:10:41 $
+  Version:   $Revision: 1.357 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -3295,6 +3295,13 @@ void cmake::DefineProperties(cmake *cm)
     "__CMAKE_DELETE_CACHE_CHANGE_VARS_", cmProperty::GLOBAL,
     "Internal property",
     "Used to detect compiler changes, Do not set.");
+
+  cm->DefineProperty(
+    "GLOBAL_DEPENDS_DEBUG_MODE", cmProperty::GLOBAL,
+    "Enable global target dependency graph debug mode.",
+    "CMake automatically analyzes the global inter-target dependency graph "
+    "at the beginning of native build system generation.  "
+    "This property causes it to display details of its analysis to stderr.");
 
   // ================================================================
   // define variables as well
