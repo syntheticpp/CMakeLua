@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmFindLibraryCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/31 12:50:40 $
-  Version:   $Revision: 1.55 $
+  Date:      $Date: 2008/02/06 20:26:22 $
+  Version:   $Revision: 1.56 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -263,6 +263,16 @@ std::string cmFindLibraryCommand::FindLibrary(const char* name)
       }
     if(!onlyFrameworks)
       {
+      // Try the original library name as specified by the user.
+      tryPath = *p;
+      tryPath += name;
+      if(cmSystemTools::FileExists(tryPath.c_str(), true))
+        {
+        tryPath = cmSystemTools::CollapseFullPath(tryPath.c_str());
+        cmSystemTools::ConvertToUnixSlashes(tryPath);
+        return tryPath;
+        }
+
       // Try various library naming conventions.
       for(std::vector<std::string>::iterator prefix = prefixes.begin();
           prefix != prefixes.end(); ++prefix)
