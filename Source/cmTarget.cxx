@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmTarget.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/06 19:06:50 $
-  Version:   $Revision: 1.192 $
+  Date:      $Date: 2008/02/06 19:19:03 $
+  Version:   $Revision: 1.193 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -2093,13 +2093,17 @@ std::string cmTarget::NormalGetFullPath(const char* config, bool implib,
   fpath += "/";
 
   // Add the full name of the target.
-  if(realname)
+  if(implib)
+    {
+    fpath += this->GetFullName(config, true);
+    }
+  else if(realname)
     {
     fpath += this->NormalGetRealName(config);
     }
   else
     {
-    fpath += this->GetFullName(config, implib);
+    fpath += this->GetFullName(config, false);
     }
   return fpath;
 }
