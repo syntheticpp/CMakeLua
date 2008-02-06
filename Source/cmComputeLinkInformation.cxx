@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmComputeLinkInformation.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/04 20:22:10 $
-  Version:   $Revision: 1.17 $
+  Date:      $Date: 2008/02/06 18:34:21 $
+  Version:   $Revision: 1.18 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -514,7 +514,8 @@ void cmComputeLinkInformation::AddItem(std::string const& item, cmTarget* tgt)
       // platform.  Add it now.
       std::string linkItem;
       linkItem = this->LoaderFlag;
-      std::string exe = tgt->GetFullPath(config, this->UseImportLibrary);
+      std::string exe = tgt->GetFullPath(config, this->UseImportLibrary,
+                                         true);
       linkItem += exe;
       this->Items.push_back(Item(linkItem, true));
       this->Depends.push_back(exe);
@@ -527,7 +528,7 @@ void cmComputeLinkInformation::AddItem(std::string const& item, cmTarget* tgt)
          (impexe || tgt->GetType() == cmTarget::SHARED_LIBRARY));
 
       // Pass the full path to the target file.
-      std::string lib = tgt->GetFullPath(config, implib);
+      std::string lib = tgt->GetFullPath(config, implib, true);
       this->Depends.push_back(lib);
 
       if(tgt->IsFrameworkOnApple())
@@ -1254,14 +1255,13 @@ cmComputeLinkInformation::AddLibraryRuntimeInfo(std::string const& fullPath,
   std::string soName = target->GetSOName(this->Config);
   const char* soname = soName.empty()? 0 : soName.c_str();
 
-  // Add the library runtime entry.
-  this->AddLibraryRuntimeInfo(fullPath, soname);
+  // Include this library in the runtime path ordering.
+  this->OrderRuntimeSearchPath->AddLibrary(fullPath, soname);
 }
 
 //----------------------------------------------------------------------------
 void
-cmComputeLinkInformation::AddLibraryRuntimeInfo(std::string const& fullPath,
-                                                const char* soname)
+cmComputeLinkInformation::AddLibraryRuntimeInfo(std::string const& fullPath)
 {
   // Get the name of the library from the file name.
   std::string file = cmSystemTools::GetFilenameName(fullPath);
@@ -1284,7 +1284,7 @@ cmComputeLinkInformation::AddLibraryRuntimeInfo(std::string const& fullPath,
     }
 
   // Include this library in the runtime path ordering.
-  this->OrderRuntimeSearchPath->AddLibrary(fullPath, soname);
+  this->OrderRuntimeSearchPath->AddLibrary(fullPath);
 }
 
 //----------------------------------------------------------------------------

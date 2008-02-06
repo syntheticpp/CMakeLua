@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmComputeLinkInformation.h,v $
   Language:  C++
-  Date:      $Date: 2008/02/04 20:22:10 $
-  Version:   $Revision: 1.12 $
+  Date:      $Date: 2008/02/06 18:34:44 $
+  Version:   $Revision: 1.13 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -162,8 +162,7 @@ private:
   // Runtime path computation.
   cmOrderRuntimeDirectories* OrderRuntimeSearchPath;
   void AddLibraryRuntimeInfo(std::string const& fullPath, cmTarget* target);
-  void AddLibraryRuntimeInfo(std::string const& fullPath,
-                             const char* soname = 0);
+  void AddLibraryRuntimeInfo(std::string const& fullPath);
 
   // Dependent library path computation.
   cmOrderRuntimeDirectories* OrderDependentRPath;

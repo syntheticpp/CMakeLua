@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmTarget.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/01 13:56:00 $
-  Version:   $Revision: 1.190 $
+  Date:      $Date: 2008/02/06 18:34:44 $
+  Version:   $Revision: 1.191 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -2008,6 +2008,40 @@ std::string cmTarget::GetSOName(const char* config)
 }
 
 //----------------------------------------------------------------------------
+std::string cmTarget::NormalGetRealName(const char* config)
+{
+  // This should not be called for imported targets.
+  // TODO: Split cmTarget into a class hierarchy to get compile-time
+  // enforcement of the limited imported target API.
+  if(this->IsImported())
+    {
+    abort();
+    }
+
+  if(this->GetType() == cmTarget::EXECUTABLE)
+    {
+    // Compute the real name that will be built.
+    std::string name;
+    std::string realName;
+    std::string impName;
+    std::string pdbName;
+    this->GetExecutableNames(name, realName, impName, pdbName, config);
+    return realName;
+    }
+  else
+    {
+    // Compute the real name that will be built.
+    std::string name;
+    std::string soName;
+    std::string realName;
+    std::string impName;
+    std::string pdbName;
+    this->GetLibraryNames(name, soName, realName, impName, pdbName, config);
+    return realName;
+    }
+}
+
+//----------------------------------------------------------------------------
 std::string cmTarget::GetFullName(const char* config, bool implib)
 {
   if(this->IsImported())
@@ -2037,7 +2071,8 @@ void cmTarget::GetFullNameComponents(std::string& prefix, std::string& base,
 }
 
 //----------------------------------------------------------------------------
-std::string cmTarget::GetFullPath(const char* config, bool implib)
+std::string cmTarget::GetFullPath(const char* config, bool implib,
+                                  bool realname)
 {
   if(this->IsImported())
     {
@@ -2045,19 +2080,27 @@ std::string cmTarget::GetFullPath(const char* config, bool implib)
     }
   else
     {
-    return this->NormalGetFullPath(config, implib);
+    return this->NormalGetFullPath(config, implib, realname);
     }
 }
 
 //----------------------------------------------------------------------------
-std::string cmTarget::NormalGetFullPath(const char* config, bool implib)
+std::string cmTarget::NormalGetFullPath(const char* config, bool implib,
+                                        bool realname)
 {
   // Start with the output directory for the target.
   std::string fpath = this->GetDirectory(config, implib);
   fpath += "/";
 
   // Add the full name of the target.
-  fpath += this->GetFullName(config, implib);
+  if(realname)
+    {
+    fpath += this->NormalGetRealName(config);
+    }
+  else
+    {
+    fpath += this->GetFullName(config, implib);
+    }
   return fpath;
 }
 
