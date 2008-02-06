@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmFileCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/06 14:35:02 $
-  Version:   $Revision: 1.97 $
+  Date:      $Date: 2008/02/06 14:46:58 $
+  Version:   $Revision: 1.98 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1918,7 +1918,6 @@ cmFileCommand::HandleDownloadCommand(std::vector<std::string>
   std::vector<std::string>::const_iterator i = args.begin();
   if(args.size() < 3)
     {
-    std::cout << args.size() << "\n";
     this->SetError("FILE(DOWNLOAD url file) must be called with "
                    "at least three arguments.");
     return false;
@@ -1971,11 +1970,6 @@ cmFileCommand::HandleDownloadCommand(std::vector<std::string>
       }
     i++;
     }
-  std::cout << "log var: [" << verboseLog << "]\n"; 
-  std::cout << "Url: [" << url << "]\n";
-  std::cout << "file: [" << file << "]\n";
-  std::cout << "timeout: [" << timeout << "]\n";
-
   std::ofstream fout(file.c_str());
   if(!fout)
     {
@@ -2010,7 +2004,6 @@ cmFileCommand::HandleDownloadCommand(std::vector<std::string>
     curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout ); 
     }
   CURLcode res = curl_easy_perform(curl);
-  std::cout << "res = " << res << "\n";
   /* always cleanup */
   curl_easy_cleanup(curl);
   if(statusVar.size())
