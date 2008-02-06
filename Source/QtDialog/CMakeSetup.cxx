@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: CMakeSetup.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/01 16:48:00 $
-  Version:   $Revision: 1.11 $
+  Date:      $Date: 2008/02/06 19:45:32 $
+  Version:   $Revision: 1.12 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -64,8 +64,13 @@ static const char * cmDocumentationOptions[][3] =
 
 int main(int argc, char** argv)
 {
-  cmSystemTools::FindExecutableDirectory(argv[0]);
   QApplication app(argc, argv);
+ 
+  QDir cmExecDir(QApplication::applicationDirPath());
+#if defined(Q_OS_MAC)
+  cmExecDir.cd("../../../");
+#endif
+  cmSystemTools::FindExecutableDirectory(cmExecDir.filePath("cmake").toAscii().data());
 
   QTranslator translator;
   QString transfile = QString("cmake_%1").arg(QLocale::system().name());
