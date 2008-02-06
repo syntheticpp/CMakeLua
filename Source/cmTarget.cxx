@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmTarget.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/06 18:34:44 $
-  Version:   $Revision: 1.191 $
+  Date:      $Date: 2008/02/06 19:06:50 $
+  Version:   $Revision: 1.192 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -2475,7 +2475,7 @@ void cmTarget::GetExecutableNamesInternal(std::string& name,
 #else
   // Check for executable version properties.
   const char* version = this->GetProperty("VERSION");
-  if(type != cmTarget::EXECUTABLE)
+  if(type != cmTarget::EXECUTABLE || this->Makefile->IsOn("XCODE"))
     {
     version = 0;
     }
