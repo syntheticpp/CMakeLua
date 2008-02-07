@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmInstallCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/06 19:20:35 $
-  Version:   $Revision: 1.44 $
+  Date:      $Date: 2008/02/07 21:22:00 $
+  Version:   $Revision: 1.45 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -223,6 +223,9 @@ bool cmInstallCommand::HandleTargetsMode(std::vector<std::string> const& args)
 
   argHelper.Parse(&args, 0);
 
+  // now parse the generic args (i.e. the ones not specialized on LIBRARY/
+  // ARCHIVE, RUNTIME etc. (see above)
+  // These generic args also contain the targets and the export stuff
   std::vector<std::string> unknownArgs;
   cmInstallCommandArguments genericArgs;
   cmCAStringVector targetList(&genericArgs.Parser, "TARGETS");
@@ -241,6 +244,8 @@ bool cmInstallCommand::HandleTargetsMode(std::vector<std::string> const& args)
   cmInstallCommandArguments publicHeaderArgs;
   cmInstallCommandArguments resourceArgs;
 
+  // now parse the args for specific parts of the target (e.g. LIBRARY, 
+  // RUNTIME, ARCHIVE etc.
   archiveArgs.Parse      (&archiveArgVector.GetVector(),       &unknownArgs);
   libraryArgs.Parse      (&libraryArgVector.GetVector(),       &unknownArgs);
   runtimeArgs.Parse      (&runtimeArgVector.GetVector(),       &unknownArgs);
