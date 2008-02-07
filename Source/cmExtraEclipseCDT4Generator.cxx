@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmExtraEclipseCDT4Generator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/07 21:26:00 $
-  Version:   $Revision: 1.8 $
+  Date:      $Date: 2008/02/07 23:24:55 $
+  Version:   $Revision: 1.9 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   Copyright (c) 2004 Alexander Neundorf neundorf@kde.org, All rights reserved.
@@ -283,16 +283,21 @@ void cmExtraEclipseCDT4Generator::CreateProjectFile() const
          it != this->GlobalGenerator->GetProjectMap().end();
          ++it)
       {
-      fout <<
-        "\t\t<link>\n"
-        "\t\t\t<name>" << it->first << "</name>\n"
-        "\t\t\t<type>2</type>\n"
-        "\t\t\t<location>"
-        << this->GetEclipsePath(
-             it->second[0]->GetMakefile()->GetStartDirectory())
-        << "</location>\n"
-        "\t\t</link>\n"
-        ;
+      std::string linkSourceDirectory =this->GetEclipsePath(
+                            it->second[0]->GetMakefile()->GetStartDirectory());
+      if (!cmSystemTools::IsSubDirectory(homeOutputDirectory.c_str(),
+                                         linkSourceDirectory.c_str()))
+        {
+        fout <<
+          "\t\t<link>\n"
+          "\t\t\t<name>" << it->first << "</name>\n"
+          "\t\t\t<type>2</type>\n"
+          "\t\t\t<location>"
+          << this->GetEclipsePath(linkSourceDirectory)
+          << "</location>\n"
+          "\t\t</link>\n"
+          ;
+        }
       }
     // for EXECUTABLE_OUTPUT_PATH when not in binary dir
     std::string output_path = mf->GetDefinition("EXECUTABLE_OUTPUT_PATH");
