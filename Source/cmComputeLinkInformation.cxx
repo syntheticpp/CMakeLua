@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmComputeLinkInformation.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/06 18:34:21 $
-  Version:   $Revision: 1.18 $
+  Date:      $Date: 2008/02/07 01:14:55 $
+  Version:   $Revision: 1.19 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -327,6 +327,11 @@ cmComputeLinkInformation
       new cmOrderRuntimeDirectories(this->GlobalGenerator, target->GetName(),
                                     "dependent library path");
     }
+
+  // Add the search path entries requested by the user to the runtime
+  // path computation.
+  this->OrderRuntimeSearchPath->AddDirectories(
+     this->Target->GetLinkDirectories());
 
   // Get the implicit link directories for this platform.
   if(const char* implicitLinks =
