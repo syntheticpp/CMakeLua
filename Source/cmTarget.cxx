@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmTarget.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/06 19:19:03 $
-  Version:   $Revision: 1.193 $
+  Date:      $Date: 2008/02/07 21:49:11 $
+  Version:   $Revision: 1.194 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -3299,6 +3299,9 @@ cmTargetLinkInterface* cmTarget::ComputeLinkInterface(const char* config)
 cmComputeLinkInformation*
 cmTarget::GetLinkInformation(const char* config)
 {
+  // Link information does not make sense for static libraries.
+  assert(this->GetType() != cmTarget::STATIC_LIBRARY);
+
   // Lookup any existing information for this configuration.
   std::map<cmStdString, cmComputeLinkInformation*>::iterator
     i = this->LinkInformation.find(config?config:"");

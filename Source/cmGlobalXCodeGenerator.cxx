@@ -3,8 +3,8 @@
 Program:   CMake - Cross-Platform Makefile Generator
 Module:    $RCSfile: cmGlobalXCodeGenerator.cxx,v $
 Language:  C++
-Date:      $Date: 2008/01/29 20:07:33 $
-Version:   $Revision: 1.183 $
+Date:      $Date: 2008/02/07 21:49:11 $
+Version:   $Revision: 1.184 $
 
 Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
 See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -2092,6 +2092,12 @@ void cmGlobalXCodeGenerator
       } 
     }
 
+  // Skip link information for static libraries.
+  if(cmtarget->GetType() == cmTarget::STATIC_LIBRARY)
+    {
+    return;
+    }
+
   // Loop over configuration types and set per-configuration info.
   for(std::vector<std::string>::iterator i =
         this->CurrentConfigurationTypes.begin();
@@ -2166,29 +2172,28 @@ void cmGlobalXCodeGenerator
     }
 
     // now add the link libraries
-    if(cmtarget->GetType() != cmTarget::STATIC_LIBRARY)
+    {
+    std::string linkLibs;
+    const char* sep = "";
+    typedef cmComputeLinkInformation::ItemVector ItemVector;
+    ItemVector const& libNames = cli.GetItems();
+    for(ItemVector::const_iterator li = libNames.begin();
+        li != libNames.end(); ++li)
       {
-      std::string linkLibs;
-      const char* sep = "";
-      typedef cmComputeLinkInformation::ItemVector ItemVector;
-      ItemVector const& libNames = cli.GetItems();
-      for(ItemVector::const_iterator li = libNames.begin();
-          li != libNames.end(); ++li)
+      linkLibs += sep;
+      sep = " ";
+      if(li->IsPath)
         {
-        linkLibs += sep;
-        sep = " ";
-        if(li->IsPath)
-          {
-          linkLibs += this->XCodeEscapePath(li->Value.c_str());
-          }
-        else
-          {
-          linkLibs += li->Value;
-          }
+        linkLibs += this->XCodeEscapePath(li->Value.c_str());
         }
-      this->AppendBuildSettingAttribute(target, "OTHER_LDFLAGS",
-                                        linkLibs.c_str(), configName);
+      else
+        {
+        linkLibs += li->Value;
+        }
       }
+    this->AppendBuildSettingAttribute(target, "OTHER_LDFLAGS",
+                                      linkLibs.c_str(), configName);
+    }
     }
 }
 
