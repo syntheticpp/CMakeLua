@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmFileCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/06 14:46:58 $
-  Version:   $Revision: 1.98 $
+  Date:      $Date: 2008/02/07 18:26:16 $
+  Version:   $Revision: 1.99 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1970,7 +1970,7 @@ cmFileCommand::HandleDownloadCommand(std::vector<std::string>
       }
     i++;
     }
-  std::ofstream fout(file.c_str());
+  std::ofstream fout(file.c_str(), std::ios::binary);
   if(!fout)
     {
     this->SetError("FILE(DOWNLOAD url file TIMEOUT time) can not open "
@@ -2008,8 +2008,10 @@ cmFileCommand::HandleDownloadCommand(std::vector<std::string>
   curl_easy_cleanup(curl);
   if(statusVar.size())
     {
-    this->Makefile->AddDefinition(statusVar.c_str(),
-                                  curl_easy_strerror(res));
+    cmOStringStream result;
+    result << (int)res << ";\"" << curl_easy_strerror(res) << "\"";
+    this->Makefile->AddDefinition(statusVar.c_str(), 
+                                  result.str().c_str());
     }
   curl_global_cleanup();
   if(chunkDebug.size())
