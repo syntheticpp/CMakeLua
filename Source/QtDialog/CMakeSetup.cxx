@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: CMakeSetup.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/06 20:10:32 $
-  Version:   $Revision: 1.13 $
+  Date:      $Date: 2008/02/08 15:42:14 $
+  Version:   $Revision: 1.14 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -19,6 +19,7 @@
 #include <QFileInfo>
 #include <QDir>
 #include <QTranslator>
+#include <QLocale>
 
 #include "CMakeSetupDialog.h"
 #include "cmDocumentation.h"
@@ -65,22 +66,29 @@ static const char * cmDocumentationOptions[][3] =
 int main(int argc, char** argv)
 {
   QApplication app(argc, argv);
- 
+
+  // tell the cmake library where cmake is 
   QDir cmExecDir(QApplication::applicationDirPath());
 #if defined(Q_OS_MAC)
   cmExecDir.cd("../../../");
 #endif
   cmSystemTools::FindExecutableDirectory(cmExecDir.filePath("cmake").toAscii().data());
 
+  // pick up translation files if they exists in the data directory
+  QDir translationsDir = cmExecDir;
+  translationsDir.cd(".." CMAKE_DATA_DIR);
+  translationsDir.cd("i18n");
   QTranslator translator;
   QString transfile = QString("cmake_%1").arg(QLocale::system().name());
-  translator.load(transfile, app.applicationDirPath());
+  translator.load(transfile, translationsDir.path());
   app.installTranslator(&translator);
   
+  // app setup
   app.setApplicationName("CMakeSetup");
   app.setOrganizationName("Kitware");
   app.setWindowIcon(QIcon(":/Icons/CMakeSetup.png"));
   
+  // do docs, if args were given
   cmDocumentation doc;
   if(app.arguments().size() > 1 &&
      doc.CheckOptions(app.argc(), app.argv()))
