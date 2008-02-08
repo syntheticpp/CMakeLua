@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: QCMake.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/01 15:41:29 $
-  Version:   $Revision: 1.13 $
+  Date:      $Date: 2008/02/08 16:26:08 $
+  Version:   $Revision: 1.14 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -132,6 +132,7 @@ void QCMake::configure()
     this->CMakeInstance->CreateGlobalGenerator(this->Generator.toAscii().data()));
   this->CMakeInstance->SetCMakeCommand(this->CMakeExecutable.toAscii().data());
   this->CMakeInstance->LoadCache();
+  this->CMakeInstance->PreLoadCMakeFiles();
 
   cmSystemTools::ResetErrorOccuredFlag();
 
