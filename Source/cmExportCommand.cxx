@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmExportCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/30 22:25:52 $
-  Version:   $Revision: 1.10 $
+  Date:      $Date: 2008/02/06 19:20:35 $
+  Version:   $Revision: 1.11 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -169,7 +169,7 @@ bool cmExportCommand
     }
 
   // Generate the import file.
-  if(!ebfg.GenerateImportFile())
+  if(!ebfg.GenerateImportFile() && this->ErrorMessage.empty())
     {
     this->SetError("could not write export file.");
     return false;

@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmInstallCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/28 19:46:16 $
-  Version:   $Revision: 1.42 $
+  Date:      $Date: 2008/02/07 21:22:00 $
+  Version:   $Revision: 1.45 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -223,6 +223,9 @@ bool cmInstallCommand::HandleTargetsMode(std::vector<std::string> const& args)
 
   argHelper.Parse(&args, 0);
 
+  // now parse the generic args (i.e. the ones not specialized on LIBRARY/
+  // ARCHIVE, RUNTIME etc. (see above)
+  // These generic args also contain the targets and the export stuff
   std::vector<std::string> unknownArgs;
   cmInstallCommandArguments genericArgs;
   cmCAStringVector targetList(&genericArgs.Parser, "TARGETS");
@@ -241,6 +244,8 @@ bool cmInstallCommand::HandleTargetsMode(std::vector<std::string> const& args)
   cmInstallCommandArguments publicHeaderArgs;
   cmInstallCommandArguments resourceArgs;
 
+  // now parse the args for specific parts of the target (e.g. LIBRARY, 
+  // RUNTIME, ARCHIVE etc.
   archiveArgs.Parse      (&archiveArgVector.GetVector(),       &unknownArgs);
   libraryArgs.Parse      (&libraryArgVector.GetVector(),       &unknownArgs);
   runtimeArgs.Parse      (&runtimeArgVector.GetVector(),       &unknownArgs);
@@ -281,6 +286,57 @@ bool cmInstallCommand::HandleTargetsMode(std::vector<std::string> const& args)
   if(!success)
     {
     return false;
+    }
+
+  // Enforce argument rules too complex to specify for the
+  // general-purpose parser.
+  if(archiveArgs.GetNamelinkOnly() ||
+     runtimeArgs.GetNamelinkOnly() ||
+     frameworkArgs.GetNamelinkOnly() ||
+     bundleArgs.GetNamelinkOnly() ||
+     privateHeaderArgs.GetNamelinkOnly() ||
+     publicHeaderArgs.GetNamelinkOnly() ||
+     resourceArgs.GetNamelinkOnly())
+    {
+    this->SetError(
+      "TARGETS given NAMELINK_ONLY option not in LIBRARY group.  "
+      "The NAMELINK_ONLY option may be specified only following LIBRARY."
+      );
+    return false;
+    }
+  if(archiveArgs.GetNamelinkSkip() ||
+     runtimeArgs.GetNamelinkSkip() ||
+     frameworkArgs.GetNamelinkSkip() ||
+     bundleArgs.GetNamelinkSkip() ||
+     privateHeaderArgs.GetNamelinkSkip() ||
+     publicHeaderArgs.GetNamelinkSkip() ||
+     resourceArgs.GetNamelinkSkip())
+    {
+    this->SetError(
+      "TARGETS given NAMELINK_SKIP option not in LIBRARY group.  "
+      "The NAMELINK_SKIP option may be specified only following LIBRARY."
+      );
+    return false;
+    }
+  if(libraryArgs.GetNamelinkOnly() && libraryArgs.GetNamelinkSkip())
+    {
+    this->SetError(
+      "TARGETS given NAMELINK_ONLY and NAMELINK_SKIP.  "
+      "At most one of these two options may be specified."
+      );
+    return false;
+    }
+
+  // Select the mode for installing symlinks to versioned shared libraries.
+  cmInstallTargetGenerator::NamelinkModeType
+    namelinkMode = cmInstallTargetGenerator::NamelinkModeNone;
+  if(libraryArgs.GetNamelinkOnly())
+    {
+    namelinkMode = cmInstallTargetGenerator::NamelinkModeOnly;
+    }
+  else if(libraryArgs.GetNamelinkSkip())
+    {
+    namelinkMode = cmInstallTargetGenerator::NamelinkModeSkip;
     }
 
   // Check if there is something to do.
@@ -343,6 +399,9 @@ bool cmInstallCommand::HandleTargetsMode(std::vector<std::string> const& args)
     cmInstallFilesGenerator* publicHeaderGenerator = 0;
     cmInstallFilesGenerator* resourceGenerator = 0;
 
+    // Track whether this is a namelink-only rule.
+    bool namelinkOnly = false;
+
     switch(target.GetType())
       {
       case cmTarget::SHARED_LIBRARY:
@@ -352,6 +411,12 @@ bool cmInstallCommand::HandleTargetsMode(std::vector<std::string> const& args)
         // cygwin.  Currently no other platform is a DLL platform.
         if(dll_platform)
           {
+          // When in namelink only mode skip all libraries on Windows.
+          if(namelinkMode == cmInstallTargetGenerator::NamelinkModeOnly)
+            {
+            continue;
+            }
+
           // This is a DLL platform.
           if(!archiveArgs.GetDestination().empty())
             {
@@ -378,6 +443,12 @@ bool cmInstallCommand::HandleTargetsMode(std::vector<std::string> const& args)
           // INSTALL properties. Otherwise, use the LIBRARY properties.
           if(target.IsFrameworkOnApple())
             {
+            // When in namelink only mode skip frameworks.
+            if(namelinkMode == cmInstallTargetGenerator::NamelinkModeOnly)
+              {
+              continue;
+              }
+
             // Use the FRAMEWORK properties.
             if (!frameworkArgs.GetDestination().empty())
               {
@@ -400,6 +471,9 @@ bool cmInstallCommand::HandleTargetsMode(std::vector<std::string> const& args)
               {
               libraryGenerator = CreateInstallTargetGenerator(target, 
                                                            libraryArgs, false);
+              libraryGenerator->SetNamelinkMode(namelinkMode);
+              namelinkOnly =
+                (namelinkMode == cmInstallTargetGenerator::NamelinkModeOnly);
               }
             else
               {
@@ -438,6 +512,9 @@ bool cmInstallCommand::HandleTargetsMode(std::vector<std::string> const& args)
           {
           libraryGenerator = CreateInstallTargetGenerator(target, libraryArgs, 
                                                           false);
+          libraryGenerator->SetNamelinkMode(namelinkMode);
+          namelinkOnly =
+            (namelinkMode == cmInstallTargetGenerator::NamelinkModeOnly);
           }
         else
           {
@@ -518,7 +595,7 @@ bool cmInstallCommand::HandleTargetsMode(std::vector<std::string> const& args)
     createInstallGeneratorsForTargetFileSets = false;
     }
 
-  if(createInstallGeneratorsForTargetFileSets)
+  if(createInstallGeneratorsForTargetFileSets && !namelinkOnly)
     {
     const char* files = target.GetProperty("PRIVATE_HEADER");
     if ((files) && (*files))
@@ -608,7 +685,9 @@ bool cmInstallCommand::HandleTargetsMode(std::vector<std::string> const& args)
     this->Makefile->AddInstallGenerator(publicHeaderGenerator);
     this->Makefile->AddInstallGenerator(resourceGenerator);
 
-    if (!exports.GetString().empty())
+    // Add this install rule to an export if one was specified and
+    // this is not a namelink-only rule.
+    if(!exports.GetString().empty() && !namelinkOnly)
       {
       this->Makefile->GetLocalGenerator()->GetGlobalGenerator()
         ->AddTargetToExports(exports.GetCString(), &target, 

@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: CMakeSetup.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/01 16:48:00 $
-  Version:   $Revision: 1.11 $
+  Date:      $Date: 2008/02/08 15:42:14 $
+  Version:   $Revision: 1.14 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -19,6 +19,7 @@
 #include <QFileInfo>
 #include <QDir>
 #include <QTranslator>
+#include <QLocale>
 
 #include "CMakeSetupDialog.h"
 #include "cmDocumentation.h"
@@ -30,7 +31,7 @@
 static const char * cmDocumentationName[][3] =
 {
   {0,
-   "  CMakeSetup - CMake GUI.", 0},
+   "  cmake-gui - CMake GUI.", 0},
   {0,0,0}
 };
 
@@ -38,9 +39,9 @@ static const char * cmDocumentationName[][3] =
 static const char * cmDocumentationUsage[][3] =
 {
   {0,
-   "  CMakeSetup [options]\n"
-   "  CMakeSetup [options] <path-to-source>\n"
-   "  CMakeSetup [options] <path-to-existing-build>", 0},
+   "  cmake-gui [options]\n"
+   "  cmake-gui [options] <path-to-source>\n"
+   "  cmake-gui [options] <path-to-existing-build>", 0},
   {0,0,0}
 };
 
@@ -48,7 +49,7 @@ static const char * cmDocumentationUsage[][3] =
 static const char * cmDocumentationDescription[][3] =
 {
   {0,
-   "The \"CMakeSetup\" executable is the CMake GUI.  Project "
+   "The \"cmake-gui\" executable is the CMake GUI.  Project "
    "configuration settings may be specified interactively.  "
    "Brief instructions are provided at the bottom of the "
    "window when the program is running.", 0},
@@ -64,18 +65,30 @@ static const char * cmDocumentationOptions[][3] =
 
 int main(int argc, char** argv)
 {
-  cmSystemTools::FindExecutableDirectory(argv[0]);
   QApplication app(argc, argv);
 
+  // tell the cmake library where cmake is 
+  QDir cmExecDir(QApplication::applicationDirPath());
+#if defined(Q_OS_MAC)
+  cmExecDir.cd("../../../");
+#endif
+  cmSystemTools::FindExecutableDirectory(cmExecDir.filePath("cmake").toAscii().data());
+
+  // pick up translation files if they exists in the data directory
+  QDir translationsDir = cmExecDir;
+  translationsDir.cd(".." CMAKE_DATA_DIR);
+  translationsDir.cd("i18n");
   QTranslator translator;
   QString transfile = QString("cmake_%1").arg(QLocale::system().name());
-  translator.load(transfile, app.applicationDirPath());
+  translator.load(transfile, translationsDir.path());
   app.installTranslator(&translator);
   
+  // app setup
   app.setApplicationName("CMakeSetup");
   app.setOrganizationName("Kitware");
   app.setWindowIcon(QIcon(":/Icons/CMakeSetup.png"));
   
+  // do docs, if args were given
   cmDocumentation doc;
   if(app.arguments().size() > 1 &&
      doc.CheckOptions(app.argc(), app.argv()))

@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmTarget.h,v $
   Language:  C++
-  Date:      $Date: 2008/02/01 18:08:12 $
-  Version:   $Revision: 1.104 $
+  Date:      $Date: 2008/02/06 18:34:44 $
+  Version:   $Revision: 1.105 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -260,7 +260,8 @@ public:
 
   /** Get the full path to the target according to the settings in its
       makefile and the configuration type.  */
-  std::string GetFullPath(const char* config=0, bool implib = false);
+  std::string GetFullPath(const char* config=0, bool implib = false,
+                          bool realname = false);
 
   /** Get the names of the library needed to generate a build rule
       that takes into account shared library version numbers.  This
@@ -437,7 +438,14 @@ private:
   const char* NormalGetDirectory(const char* config, bool implib);
 
   std::string ImportedGetFullPath(const char* config, bool implib);
-  std::string NormalGetFullPath(const char* config, bool implib);
+  std::string NormalGetFullPath(const char* config, bool implib,
+                                bool realname);
+
+  /** Get the real name of the target.  Allowed only for non-imported
+      targets.  When a library or executable file is versioned this is
+      the full versioned name.  If the target is not versioned this is
+      the same as GetFullName.  */
+  std::string NormalGetRealName(const char* config);
 
 private:
   std::string Name;

@@ -89,10 +89,14 @@ SET(SRCS
   cmCommandArgumentLexer.cxx
   cmCommandArgumentParser.cxx
   cmCommandArgumentParserHelper.cxx
+  cmComputeComponentGraph.cxx
+  cmComputeComponentGraph.h
   cmComputeLinkDepends.cxx
   cmComputeLinkDepends.h
   cmComputeLinkInformation.cxx
   cmComputeLinkInformation.h
+  cmComputeTargetDepends.h
+  cmComputeTargetDepends.cxx
   cmCustomCommand.cxx
   cmCustomCommand.h
   cmDepends.cxx
@@ -138,6 +142,7 @@ SET(SRCS
   cmGlobalGenerator.h
   cmGlobalUnixMakefileGenerator3.cxx
   cmGlobalUnixMakefileGenerator3.h
+  cmGraphAdjacencyList.h
   cmInstallGenerator.h
   cmInstallGenerator.cxx
   cmInstallExportGenerator.cxx
@@ -267,8 +272,9 @@ ENDIF (WIN32)
 ADD_LIBRARY(CMakeLib ${SRCS})
 TARGET_LINK_LIBRARIES(CMakeLib cmsys
   ${CMAKE_EXPAT_LIBRARIES} ${CMAKE_ZLIB_LIBRARIES}
-  ${CMAKE_TAR_LIBRARIES} ${CMAKE_COMPRESS_LIBRARIES} 
-  ${CMAKE_LUA_LIBRARIES})
+  ${CMAKE_TAR_LIBRARIES} ${CMAKE_COMPRESS_LIBRARIES}
+  ${CMAKE_LUA_LIBRARIES}
+  ${CMAKE_CURL_LIBRARIES})
 
 # On Apple we need Carbon
 IF(APPLE)

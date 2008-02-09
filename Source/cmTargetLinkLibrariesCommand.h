@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmTargetLinkLibrariesCommand.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/23 15:27:59 $
-  Version:   $Revision: 1.14 $
+  Date:      $Date: 2008/02/06 20:23:36 $
+  Version:   $Revision: 1.15 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -71,7 +71,10 @@ public:
       "The debug and optimized strings may be used to indicate that "
       "the next library listed is to be used only for that specific "
       "type of build. general indicates it is used for all build types "
-      "and is assumed if not specified.";
+      "and is assumed if not specified.\n"
+      "If any library name matches that of a target in the current project "
+      "a dependency will automatically be added in the build system to make "
+      "sure the library being linked is up-to-date before the target links.";
     }
   
   cmTypeMacro(cmTargetLinkLibrariesCommand, cmCommand);

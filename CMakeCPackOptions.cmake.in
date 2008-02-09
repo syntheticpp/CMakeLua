@@ -1,4 +1,9 @@
+# This file is configured at cmake time, and loaded at cpack time.
+# To pass variables to cpack from cmake, they must be configured
+# in this file.  
+
 if(CPACK_GENERATOR MATCHES "NSIS")
+  SET(QT_DIALOG_OPTIONS_FILE @QT_DIALOG_OPTIONS_FILE@)
   # set the install/unistall icon used for the installer itself
   # There is a bug in NSI that does not handle full unix paths properly. 
   SET(CPACK_NSIS_MUI_ICON "@CMake_SOURCE_DIR@/Utilities/Release\\CMakeLogo.ico")
@@ -28,6 +33,8 @@ if(CPACK_GENERATOR MATCHES "NSIS")
   SET(CPACK_NSIS_CONTACT @CPACK_PACKAGE_CONTACT@)
   SET(CPACK_NSIS_MODIFY_PATH ON)
 endif(CPACK_GENERATOR MATCHES "NSIS")
+# include the cpack options 
+INCLUDE("@QT_DIALOG_CPACK_OPTIONS_FILE@")
 
 if(CPACK_GENERATOR MATCHES "CygwinSource")
   # when packaging source make sure the .build directory is not included

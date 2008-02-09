@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmGlobalGenerator.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/31 03:56:34 $
-  Version:   $Revision: 1.105 $
+  Date:      $Date: 2008/02/06 04:10:41 $
+  Version:   $Revision: 1.106 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -313,12 +313,7 @@ private:
   // track files replaced during a Generate
   std::vector<std::string> FilesReplacedDuringGenerate;
 
-  // Track inter-target dependencies.
-  bool ConsiderTargetDepends(cmTarget * depender,
-                             TargetDependSet& depender_depends,
-                             const char* dependee_name);
-  bool FindDependency(cmTarget * goal, cmTarget * current,
-                      std::vector<cmTarget *>& steps);
+  // Store computed inter-target dependencies.
   typedef std::map<cmTarget *, TargetDependSet> TargetDependMap;
   TargetDependMap TargetDependencies;
 

@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefileLibraryTargetGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/30 02:16:49 $
-  Version:   $Revision: 1.53 $
+  Date:      $Date: 2008/02/07 21:49:11 $
+  Version:   $Revision: 1.54 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -720,7 +720,11 @@ void cmMakefileLibraryTargetGenerator::WriteLibraryRules
 
   // Collect up flags to link in needed libraries.
   cmOStringStream linklibs;
-  this->LocalGenerator->OutputLinkLibraries(linklibs, *this->Target, relink);
+  if(this->Target->GetType() != cmTarget::STATIC_LIBRARY)
+    {
+    this->LocalGenerator
+      ->OutputLinkLibraries(linklibs, *this->Target, relink);
+    }
 
   // Construct object file lists that may be needed to expand the
   // rule.
