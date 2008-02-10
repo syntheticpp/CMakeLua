@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmIfCommand.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/23 15:27:59 $
-  Version:   $Revision: 1.45 $
+  Date:      $Date: 2008/02/10 22:19:10 $
+  Version:   $Revision: 1.46 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -137,7 +137,8 @@ public:
       "  if(variable1 OR variable2)\n"
       "True if either variable would be considered true individually.\n"
       "  if(COMMAND command-name)\n"
-      "True if the given name is a command that can be invoked.\n"
+      "True if the given name is a command, macro or function that can be "
+      "invoked.\n"
       "  if(EXISTS file-name)\n"
       "  if(EXISTS directory-name)\n"
       "True if the named file or directory exists.  "
