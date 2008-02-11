@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmFindLibraryCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/10 16:37:06 $
-  Version:   $Revision: 1.57 $
+  Date:      $Date: 2008/02/11 22:00:45 $
+  Version:   $Revision: 1.58 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -167,8 +167,8 @@ void cmFindLibraryCommand::AddLib64Paths()
     {
     return;
     }
-  std::string voidsize = 
-    this->Makefile->GetRequiredDefinition("CMAKE_SIZEOF_VOID_P");
+  std::string voidsize =
+    this->Makefile->GetSafeDefinition("CMAKE_SIZEOF_VOID_P");
   int size = atoi(voidsize.c_str());
   if(size != 8)
     {
