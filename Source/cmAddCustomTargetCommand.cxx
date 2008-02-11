@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmAddCustomTargetCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/23 15:27:59 $
-  Version:   $Revision: 1.27 $
+  Date:      $Date: 2008/02/11 18:35:39 $
+  Version:   $Revision: 1.28 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -156,6 +156,14 @@ bool cmAddCustomTargetCommand
     {
     commandLines.push_back(currentLine);
     currentLine.clear();
+    }
+
+  // Enforce name uniqueness.
+  std::string msg;
+  if(!this->Makefile->EnforceUniqueName(args[0], msg))
+    {
+    this->SetError(msg.c_str());
+    return false;
     }
 
   // Add the utility target to the makefile.
