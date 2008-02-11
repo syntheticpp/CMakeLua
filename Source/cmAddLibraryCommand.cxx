@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmAddLibraryCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/11 18:35:39 $
-  Version:   $Revision: 1.35 $
+  Date:      $Date: 2008/02/11 22:33:46 $
+  Version:   $Revision: 1.36 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -128,12 +128,14 @@ bool cmAddLibraryCommand
     }
 
   // Enforce name uniqueness.
+  {
   std::string msg;
   if(!this->Makefile->EnforceUniqueName(libName, msg))
     {
     this->SetError(msg.c_str());
     return false;
     }
+  }
 
   if (s == args.end())
     {
