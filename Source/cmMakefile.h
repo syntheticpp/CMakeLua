@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefile.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/28 13:38:36 $
-  Version:   $Revision: 1.222 $
+  Date:      $Date: 2008/02/11 18:35:30 $
+  Version:   $Revision: 1.223 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -121,6 +121,13 @@ public:
   ///! Get the current makefile generator.
   cmLocalGenerator* GetLocalGenerator() 
     { return this->LocalGenerator;}
+
+  /**
+   * Test whether compatibility is set to a given version or lower.
+   */
+  bool NeedBackwardsCompatibility(unsigned int major,
+                                  unsigned int minor,
+                                  unsigned int patch = 0xFFu);
 
   /**
    * Perform FinalPass, Library dependency analysis etc before output of the
