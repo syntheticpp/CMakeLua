@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: QCMake.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/08 16:26:08 $
-  Version:   $Revision: 1.14 $
+  Date:      $Date: 2008/02/12 14:49:42 $
+  Version:   $Revision: 1.15 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -47,6 +47,7 @@ QCMake::QCMake(QObject* p)
   cmSystemTools::SetErrorCallback(QCMake::errorCallback, this);
 
   this->CMakeInstance = new cmake;
+  this->CMakeInstance->SetCMakeEditCommand("cmake-gui");
   this->CMakeInstance->SetProgressCallback(QCMake::progressCallback, this);
 
   std::vector<std::string> generators;

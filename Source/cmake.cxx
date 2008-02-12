@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmake.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/11 22:00:36 $
-  Version:   $Revision: 1.358 $
+  Date:      $Date: 2008/02/12 14:49:42 $
+  Version:   $Revision: 1.359 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -756,20 +756,39 @@ int cmake::AddCMakePaths()
   this->CacheManager->AddCacheEntry
     ("CMAKE_COMMAND",cMakeSelf.c_str(), "Path to CMake executable.",
      cmCacheManager::INTERNAL);
-
-  // Find and save the command to edit the cache
-  std::string editCacheCommand = cmSystemTools::GetFilenamePath(cMakeSelf) +
-    "/ccmake" + cmSystemTools::GetFilenameExtension(cMakeSelf);
-  if( !cmSystemTools::FileExists(editCacheCommand.c_str()))
+  // if the edit command is not yet in the cache, 
+  // or if CMakeEditCommand has been set on this object,
+  // then set the CMAKE_EDIT_COMMAND in the cache
+  // This will mean that the last gui to edit the cache
+  // will be the one that make edit_cache uses.
+  if(!this->GetCacheDefinition("CMAKE_EDIT_COMMAND") 
+    || !this->CMakeEditCommand.empty())
     {
-    editCacheCommand = cmSystemTools::GetFilenamePath(cMakeSelf) +
-      "/CMakeSetup" + cmSystemTools::GetFilenameExtension(cMakeSelf);
-    }
-  if(cmSystemTools::FileExists(editCacheCommand.c_str()))
-    {
-    this->CacheManager->AddCacheEntry
-      ("CMAKE_EDIT_COMMAND", editCacheCommand.c_str(),
-       "Path to cache edit program executable.", cmCacheManager::INTERNAL);
+    // Find and save the command to edit the cache
+    std::string editCacheCommand;
+    if(!this->CMakeEditCommand.empty())
+      {
+      editCacheCommand = cmSystemTools::GetFilenamePath(cMakeSelf)
+        + std::string("/") 
+        + this->CMakeEditCommand 
+        + cmSystemTools::GetFilenameExtension(cMakeSelf);
+      }
+    if( !cmSystemTools::FileExists(editCacheCommand.c_str()))
+      {
+      editCacheCommand = cmSystemTools::GetFilenamePath(cMakeSelf) +
+        "/ccmake" + cmSystemTools::GetFilenameExtension(cMakeSelf);
+      }
+    if( !cmSystemTools::FileExists(editCacheCommand.c_str()))
+      {
+      editCacheCommand = cmSystemTools::GetFilenamePath(cMakeSelf) +
+        "/CMakeSetup" + cmSystemTools::GetFilenameExtension(cMakeSelf);
+      }
+    if(cmSystemTools::FileExists(editCacheCommand.c_str()))
+      {
+      this->CacheManager->AddCacheEntry
+        ("CMAKE_EDIT_COMMAND", editCacheCommand.c_str(),
+         "Path to cache edit program executable.", cmCacheManager::INTERNAL);
+      }
     }
   std::string ctestCommand = cmSystemTools::GetFilenamePath(cMakeSelf) +
     "/ctest" + cmSystemTools::GetFilenameExtension(cMakeSelf);
