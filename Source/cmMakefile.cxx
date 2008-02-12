@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefile.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/11 18:35:39 $
-  Version:   $Revision: 1.434 $
+  Date:      $Date: 2008/02/12 15:19:38 $
+  Version:   $Revision: 1.435 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -3156,6 +3156,7 @@ bool cmMakefile::EnforceUniqueName(std::string const& name, std::string& msg)
       msg = e.str();
       return false;
       }
+#if 0 /* disable until CTestTargets can be fixed */
     else if(!this->NeedBackwardsCompatibility(2, 4))
       {
       // The conflict is with a non-imported target.  Produce an error
@@ -3174,6 +3175,7 @@ bool cmMakefile::EnforceUniqueName(std::string const& name, std::string& msg)
       msg = e.str();
       return false;
       }
+#endif
     }
   return true;
 }
