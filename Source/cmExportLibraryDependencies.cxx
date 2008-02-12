@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmExportLibraryDependencies.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/11 15:31:44 $
-  Version:   $Revision: 1.20 $
+  Date:      $Date: 2008/02/12 14:18:50 $
+  Version:   $Revision: 1.21 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -163,7 +163,8 @@ void cmExportLibraryDependenciesCommand::ConstFinalPass() const
     "\"${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}\" GREATER 2.4";
   fout << "IF(" << vertest << ")\n";
   fout << "  # Information for CMake 2.6 and above.\n";
-  for(std::map<cmStdString, cmStdString>::const_iterator i = libDepsNew.begin();
+  for(std::map<cmStdString, cmStdString>::const_iterator
+        i = libDepsNew.begin();
       i != libDepsNew.end(); ++i)
     {
     if(!i->second.empty())
@@ -173,7 +174,8 @@ void cmExportLibraryDependenciesCommand::ConstFinalPass() const
     }
   fout << "ELSE(" << vertest << ")\n";
   fout << "  # Information for CMake 2.4 and lower.\n";
-  for(std::map<cmStdString, cmStdString>::const_iterator i = libDepsOld.begin();
+  for(std::map<cmStdString, cmStdString>::const_iterator
+        i = libDepsOld.begin();
       i != libDepsOld.end(); ++i)
     {
     if(!i->second.empty())
