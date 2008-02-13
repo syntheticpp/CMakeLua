@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmComputeLinkDepends.h,v $
   Language:  C++
-  Date:      $Date: 2008/02/07 21:14:05 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2008/02/13 20:29:55 $
+  Version:   $Revision: 1.5 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -78,6 +78,7 @@ private:
                             LinkLibraryVectorType const& libs);
   void AddLinkEntries(int depender_index,
                       std::vector<std::string> const& libs);
+  std::string CleanItemName(std::string const& item);
 
   // One entry for each unique item.
   std::vector<LinkEntry> EntryList;
