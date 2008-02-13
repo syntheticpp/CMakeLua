@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: QCMakeCacheView.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/08 15:42:14 $
-  Version:   $Revision: 1.23 $
+  Date:      $Date: 2008/02/13 18:58:35 $
+  Version:   $Revision: 1.24 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -70,7 +70,10 @@ QCMakeCacheView::QCMakeCacheView(QWidget* p)
   QCMakeCacheModelDelegate* delegate = new QCMakeCacheModelDelegate(this);
   this->setItemDelegate(delegate);
   
-  this->setEditTriggers(QAbstractItemView::AllEditTriggers);
+  this->setEditTriggers(QAbstractItemView::DoubleClicked |
+                        QAbstractItemView::SelectedClicked |
+                        QAbstractItemView::EditKeyPressed |
+                        QAbstractItemView::AnyKeyPressed);
 
   // set up headers and sizes
   int h = 0;
@@ -146,7 +149,6 @@ bool QCMakeCacheView::showAdvanced() const
 
 void QCMakeCacheView::setSearchFilter(const QString& s)
 {
-  this->selectionModel()->clear();
   this->SearchFilter->setFilterFixedString(s);
 }
 

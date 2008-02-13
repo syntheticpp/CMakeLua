@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: CMakeSetupDialog.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/08 18:47:08 $
-  Version:   $Revision: 1.31 $
+  Date:      $Date: 2008/02/13 18:58:35 $
+  Version:   $Revision: 1.32 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -695,7 +695,6 @@ void CMakeSetupDialog::removeSelectedCacheEntries()
     {
     pidxs.append(i);
     }
-  this->CacheValues->selectionModel()->clear();
   foreach(QPersistentModelIndex pi, pidxs)
     {
     this->CacheValues->model()->removeRow(pi.row());
