@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: CMakeSetupDialog.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/13 18:58:35 $
-  Version:   $Revision: 1.32 $
+  Date:      $Date: 2008/02/14 14:14:04 $
+  Version:   $Revision: 1.33 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -543,9 +543,18 @@ void CMakeSetupDialog::doReloadCache()
 }
 
 void CMakeSetupDialog::doDeleteCache()
-{
+{   
+  QString title = tr("Delete Cache");
+  QString message = "Are you sure you want to delete the cache?";
+  QMessageBox::StandardButton btn;
+  btn = QMessageBox::information(this, title, message, 
+                                 QMessageBox::Yes | QMessageBox::No);
+  if(btn == QMessageBox::No)
+    {
+    return;
+    }
   QMetaObject::invokeMethod(this->CMakeThread->cmakeInstance(),
-    "deleteCache", Qt::QueuedConnection);
+                            "deleteCache", Qt::QueuedConnection);
 }
 
 void CMakeSetupDialog::doAbout()
