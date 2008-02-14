@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefile.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/12 15:19:38 $
-  Version:   $Revision: 1.435 $
+  Date:      $Date: 2008/02/14 16:58:32 $
+  Version:   $Revision: 1.436 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -3156,7 +3156,6 @@ bool cmMakefile::EnforceUniqueName(std::string const& name, std::string& msg)
       msg = e.str();
       return false;
       }
-#if 0 /* disable until CTestTargets can be fixed */
     else if(!this->NeedBackwardsCompatibility(2, 4))
       {
       // The conflict is with a non-imported target.  Produce an error
@@ -3165,9 +3164,10 @@ bool cmMakefile::EnforceUniqueName(std::string const& name, std::string& msg)
       e << "cannot create target \"" << name
         << "\" because another target with the same name already exists.  "
         << "Logical target names must be globally unique.  "
-        << "Consider using the OUTPUT_NAME target property to create "
-        << "two targets with the same physical name while keeping logical "
-        << "names distinct.\n"
+        << "For executables and libraries, consider using the OUTPUT_NAME "
+        << "target property to create two targets with the same physical "
+        << "name while keeping logical names distinct.  "
+        << "Custom targets must simply have globally unique names.\n"
         << "If you are building an older project it is possible that "
         << "it violated this rule but was working accidentally.  "
         << "Set CMAKE_BACKWARDS_COMPATIBILITY to 2.4 or lower to disable "
@@ -3175,7 +3175,6 @@ bool cmMakefile::EnforceUniqueName(std::string const& name, std::string& msg)
       msg = e.str();
       return false;
       }
-#endif
     }
   return true;
 }

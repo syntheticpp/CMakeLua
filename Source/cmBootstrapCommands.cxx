@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmBootstrapCommands.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/13 19:47:03 $
-  Version:   $Revision: 1.24 $
+  Date:      $Date: 2008/02/14 16:58:32 $
+  Version:   $Revision: 1.25 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -34,6 +34,7 @@
 #include "cmConfigureFileCommand.cxx"
 #include "cmCoreTryCompile.cxx"
 #include "cmCreateTestSourceList.cxx"
+#include "cmDefinePropertyCommand.cxx"
 #include "cmElseCommand.cxx"
 #include "cmEnableTestingCommand.cxx"
 #include "cmEndForEachCommand.cxx"
@@ -56,6 +57,7 @@
 #include "cmGetCMakePropertyCommand.cxx"
 #include "cmGetDirectoryPropertyCommand.cxx"
 #include "cmGetFilenameComponentCommand.cxx"
+#include "cmGetPropertyCommand.cxx"
 #include "cmGetSourceFilePropertyCommand.cxx"
 #include "cmGetTargetPropertyCommand.cxx"
 #include "cmHexFileConverter.cxx"
@@ -103,6 +105,7 @@ void GetBootstrapCommands(std::list<cmCommand*>& commands)
   commands.push_back(new cmCMakeMinimumRequired);
   commands.push_back(new cmConfigureFileCommand);
   commands.push_back(new cmCreateTestSourceList);
+  commands.push_back(new cmDefinePropertyCommand);
   commands.push_back(new cmElseCommand);
   commands.push_back(new cmEnableTestingCommand);  
   commands.push_back(new cmEndForEachCommand);
@@ -122,6 +125,7 @@ void GetBootstrapCommands(std::list<cmCommand*>& commands)
   commands.push_back(new cmGetCMakePropertyCommand);
   commands.push_back(new cmGetDirectoryPropertyCommand);
   commands.push_back(new cmGetFilenameComponentCommand);
+  commands.push_back(new cmGetPropertyCommand);
   commands.push_back(new cmGetSourceFilePropertyCommand);
   commands.push_back(new cmGetTargetPropertyCommand);
   commands.push_back(new cmIfCommand);
