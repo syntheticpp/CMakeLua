@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator3
   Module:    $RCSfile: cmGlobalUnixMakefileGenerator3.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/31 03:56:34 $
-  Version:   $Revision: 1.54 $
+  Date:      $Date: 2008/02/14 21:42:29 $
+  Version:   $Revision: 1.55 $
 
   Copyright (c) 2005 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -161,6 +161,8 @@ protected:
   virtual const char* GetEditCacheTargetName()    { return "edit_cache"; }
   virtual const char* GetRebuildCacheTargetName() { return "rebuild_cache"; }
   virtual const char* GetCleanTargetName()        { return "clean"; }
+
+  virtual bool CheckALLOW_DUPLICATE_CUSTOM_TARGETS() { return true; }
 
   // Some make programs (Borland) do not keep a rule if there are no
   // dependencies or commands.  This is a problem for creating rules

@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmake.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/12 14:49:42 $
-  Version:   $Revision: 1.359 $
+  Date:      $Date: 2008/02/14 21:42:29 $
+  Version:   $Revision: 1.360 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -3321,6 +3321,25 @@ void cmake::DefineProperties(cmake *cm)
     "CMake automatically analyzes the global inter-target dependency graph "
     "at the beginning of native build system generation.  "
     "This property causes it to display details of its analysis to stderr.");
+
+  cm->DefineProperty(
+    "ALLOW_DUPLICATE_CUSTOM_TARGETS", cmProperty::GLOBAL,
+    "Allow duplicate custom targets to be created.",
+    "Normally CMake requires that all targets built in a project have "
+    "globally unique names.  "
+    "This is necessary to generate meaningful project file names in "
+    "Xcode and VS IDE generators.  "
+    "It also allows the target names to be referenced unambiguously.\n"
+    "Makefile generators are capable of supporting duplicate custom target "
+    "names.  "
+    "For projects that care only about Makefile generators and do "
+    "not wish to support Xcode or VS IDE generators, one may set this "
+    "property to true to allow duplicate custom targets.  "
+    "The property allows multiple add_custom_target command calls in "
+    "*different directories* to specify the same target name.  "
+    "However, setting this property will cause non-Makefile generators "
+    "to produce an error and refuse to generate the project."
+    );
 
   cm->DefineProperty
     ("IN_TRY_COMPILE", cmProperty::GLOBAL,

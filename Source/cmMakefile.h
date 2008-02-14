@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefile.h,v $
   Language:  C++
-  Date:      $Date: 2008/02/11 18:35:39 $
-  Version:   $Revision: 1.224 $
+  Date:      $Date: 2008/02/14 21:42:29 $
+  Version:   $Revision: 1.225 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -132,7 +132,8 @@ public:
   /**
    * Help enforce global target name uniqueness.
    */
-  bool EnforceUniqueName(std::string const& name, std::string& msg);
+  bool EnforceUniqueName(std::string const& name, std::string& msg,
+                         bool isCustom = false);
 
   /**
    * Perform FinalPass, Library dependency analysis etc before output of the

@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmGlobalGenerator.h,v $
   Language:  C++
-  Date:      $Date: 2008/02/06 04:10:41 $
-  Version:   $Revision: 1.106 $
+  Date:      $Date: 2008/02/14 21:42:29 $
+  Version:   $Revision: 1.107 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -257,6 +257,8 @@ protected:
                         projectTargets);
   void SetLanguageEnabledFlag(const char* l, cmMakefile* mf);
   void SetLanguageEnabledMaps(const char* l, cmMakefile* mf);
+
+  virtual bool CheckALLOW_DUPLICATE_CUSTOM_TARGETS();
 
   // Fill the ProjectMap, this must be called after LocalGenerators 
   // has been populated.
