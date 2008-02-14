@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmTarget.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/11 18:35:39 $
-  Version:   $Revision: 1.195 $
+  Date:      $Date: 2008/02/14 20:31:08 $
+  Version:   $Revision: 1.196 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -510,7 +510,19 @@ void cmTarget::DefineProperties(cmake *cm)
      "When this property is set to true the executable when built "
      "on Mac OS X will be created as an application bundle.  "
      "This makes it a GUI executable that can be launched from "
-     "the Finder.");
+     "the Finder.\n"
+     "The bundle Info.plist file is generated automatically.  "
+     "The following target properties may be set to specify "
+     "its content:"
+     "  MACOSX_BUNDLE_INFO_STRING\n"
+     "  MACOSX_BUNDLE_ICON_FILE\n"
+     "  MACOSX_BUNDLE_GUI_IDENTIFIER\n"
+     "  MACOSX_BUNDLE_LONG_VERSION_STRING\n"
+     "  MACOSX_BUNDLE_BUNDLE_NAME\n"
+     "  MACOSX_BUNDLE_SHORT_VERSION_STRING\n"
+     "  MACOSX_BUNDLE_BUNDLE_VERSION\n"
+     "  MACOSX_BUNDLE_COPYRIGHT\n"
+      );
 
   cm->DefineProperty
     ("ENABLE_EXPORTS", cmProperty::TARGET,

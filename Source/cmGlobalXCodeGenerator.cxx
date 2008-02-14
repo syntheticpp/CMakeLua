@@ -3,8 +3,8 @@
 Program:   CMake - Cross-Platform Makefile Generator
 Module:    $RCSfile: cmGlobalXCodeGenerator.cxx,v $
 Language:  C++
-Date:      $Date: 2008/02/07 21:49:11 $
-Version:   $Revision: 1.184 $
+Date:      $Date: 2008/02/14 20:31:08 $
+Version:   $Revision: 1.185 $
 
 Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
 See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1482,18 +1482,15 @@ void cmGlobalXCodeGenerator::CreateBuildSettings(cmTarget& target,
     if(target.GetPropertyAsBool("MACOSX_BUNDLE"))
       {
       productType = "com.apple.product-type.application";
-      std::string f1 =
-        this->CurrentMakefile->GetModulesFile("MacOSXBundleInfo.plist.in");
-      if ( f1.size() == 0 )
-        {
-        cmSystemTools::Error("could not find Mac OSX bundle template file.");
-        }
-      std::string f2 = this->CurrentMakefile->GetCurrentOutputDirectory();
-      f2 += "/Info.plist";
-      this->CurrentMakefile->ConfigureFile(f1.c_str(), f2.c_str(),
-                                       false, false, false);
-      std::string path = 
-        this->ConvertToRelativeForXCode(f2.c_str());
+      std::string plist = this->CurrentMakefile->GetCurrentOutputDirectory();
+      plist += cmake::GetCMakeFilesDirectory();
+      plist += "/";
+      plist += target.GetName();
+      plist += "Info.plist";
+      this->CurrentLocalGenerator
+        ->GenerateAppleInfoPList(&target, productName.c_str(), plist.c_str());
+      std::string path =
+        this->ConvertToRelativeForXCode(plist.c_str());
       buildSettings->AddAttribute("INFOPLIST_FILE", 
                                   this->CreateString(path.c_str()));
 

@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefileExecutableTargetGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/30 02:16:49 $
-  Version:   $Revision: 1.41 $
+  Date:      $Date: 2008/02/14 20:31:08 $
+  Version:   $Revision: 1.42 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -133,13 +133,6 @@ void cmMakefileExecutableTargetGenerator::WriteExecutableRule(bool relink)
     outpath += "/";
 
     // Make bundle directories
-    std::string f1 =
-      this->Makefile->GetModulesFile("MacOSXBundleInfo.plist.in");
-    if ( f1.size() == 0 )
-      {
-      cmSystemTools::Error("could not find Mac OSX bundle template file.");
-      }
-
     std::vector<cmSourceFile*>::const_iterator sourceIt;
     for ( sourceIt = this->Target->GetSourceFiles().begin();
       sourceIt != this->Target->GetSourceFiles().end();
@@ -162,11 +155,10 @@ void cmMakefileExecutableTargetGenerator::WriteExecutableRule(bool relink)
 
     // Configure the Info.plist file.  Note that it needs the executable name
     // to be set.
-    std::string f2 = macdir + "Info.plist";
-    this->Makefile->AddDefinition("MACOSX_BUNDLE_EXECUTABLE_NAME",
-                                  targetName.c_str());
-    this->Makefile->ConfigureFile(f1.c_str(), f2.c_str(), 
-                                  false, false, false);
+    std::string plist = macdir + "Info.plist";
+    this->LocalGenerator->GenerateAppleInfoPList(this->Target,
+                                                 targetName.c_str(),
+                                                 plist.c_str());
     }
 #endif
   std::string outpathImp;

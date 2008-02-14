@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefileLibraryTargetGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/07 21:49:11 $
-  Version:   $Revision: 1.54 $
+  Date:      $Date: 2008/02/14 20:31:08 $
+  Version:   $Revision: 1.55 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -364,22 +364,6 @@ void cmMakefileLibraryTargetGenerator::CreateFramework(
 
   //cmSystemTools::MakeDirectory((macdir + "Libraries").c_str());
   cmSystemTools::MakeDirectory((macdir + "Headers").c_str());
-  // Configure the Info.plist file.  Note that it needs the executable name
-  // to be set
-  std::string rsrcDir = macdir + "Resources/";
-  cmSystemTools::MakeDirectory(rsrcDir.c_str());
-  this->Makefile->AddDefinition("MACOSX_FRAMEWORK_NAME",
-                                targetName.c_str());
-  std::string f1 = 
-    this->Makefile->GetModulesFile("MacOSXFrameworkInfo.plist.in");
-  if ( f1.size() == 0 )
-    {
-    cmSystemTools::Error(
-      "could not find Mac OSX framework Info.plist template file.");
-    }
-  std::string f2 = rsrcDir + "Info.plist";
-  this->Makefile->ConfigureFile(f1.c_str(), f2.c_str(),
-                                false, false, false);
 
   this->CopyFrameworkSources(targetName, outpath, version,
     "PRIVATE_HEADER", "PrivateHeaders");

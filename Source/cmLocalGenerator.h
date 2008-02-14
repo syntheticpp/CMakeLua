@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalGenerator.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/30 02:16:49 $
-  Version:   $Revision: 1.102 $
+  Date:      $Date: 2008/02/14 20:31:08 $
+  Version:   $Revision: 1.103 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -269,6 +269,12 @@ public:
   bool NeedBackwardsCompatibility(unsigned int major,
                                   unsigned int minor,
                                   unsigned int patch = 0xFFu);
+
+  /**
+   * Generate a Mac OS X application bundle Info.plist file.
+   */
+  void GenerateAppleInfoPList(cmTarget* target, const char* targetName,
+                              const char* fname);
 protected:
   /** Construct a comment for a custom command.  */
   std::string ConstructComment(const cmCustomCommand& cc,
