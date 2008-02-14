@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: CMakeSetupDialog.h,v $
   Language:  C++
-  Date:      $Date: 2008/02/14 20:06:05 $
-  Version:   $Revision: 1.19 $
+  Date:      $Date: 2008/02/14 23:18:10 $
+  Version:   $Revision: 1.20 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -71,6 +71,7 @@ protected slots:
   void removeSelectedCacheEntries();
   void selectionChanged();
   void addCacheEntry();
+  void startSearch();
 
 protected:
 

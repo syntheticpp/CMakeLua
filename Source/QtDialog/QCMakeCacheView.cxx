@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: QCMakeCacheView.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/13 18:58:35 $
-  Version:   $Revision: 1.24 $
+  Date:      $Date: 2008/02/14 23:18:10 $
+  Version:   $Revision: 1.25 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -75,6 +75,9 @@ QCMakeCacheView::QCMakeCacheView(QWidget* p)
                         QAbstractItemView::EditKeyPressed |
                         QAbstractItemView::AnyKeyPressed);
 
+  // tab, backtab doesn't step through items
+  this->setTabKeyNavigation(false);
+
   // set up headers and sizes
   int h = 0;
   QFontMetrics met(this->font());
@@ -105,33 +108,14 @@ QCMakeCacheModel* QCMakeCacheView::cacheModel() const
 QModelIndex QCMakeCacheView::moveCursor(CursorAction act, 
   Qt::KeyboardModifiers mod)
 {
-  // tab through values only (not names)
-  QModelIndex current = this->currentIndex();
-  if(act == MoveNext)
+  // want home/end to go to begin/end of rows, not columns
+  if(act == MoveHome)
     {
-    if(!current.isValid())
-      {
-      return this->model()->index(0, 1);
-      }
-    else if(current.column() == 0)
-      {
-      return this->model()->index(current.row(), 1);
-      }
-    else
-      {
-      return this->model()->index(current.row()+1, 1);
-      }
+    return this->model()->index(0, 1);
     }
-  else if(act == MovePrevious)
+  else if(act == MoveEnd)
     {
-    if(!current.isValid())
-      {
-      return this->model()->index(0, 1);
-      }
-    else
-      {
-      return this->model()->index(current.row()-1, 1);
-      }
+    return this->model()->index(this->model()->rowCount()-1, 1);
     }
   return QTableView::moveCursor(act, mod);
 }

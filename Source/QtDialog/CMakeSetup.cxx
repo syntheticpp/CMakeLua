@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: CMakeSetup.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/12 14:49:42 $
-  Version:   $Revision: 1.15 $
+  Date:      $Date: 2008/02/14 23:18:10 $
+  Version:   $Revision: 1.16 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -23,7 +23,6 @@
 
 #include "CMakeSetupDialog.h"
 #include "cmDocumentation.h"
-#include "cmSystemTools.h"
 #include "cmake.h"
 #include "cmVersion.h"
 #include <cmsys/CommandLineArguments.hxx>
@@ -73,7 +72,6 @@ int main(int argc, char** argv)
 #if defined(Q_OS_MAC)
   cmExecDir.cd("../../../");
 #endif
-  cmSystemTools::FindExecutableDirectory(cmExecDir.filePath("cmake").toAscii().data());
 
   // pick up translation files if they exists in the data directory
   QDir translationsDir = cmExecDir;
