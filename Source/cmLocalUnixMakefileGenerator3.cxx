@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalUnixMakefileGenerator3.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/15 16:22:23 $
-  Version:   $Revision: 1.236 $
+  Date:      $Date: 2008/02/15 16:56:13 $
+  Version:   $Revision: 1.237 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1080,7 +1080,7 @@ cmLocalUnixMakefileGenerator3
       {
       cmSystemTools::Error("Could not create ", cleanfilePath.c_str());
       }
-    fout << "FILE(REMOVE\n";
+    fout << "FILE(REMOVE_RECURSE\n";
     std::string remove = "$(CMAKE_COMMAND) -P ";
     remove += this->Convert(cleanfile.c_str(), START_OUTPUT, SHELL);
     for(std::vector<std::string>::const_iterator f = files.begin();
