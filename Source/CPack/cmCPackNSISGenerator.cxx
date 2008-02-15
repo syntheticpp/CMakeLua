@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCPackNSISGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/14 19:58:27 $
-  Version:   $Revision: 1.30 $
+  Date:      $Date: 2008/02/15 15:40:55 $
+  Version:   $Revision: 1.31 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -180,7 +180,7 @@ int cmCPackNSISGenerator::InitializeInternal()
       (cmCPackLog::LOG_ERROR, 
        "Cannot find NSIS registry value. This is usually caused by NSIS "
        "not being installed. Please install NSIS from "
-       "http://nsis.sourceforge.org"
+       "http://nsis.sourceforge.net"
        << std::endl);
     return 0;
     }
