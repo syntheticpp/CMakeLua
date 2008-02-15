@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmGlobalVisualStudio9Generator.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/18 19:34:48 $
-  Version:   $Revision: 1.3 $
+  Date:      $Date: 2008/02/15 16:49:58 $
+  Version:   $Revision: 1.4 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -59,5 +59,11 @@ public:
    * Studio does not implement support for VB macros.
    */
   virtual std::string GetUserMacrosDirectory();
+
+  /**
+   * What is the reg key path to "vsmacros" for this version of Visual
+   * Studio?
+   */
+  virtual std::string GetUserMacrosRegKeyBase();
 };
 #endif

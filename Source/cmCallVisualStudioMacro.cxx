@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCallVisualStudioMacro.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/11/20 16:10:11 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2008/02/15 16:49:58 $
+  Version:   $Revision: 1.3 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -94,7 +94,41 @@ HRESULT InstanceCallMacro(
 
       hr = vsIDE->Invoke(dispid, IID_NULL, LOCALE_USER_DEFAULT,
         DISPATCH_METHOD, &params, &result, &excep, &arg);
-      ReportHRESULT(hr, "Invoke(ExecuteCommand)");
+
+      std::ostringstream oss;
+      oss << std::endl;
+      oss << "Invoke(ExecuteCommand)" << std::endl;
+      oss << "  Macro: " << macro.c_str() << std::endl;
+      oss << "  Args: " << args.c_str() << std::endl;
+
+      if (DISP_E_EXCEPTION == hr)
+        {
+        oss << "DISP_E_EXCEPTION EXCEPINFO:" << excep.wCode << std::endl;
+        oss << "  wCode: " << excep.wCode << std::endl;
+        oss << "  wReserved: " << excep.wReserved << std::endl;
+        if (excep.bstrSource)
+          {
+          oss << "  bstrSource: " <<
+            (const char*)(_bstr_t)excep.bstrSource << std::endl;
+          }
+        if (excep.bstrDescription)
+          {
+          oss << "  bstrDescription: " <<
+            (const char*)(_bstr_t)excep.bstrDescription << std::endl;
+          }
+        if (excep.bstrHelpFile)
+          {
+          oss << "  bstrHelpFile: " <<
+            (const char*)(_bstr_t)excep.bstrHelpFile << std::endl;
+          }
+        oss << "  dwHelpContext: " << excep.dwHelpContext << std::endl;
+        oss << "  pvReserved: " << excep.pvReserved << std::endl;
+        oss << "  pfnDeferredFillIn: " << excep.pfnDeferredFillIn << std::endl;
+        oss << "  scode: " << excep.scode << std::endl;
+        }
+
+      std::string exstr(oss.str());
+      ReportHRESULT(hr, exstr.c_str());
 
       VariantClear(&result);
       }
