@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmExtraEclipseCDT4Generator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/07 23:24:55 $
-  Version:   $Revision: 1.9 $
+  Date:      $Date: 2008/02/15 01:18:49 $
+  Version:   $Revision: 1.10 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   Copyright (c) 2004 Alexander Neundorf neundorf@kde.org, All rights reserved.
@@ -63,7 +63,7 @@ void cmExtraEclipseCDT4Generator
   cmExternalMakefileProjectGenerator::SetGlobalGenerator(generator);
   cmGlobalUnixMakefileGenerator3* mf
     = static_cast<cmGlobalUnixMakefileGenerator3*>(generator);
-  mf->SetToolSupportsColor(false);
+  mf->SetToolSupportsColor(true);
   mf->SetForceVerboseMakefiles(true);
   mf->EnableInstallTarget();
 }
