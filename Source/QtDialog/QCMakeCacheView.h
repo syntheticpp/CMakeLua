@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: QCMakeCacheView.h,v $
   Language:  C++
-  Date:      $Date: 2008/02/07 22:58:57 $
-  Version:   $Revision: 1.16 $
+  Date:      $Date: 2008/02/15 00:58:31 $
+  Version:   $Revision: 1.17 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -25,6 +25,7 @@
 #include <QLineEdit>
 #include <QItemDelegate>
 #include <QSortFilterProxyModel>
+#include <QCompleter>
 
 class QCMakeCacheModel;
 class QToolButton;
@@ -137,6 +138,14 @@ class QCMakeCacheFilePathEditor : public QCMakeCacheFileEditor
 public:
   QCMakeCacheFilePathEditor(QWidget* p = NULL, const QString& var = QString());
   void chooseFile();
+};
+
+/// completer class that returns native cmake paths
+class QCMakeFileCompleter : public QCompleter
+{
+public:
+  QCMakeFileCompleter(QObject* o, bool dirs);
+  virtual QString pathFromIndex(const QModelIndex& idx) const;
 };
 
 #endif

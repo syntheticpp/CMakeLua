@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: QCMakeCacheView.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/14 23:18:10 $
-  Version:   $Revision: 1.25 $
+  Date:      $Date: 2008/02/15 00:58:31 $
+  Version:   $Revision: 1.26 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -27,7 +27,6 @@
 #include <QKeyEvent>
 #include <QMenu>
 #include <QDirModel>
-#include <QCompleter>
 
 static QRegExp AdvancedRegExp[2] = { QRegExp("(false)"), QRegExp("(true|false)") };
 
@@ -460,20 +459,13 @@ QCMakeCacheFileEditor::QCMakeCacheFileEditor(QWidget* p, const QString& var)
 QCMakeCacheFilePathEditor::QCMakeCacheFilePathEditor(QWidget* p, const QString& var)
  : QCMakeCacheFileEditor(p, var)
 {
-  QCompleter* comp = new QCompleter(this);
-  QDirModel* model = new QDirModel(comp);
-  comp->setModel(model);
-  this->setCompleter(comp);
+  this->setCompleter(new QCMakeFileCompleter(this, false));
 }
 
 QCMakeCachePathEditor::QCMakeCachePathEditor(QWidget* p, const QString& var)
  : QCMakeCacheFileEditor(p, var)
 {
-  QCompleter* comp = new QCompleter(this);
-  QDirModel* model = new QDirModel(comp);
-  model->setFilter(QDir::AllDirs | QDir::Drives);
-  comp->setModel(model);
-  this->setCompleter(comp);
+this->setCompleter(new QCMakeFileCompleter(this, true));
 }
 
 void QCMakeCacheFileEditor::resizeEvent(QResizeEvent* e)
@@ -504,7 +496,7 @@ void QCMakeCacheFilePathEditor::chooseFile()
   
   if(!path.isEmpty())
     {
-    this->setText(path);
+    this->setText(QDir::fromNativeSeparators(path));
     }
 }
 
@@ -525,8 +517,23 @@ void QCMakeCachePathEditor::chooseFile()
   path = QFileDialog::getExistingDirectory(this, title, this->text());
   if(!path.isEmpty())
     {
-    this->setText(path);
+    this->setText(QDir::fromNativeSeparators(path));
     }
 }
 
+QCMakeFileCompleter::QCMakeFileCompleter(QObject* o, bool dirs)
+  : QCompleter(o)
+{
+  QDirModel* model = new QDirModel(this);
+  if(dirs)
+    {
+    model->setFilter(QDir::AllDirs | QDir::Drives | QDir::NoDotAndDotDot);
+    }
+  this->setModel(model);
+}
+
+QString QCMakeFileCompleter::pathFromIndex(const QModelIndex& idx) const
+{
+  return QDir::fromNativeSeparators(QCompleter::pathFromIndex(idx));
+}
 

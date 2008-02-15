@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: CMakeSetupDialog.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/14 23:18:10 $
-  Version:   $Revision: 1.35 $
+  Date:      $Date: 2008/02/15 00:58:31 $
+  Version:   $Revision: 1.36 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -24,8 +24,6 @@
 #include <QDialogButtonBox>
 #include <QCloseEvent>
 #include <QCoreApplication>
-#include <QCompleter>
-#include <QDirModel>
 #include <QSettings>
 #include <QMenu>
 #include <QMenuBar>
@@ -117,16 +115,8 @@ CMakeSetupDialog::CMakeSetupDialog()
   QStringList buildPaths = this->loadBuildPaths();
   this->BinaryDirectory->addItems(buildPaths);
  
-  QCompleter* compBinaryDir = new QCompleter(this);
-  QDirModel* modelBinaryDir = new QDirModel(compBinaryDir);
-  modelBinaryDir->setFilter(QDir::NoDotAndDotDot | QDir::Dirs);
-  compBinaryDir->setModel(modelBinaryDir);
-  this->BinaryDirectory->setCompleter(compBinaryDir);
-  QCompleter* compSourceDir = new QCompleter(this);
-  QDirModel* modelSourceDir = new QDirModel(compSourceDir);
-  modelSourceDir->setFilter(QDir::NoDotAndDotDot | QDir::Dirs);
-  compSourceDir->setModel(modelSourceDir);
-  this->SourceDirectory->setCompleter(compSourceDir);
+  this->BinaryDirectory->setCompleter(new QCMakeFileCompleter(this, true));
+  this->SourceDirectory->setCompleter(new QCMakeFileCompleter(this, true));
 
 
   // start the cmake worker thread
@@ -416,7 +406,7 @@ void CMakeSetupDialog::doSourceBrowse()
     tr("Enter Path to Source"), this->SourceDirectory->text());
   if(!dir.isEmpty())
     {
-    this->setSourceDirectory(dir);
+    this->setSourceDirectory(QDir::fromNativeSeparators(dir));
     }
 }
 
@@ -424,7 +414,9 @@ void CMakeSetupDialog::updateSourceDirectory(const QString& dir)
 {
   if(this->SourceDirectory->text() != dir)
     {
-    this->setSourceDirectory(dir);
+    this->SourceDirectory->blockSignals(true);
+    this->SourceDirectory->setText(dir);
+    this->SourceDirectory->blockSignals(false);
     }
 }
 
@@ -434,7 +426,7 @@ void CMakeSetupDialog::doBinaryBrowse()
     tr("Enter Path to Build"), this->BinaryDirectory->currentText());
   if(!dir.isEmpty() && dir != this->BinaryDirectory->currentText())
     {
-    this->setBinaryDirectory(dir);
+    this->setBinaryDirectory(QDir::fromNativeSeparators(dir));
     }
 }
 
