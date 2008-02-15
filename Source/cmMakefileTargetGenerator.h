@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefileTargetGenerator.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/30 01:46:25 $
-  Version:   $Revision: 1.20 $
+  Date:      $Date: 2008/02/15 16:22:23 $
+  Version:   $Revision: 1.21 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -81,6 +81,9 @@ protected:
 
   // write the depend rules for this target
   void WriteTargetDependRules();
+
+  // write rules for Mac OS X Application Bundle content.
+  void WriteMacOSXContentRules(cmSourceFile& source, const char* pkgloc);
 
   // write the rules for an object
   void WriteObjectRuleFiles(cmSourceFile& source);
@@ -178,10 +181,12 @@ protected:
   // objects used by this target
   std::vector<std::string> Objects;
   std::vector<std::string> ExternalObjects;
-  std::set<std::string> ExtraContent;
 
   // Set of object file names that will be built in this directory.
   std::set<cmStdString> ObjectFiles;
+
+  // Set of extra output files to be driven by the build.
+  std::set<cmStdString> ExtraFiles;
 
   typedef std::map<cmStdString, cmStdString> MultipleOutputPairsType;
   MultipleOutputPairsType MultipleOutputPairs;

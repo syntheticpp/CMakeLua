@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalUnixMakefileGenerator3.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/18 15:25:25 $
-  Version:   $Revision: 1.235 $
+  Date:      $Date: 2008/02/15 16:22:23 $
+  Version:   $Revision: 1.236 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1887,74 +1887,32 @@ cmLocalUnixMakefileGenerator3
                     std::string* nameWithoutTargetDir,
                     bool* hasSourceExtension)
 {
-  if(const char* fileTargetDirectory =
-     source.GetProperty("MACOSX_PACKAGE_LOCATION"))
+  // Make sure we never hit this old case.
+  if(source.GetProperty("MACOSX_PACKAGE_LOCATION"))
     {
-    // Special handling for OSX package files.
-    std::string objectName =
-      this->GetObjectFileNameWithoutTarget(source, 0,
-                                           hasSourceExtension);
-    if(nameWithoutTargetDir)
-      {
-      *nameWithoutTargetDir = objectName;
-      }
-    objectName = cmSystemTools::GetFilenameName(objectName.c_str());
-    std::string targetName;
-    std::string targetNameReal;
-    std::string targetNameImport;
-    std::string targetNamePDB;
-    target.GetExecutableNames(targetName, targetNameReal, targetNameImport,
-                              targetNamePDB, this->ConfigurationName.c_str());
-    std::string obj;
-
-    // Construct the full path version of the names.
-    //
-    // If target is a MACOSX_BUNDLE target, then the package location is
-    // relative to "${targetDir}/${targetName}.app/Contents"... else it is
-    // relative to "${targetDir}"...
-    //
-    obj = target.GetDirectory();
-    obj += "/";
-    if ( target.GetPropertyAsBool("MACOSX_BUNDLE") )
-      {
-      obj += targetName + ".app/Contents/";
-      }
-    else
-      {
-      // Emit warning here...? MACOSX_PACKAGE_LOCATION is "most useful" in a
-      // MACOSX_BUNDLE...
-      }
-    obj += fileTargetDirectory;
-
-    // Object names are specified relative to the current build dir.
-    obj = this->Convert(obj.c_str(), START_OUTPUT);
-    obj += "/";
-    obj += objectName;
-    return obj;
+    abort();
     }
-  else
+
+  // Start with the target directory.
+  std::string obj = this->GetTargetDirectory(target);
+  obj += "/";
+
+  // Get the object file name without the target directory.
+  std::string::size_type dir_len = 0;
+  dir_len += strlen(this->Makefile->GetCurrentOutputDirectory());
+  dir_len += 1;
+  dir_len += obj.size();
+  std::string objectName =
+    this->GetObjectFileNameWithoutTarget(source, dir_len,
+                                         hasSourceExtension);
+  if(nameWithoutTargetDir)
     {
-    // Start with the target directory.
-    std::string obj = this->GetTargetDirectory(target);
-    obj += "/";
-
-    // Get the object file name without the target directory.
-    std::string::size_type dir_len = 0;
-    dir_len += strlen(this->Makefile->GetCurrentOutputDirectory());
-    dir_len += 1;
-    dir_len += obj.size();
-    std::string objectName =
-      this->GetObjectFileNameWithoutTarget(source, dir_len,
-                                           hasSourceExtension);
-    if(nameWithoutTargetDir)
-      {
-      *nameWithoutTargetDir = objectName;
-      }
-
-    // Append the object name to the target directory.
-    obj += objectName;
-    return obj;
+    *nameWithoutTargetDir = objectName;
     }
+
+  // Append the object name to the target directory.
+  obj += objectName;
+  return obj;
 }
 
 //----------------------------------------------------------------------------
