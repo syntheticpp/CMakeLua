@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmBootstrapCommands.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/14 16:58:32 $
-  Version:   $Revision: 1.25 $
+  Date:      $Date: 2008/02/16 18:05:03 $
+  Version:   $Revision: 1.26 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -66,6 +66,8 @@
 #include "cmIncludeDirectoryCommand.cxx"
 #include "cmIncludeRegularExpressionCommand.cxx"
 #include "cmInstallFilesCommand.cxx"
+#include "cmInstallCommandArguments.cxx"
+#include "cmInstallCommand.cxx"
 #include "cmInstallTargetsCommand.cxx"
 #include "cmLinkDirectoriesCommand.cxx"
 #include "cmListCommand.cxx"
@@ -132,6 +134,7 @@ void GetBootstrapCommands(std::list<cmCommand*>& commands)
   commands.push_back(new cmIncludeCommand);
   commands.push_back(new cmIncludeDirectoryCommand);
   commands.push_back(new cmIncludeRegularExpressionCommand);
+  commands.push_back(new cmInstallCommand);
   commands.push_back(new cmInstallFilesCommand);
   commands.push_back(new cmInstallTargetsCommand);
   commands.push_back(new cmLinkDirectoriesCommand);

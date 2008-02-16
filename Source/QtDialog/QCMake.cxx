@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: QCMake.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/15 20:36:16 $
-  Version:   $Revision: 1.19 $
+  Date:      $Date: 2008/02/16 18:05:03 $
+  Version:   $Revision: 1.20 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -34,12 +34,18 @@ QCMake::QCMake(QObject* p)
   QDir execDir(QCoreApplication::applicationDirPath());
   
 #if defined(Q_OS_MAC)
-  execDir.cd("../../../");
+  if(execDir.exists("../bin/cmake"))
+    {
+    execDir.cd("../bin");
+    }
+  else
+    {
+    execDir.cd("../../../");  // path to cmake in build directory (need to fix for deployment)
+    }
 #endif
   
   QString cmakeCommand = QString("cmake")+cmSystemTools::GetExecutableExtension();
   cmakeCommand = execDir.filePath(cmakeCommand);
-
 
   cmSystemTools::DisableRunCommandOutput();
   cmSystemTools::SetRunCommandHideConsole(true);
