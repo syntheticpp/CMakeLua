@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCPackGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/11/06 13:28:26 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2008/02/16 18:02:57 $
+  Version:   $Revision: 1.3 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -395,13 +395,12 @@ int cmCPackGenerator::InstallProjectViaInstallScript(
         // underneath the tempInstallDirectory. The value of the project's
         // CMAKE_INSTALL_PREFIX is sent in here as the value of the
         // CPACK_INSTALL_PREFIX variable.
-        std::string dir = tempInstallDirectory;
+       std::string dir;
         if (this->GetOption("CPACK_INSTALL_PREFIX"))
           {
           dir += this->GetOption("CPACK_INSTALL_PREFIX");
           }
         this->SetOption("CMAKE_INSTALL_PREFIX", dir.c_str());
-
         cmCPackLogger(cmCPackLog::LOG_DEBUG,
           "- Using DESTDIR + CPACK_INSTALL_PREFIX... (this->SetOption)"
           << std::endl);
@@ -555,7 +554,7 @@ int cmCPackGenerator::InstallProjectViaInstallCMakeProjects(
         // underneath the tempInstallDirectory. The value of the project's
         // CMAKE_INSTALL_PREFIX is sent in here as the value of the
         // CPACK_INSTALL_PREFIX variable.
-        std::string dir = tempInstallDirectory;
+        std::string dir;
         if (this->GetOption("CPACK_INSTALL_PREFIX"))
           {
           dir += this->GetOption("CPACK_INSTALL_PREFIX");
