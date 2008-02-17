@@ -34,6 +34,7 @@ extern "C" {
 #include "lauxlib.h"
 #include "lualib.h"
 }
+#include "cmLuaUtils.h"
 
 #if defined(CMAKE_BUILD_WITH_CMAKE)
 # include "cmDependsFortran.h" // For -E cmake_copy_f90_mod callback.
@@ -323,6 +324,8 @@ void cmake::AddCommand(cmCommand* wg)
   // add to Lua
   if (wg->GetExposeToLua())
     {
+#define CMAKELUA_NO_NAMESPACE
+#ifdef CMAKELUA_NO_NAMESPACE
     lua_pushstring(this->LuaState, name.c_str());
     lua_pushcclosure(this->LuaState, wg->LuaFunction, 1);
   
@@ -330,6 +333,11 @@ void cmake::AddCommand(cmCommand* wg)
     std::string fname = "cm_";
     fname += name;
     lua_setglobal(this->LuaState, fname.c_str());
+#else
+	const char* cmakelua_api_namespace = "cmake";
+	std::cerr << "RegisterFunc for: " << name << ".\n";
+	LuaUtils_RegisterFunc(this->LuaState, wg->LuaFunction, name.c_str(), cmakelua_api_namespace);
+#endif
     }
 }
 

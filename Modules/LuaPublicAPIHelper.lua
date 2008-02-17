@@ -46,10 +46,19 @@ end
 
 
 -- create a namespace for public functions using tables
-cm = {}
+if cmake == nil then
+	cmake = {}
+end
 
 -- Create some global constants (maybe we want this in the namespace too?)
+cmake.STATIC = "STATIC"
+
+--[[
+if cm == nil then
+	cm = {}
+end
 cm.STATIC = "STATIC"
+--]]
 
 
 
@@ -83,6 +92,7 @@ end
 
 -- Here we demonstrate some fancy argument handling for the convenience of the users
 
+--[[
 function cm.add_library(library_name, ...)
 	local argument_table = {...} -- put the arguments in a table for easier handling
 	local number_of_args = #argument_table -- use the # operator to get the size of the table
@@ -112,7 +122,45 @@ function cm.add_library(library_name, ...)
 
 
 	-- Call the 'real' C/Lua CMake function
-	return cm_add_library(library_name, unpack(flattened_list))
+	return cmake.add_library(library_name, unpack(flattened_list))
+end
+--]]
+
+local function setup_fancy_argument_handling(original_function)
+
+	
+	local old_function = original_function
+
+	return function(...)
+		local argument_table = {...} -- put the arguments in a table for easier handling
+		local number_of_args = #argument_table -- use the # operator to get the size of the table
+
+		local flattened_list = {}
+		recursive_file_concat(flattened_list, argument_table)
+
+		return old_function(unpack(flattened_list))
+	end
+end
+
+	
+
+
+-- For every registered (C++) CMake API function (in cmake. table)
+-- provide fancy argument handling
+--for key, value in pairs(cmake) do
+for key, value in pairs(_G) do
+	if type(value) == "function" then
+		local func_name = string.match(key, '^cm_(.*)$')
+		if func_name then
+--			print("Found function:", key, "func_name", func_name, ".")
+			--cmake[key] = setup_fancy_argument_handling(value)
+			--cmake[func_name] = value
+			cmake[func_name] = setup_fancy_argument_handling(value)
+			_G[key] = nil
+		end
+	else
+--		print("Type:", type(value), "for key:", key)
+	end
 end
 
 

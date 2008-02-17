@@ -485,7 +485,13 @@ bool cmMakefile::ReadListFile(const char* filename_in,
 		if ( s!=0 )
 		{
 			std::cerr << "-- " << lua_tostring(L, -1) << std::endl;
+			lua_pop(L, 1);
 		}
+	}
+	else
+	{
+			std::cerr << "-- " << lua_tostring(L, -1) << std::endl;
+			lua_pop(L, 1);
 	}
 
 

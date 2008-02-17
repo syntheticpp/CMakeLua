@@ -1,7 +1,7 @@
 -- a simple test case
-cm_project ("LuaTest");
+cmake.project ("LuaTest");
 
-cm_add_executable ("LuaTestSub", "simple.cxx");
+cmake.add_executable ("LuaTestSub", "simple.cxx");
 
 sources = {
   "simpleLib.cxx",
@@ -9,9 +9,10 @@ sources = {
   "simpleWe.cpp"
 }
 
-cm_add_library ("simpleLibSub", "STATIC", unpack(sources));
+cmake.add_library ("simpleLibSub", "STATIC", unpack(sources));
+--cmake.add_library ("simpleLibSub", "STATIC", unpack(sources));
 
-cm_target_link_libraries ("LuaTestSub", "simpleLibSub");
+cmake.target_link_libraries ("LuaTestSub", "simpleLibSub");
 
---print("The location of simpleLib is: " .. cm_get_property("TARGET", "simpleLibSub", "LOCATION"));
+--print("The location of simpleLib is: " .. cmake.get_property("TARGET", "simpleLibSub", "LOCATION"));
 

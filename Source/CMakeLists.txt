@@ -160,6 +160,8 @@ SET(SRCS
   cmLocalGenerator.cxx
   cmLocalGenerator.h
   cmLocalUnixMakefileGenerator3.cxx
+  cmLuaUtils.h
+  cmLuaUtils.cxx
   cmMakeDepend.cxx
   cmMakeDepend.h
   cmMakefile.cxx
