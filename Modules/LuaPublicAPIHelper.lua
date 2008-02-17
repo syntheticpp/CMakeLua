@@ -127,8 +127,6 @@ end
 --]]
 
 local function setup_fancy_argument_handling(original_function)
-
-	
 	local old_function = original_function
 
 	return function(...)
@@ -138,7 +136,8 @@ local function setup_fancy_argument_handling(original_function)
 		local flattened_list = {}
 		recursive_file_concat(flattened_list, argument_table)
 
-		return old_function(unpack(flattened_list))
+		--return old_function(unpack(flattened_list))
+		return old_function(flattened_list)
 	end
 end
 
@@ -164,5 +163,19 @@ for key, value in pairs(_G) do
 end
 
 
+--[[
+for key, value in pairs(cmake) do
+	if type(value) == "function" then
+--			print("Found function:", key, ".")
+			cmake[key] = setup_fancy_argument_handling(value)
+			--cmake[func_name] = value
+			--cmake[func_name] = setup_fancy_argument_handling(value)
+			--_G[key] = nil
+	else
+		print("Type:", type(value), "for key:", key)
+	end
+end
+--]]
+--print("end of helper")
 
 

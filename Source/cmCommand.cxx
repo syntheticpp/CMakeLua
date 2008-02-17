@@ -32,13 +32,38 @@ static int cmLuaFunc(lua_State *L)
   
   int i;
   int top = lua_gettop(L);
+  /* The old way used variable number of arguments.
+   * The problem with this is that the max number of 
+   * arguments is capped at 2048. If people are
+   * list large number of files, we will get into trouble.
+   * So I'm switching the implementation to pass a single
+   * table (array) instead which doesn't have the cap.
+   */
+/*  
   for (i = 1; i <= top; i++) 
     { 
     const char *arg = lua_tostring(L, i);
     lff.Arguments.push_back(cmListFileArgument(arg, false,
                                                0, 0));
     }
-
+*/
+ /* New way: uses a table (array) */
+  if(lua_istable(L, -1))
+    {
+    int array_length = luaL_getn(L, -1);	
+    for (i = 1; i<= array_length; i++)
+      {
+      lua_rawgeti(L, 1, i); // assumes table is first (and only) argument
+      const char *arg = lua_tostring(L, -1);
+      lff.Arguments.push_back(cmListFileArgument(arg, false,
+                                                 0, 0));
+      lua_pop(L, 1);
+      }
+	}
+  else
+    {
+		std::cerr << "CMakeLua functions can only take a single table (array) parameter in cmCommand::cmLuaFunc(). It is expected that fancy argument handling is handled in LuaPublicAPIHelper.lua which should prepare all arguments to be formatted for this function. If this message is seen, either the helper failed or invocation bypassed the helper." << std::endl;
+    }
   // get the current makefile
   lua_pushstring(L,"cmCurrentMakefile");
   lua_gettable(L, LUA_REGISTRYINDEX);
