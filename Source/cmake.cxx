@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmake.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/14 21:42:29 $
-  Version:   $Revision: 1.360 $
+  Date:      $Date: 2008/02/18 18:03:40 $
+  Version:   $Revision: 1.361 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -839,14 +839,6 @@ int cmake::AddCMakePaths()
     {
     // try compiled in root directory
     cMakeRoot = CMAKE_ROOT_DIR;
-    modules = cMakeRoot + "/Modules/CMake.cmake";
-    }
-#endif
-#ifdef CMAKE_PREFIX
-  if (!cmSystemTools::FileExists(modules.c_str()))
-    {
-    // try compiled in install prefix
-    cMakeRoot = CMAKE_PREFIX CMAKE_DATA_DIR;
     modules = cMakeRoot + "/Modules/CMake.cmake";
     }
 #endif
