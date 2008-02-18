@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCPackGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/16 18:02:57 $
-  Version:   $Revision: 1.3 $
+  Date:      $Date: 2008/02/18 15:26:28 $
+  Version:   $Revision: 1.4 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -536,6 +536,7 @@ int cmCPackGenerator::InstallProjectViaInstallCMakeProjects(
       cmCPackLogger(cmCPackLog::LOG_OUTPUT,
         "- Install project: " << installProjectName << std::endl);
       cmake cm;
+      cm.AddCMakePaths();
       cm.SetProgressCallback(cmCPackGeneratorProgress, this);
       cmGlobalGenerator gg;
       gg.SetCMakeInstance(&cm);
@@ -596,7 +597,6 @@ int cmCPackGenerator::InstallProjectViaInstallCMakeProjects(
         {
         mf->AddDefinition("CMAKE_INSTALL_DO_STRIP", "1");
         }
-
       int res = mf->ReadListFile(0, installFile.c_str());
       if ( cmSystemTools::GetErrorOccuredFlag() || !res )
         {
