@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmTarget.h,v $
   Language:  C++
-  Date:      $Date: 2008/02/06 18:34:44 $
-  Version:   $Revision: 1.105 $
+  Date:      $Date: 2008/02/18 21:38:34 $
+  Version:   $Revision: 1.106 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -51,6 +51,19 @@ struct cmTargetLinkInterfaceMap:
   cmTargetLinkInterfaceMap() {}
   cmTargetLinkInterfaceMap(cmTargetLinkInterfaceMap const& r);
   ~cmTargetLinkInterfaceMap();
+};
+
+class cmTargetInternals;
+class cmTargetInternalPointer
+{
+public:
+  cmTargetInternalPointer();
+  cmTargetInternalPointer(cmTargetInternalPointer const& r);
+  ~cmTargetInternalPointer();
+  cmTargetInternalPointer& operator=(cmTargetInternalPointer const& r);
+  cmTargetInternals* operator->() const { return this->Pointer; }
+private:
+  cmTargetInternals* Pointer;
 };
 
 /** \class cmTarget
@@ -115,12 +128,22 @@ public:
    * Flags for a given source file as used in this target. Typically assigned
    * via SET_TARGET_PROPERTIES when the property is a list of source files.
    */
+  enum SourceFileType
+  {
+    SourceFileTypeNormal,
+    SourceFileTypePrivateHeader, // is in "PRIVATE_HEADER" target property
+    SourceFileTypePublicHeader,  // is in "PUBLIC_HEADER" target property
+    SourceFileTypeResource,      // is in "RESOURCE" target property *or*
+                                 // has MACOSX_PACKAGE_LOCATION=="Resources"
+    SourceFileTypeMacContent     // has MACOSX_PACKAGE_LOCATION!="Resources"
+  };
   struct SourceFileFlags
   {
-    bool PrivateHeader; // source is in "PRIVATE_HEADER" target property
-    bool PublicHeader;  // source is in "PUBLIC_HEADER" target property
-    bool Resource;      // source is in "RESOURCE" target property *or*
-                        // source has MACOSX_PACKAGE_LOCATION=="Resources"
+    SourceFileFlags(): Type(SourceFileTypeNormal), MacFolder(0) {}
+    SourceFileFlags(SourceFileFlags const& r):
+      Type(r.Type), MacFolder(r.MacFolder) {}
+    SourceFileType Type;
+    const char* MacFolder; // location inside Mac content folders
   };
 
   /**
@@ -497,6 +520,12 @@ private:
   // The cmMakefile instance that owns this target.  This should
   // always be set.
   cmMakefile* Makefile;
+
+  // Internal representation details.
+  friend class cmTargetInternals;
+  cmTargetInternalPointer Internal;
+
+  void ConstructSourceFileFlags();
 };
 
 typedef std::map<cmStdString,cmTarget> cmTargets;

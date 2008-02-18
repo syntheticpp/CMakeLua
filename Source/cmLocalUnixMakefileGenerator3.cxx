@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalUnixMakefileGenerator3.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/15 16:56:13 $
-  Version:   $Revision: 1.237 $
+  Date:      $Date: 2008/02/18 21:38:34 $
+  Version:   $Revision: 1.238 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -128,8 +128,8 @@ void cmLocalUnixMakefileGenerator3::Generate()
   std::string empty;
   for(cmTargets::iterator t = targets.begin(); t != targets.end(); ++t)
     {
-    cmMakefileTargetGenerator *tg = 
-      cmMakefileTargetGenerator::New(this, t->first, &(t->second));
+    cmMakefileTargetGenerator *tg =
+      cmMakefileTargetGenerator::New(&(t->second));
     if (tg)
       {
       this->TargetGenerators.push_back(tg);
@@ -168,7 +168,7 @@ unsigned long cmLocalUnixMakefileGenerator3
          this->TargetGenerators.begin();
        mtgIter != this->TargetGenerators.end(); ++mtgIter)
     {
-    if (!strcmp(name,(*mtgIter)->GetTargetName()))
+    if (!strcmp(name,(*mtgIter)->GetTarget()->GetName()))
       {
       return (*mtgIter)->GetNumberOfProgressActions();
       }
