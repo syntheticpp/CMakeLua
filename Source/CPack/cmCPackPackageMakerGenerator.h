@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCPackPackageMakerGenerator.h,v $
   Language:  C++
-  Date:      $Date: 2007/11/05 21:55:45 $
-  Version:   $Revision: 1.11 $
+  Date:      $Date: 2008/02/19 19:26:19 $
+  Version:   $Revision: 1.12 $
 
   Copyright (c) 2002 Kitware, Inc. All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -39,6 +39,9 @@ public:
   virtual ~cmCPackPackageMakerGenerator();
 
 protected:
+  int CopyInstallScript(const char* resdir,
+                        const char* script,
+                        const char* name);
   virtual int InitializeInternal();
   int CompressFiles(const char* outFileName, const char* toplevel,
     const std::vector<std::string>& files);
