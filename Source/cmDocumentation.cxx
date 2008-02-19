@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmDocumentation.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/17 19:04:01 $
-  Version:   $Revision: 1.66 $
+  Date:      $Date: 2008/02/19 19:33:43 $
+  Version:   $Revision: 1.67 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -324,6 +324,7 @@ void cmDocumentation::ClearSections()
 bool cmDocumentation::PrintDocumentation(Type ht, std::ostream& os)
 {
   if ((this->CurrentFormatter->GetForm() != HTMLForm) 
+       && (this->CurrentFormatter->GetForm() != DocbookForm)
        && (this->CurrentFormatter->GetForm() != ManForm))
     {
     this->PrintVersion(os);
@@ -634,6 +635,11 @@ cmDocumentation::Form cmDocumentation::GetFormFromFilename(
   if ((ext == ".HTM") || (ext == ".HTML"))
     {
     return cmDocumentation::HTMLForm;
+    }
+
+  if (ext == ".DOCBOOK")
+    {
+    return cmDocumentation::DocbookForm;
     }
 
   // ".1" to ".9" should be manpages
@@ -1216,7 +1222,8 @@ bool cmDocumentation::PrintDocumentationCustomModules(std::ostream& os)
   this->CreateCustomModulesSection();
   this->AddSectionToPrint("Description");
   this->AddSectionToPrint("Custom CMake Modules");
-  this->AddSectionToPrint("Copyright");
+// the custom modules are most probably not under Kitware's copyright, Alex
+//  this->AddSectionToPrint("Copyright");
   this->AddSectionToPrint("See Also");
 
   this->CurrentFormatter->PrintHeader(this->GetNameString(), os);
@@ -1372,6 +1379,9 @@ void cmDocumentation::SetForm(Form f)
   {
     case HTMLForm:
       this->CurrentFormatter = &this->HTMLFormatter;
+      break;
+    case DocbookForm:
+      this->CurrentFormatter = &this->DocbookFormatter;
       break;
     case ManForm:
       this->CurrentFormatter = &this->ManFormatter;

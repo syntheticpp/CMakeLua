@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmDocumentation.h,v $
   Language:  C++
-  Date:      $Date: 2007/10/24 15:36:47 $
-  Version:   $Revision: 1.31 $
+  Date:      $Date: 2008/02/19 19:33:43 $
+  Version:   $Revision: 1.32 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -21,6 +21,7 @@
 #include "cmProperty.h"
 #include "cmDocumentationFormatter.h"
 #include "cmDocumentationFormatterHTML.h"
+#include "cmDocumentationFormatterDocbook.h"
 #include "cmDocumentationFormatterMan.h"
 #include "cmDocumentationFormatterText.h"
 #include "cmDocumentationFormatterUsage.h"
@@ -176,6 +177,7 @@ private:
   std::vector<RequestedHelpItem> RequestedHelpItems;
   cmDocumentationFormatter* CurrentFormatter;
   cmDocumentationFormatterHTML HTMLFormatter;
+  cmDocumentationFormatterDocbook DocbookFormatter;
   cmDocumentationFormatterMan ManFormatter;
   cmDocumentationFormatterText TextFormatter;
   cmDocumentationFormatterUsage UsageFormatter;

@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmDocumentationFormatterHTML.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/17 17:31:29 $
-  Version:   $Revision: 1.8 $
+  Date:      $Date: 2008/02/19 19:33:43 $
+  Version:   $Revision: 1.9 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -32,24 +32,23 @@ static bool cmDocumentationIsHyperlinkChar(char c)
 static void cmDocumentationPrintHTMLChar(std::ostream& os, char c)
 {
   // Use an escape sequence if necessary.
-  static std::map<char,std::string> escapes;
-  if (escapes.empty())
+  switch (c)
     {
-    escapes['<'] = "&lt;";
-    escapes['>'] = "&gt;";
-    escapes['&'] = "&amp;";
-    escapes['\n'] = "<br>";
-    }
-
-  if (escapes.find(c) == escapes.end())
-    {
-    // No escape sequence is needed.
-    os << c;
-    return;
-    }
-    
-  os << escapes[c];
-  return;
+    case '<': 
+      os << "&lt;";
+      break;
+    case '>':
+      os << "&gt;";
+      break;
+    case '&':
+      os << "&amp;";
+      break;
+    case '\n':
+      os << "<br>";
+      break;
+    default:
+      os << c;
+  }
 }
 
 //----------------------------------------------------------------------------
