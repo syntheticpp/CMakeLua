@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmExtraEclipseCDT4Generator.h,v $
   Language:  C++
-  Date:      $Date: 2007/08/17 14:05:39 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2008/02/19 20:07:28 $
+  Version:   $Revision: 1.3 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   Copyright (c) 2004 Alexander Neundorf, neundorf@kde.org. All rights reserved.
@@ -76,6 +76,11 @@ private:
   // Extract basename.
   static std::string GetPathBasename(const std::string& path);
 
+  // Generate the project name as: <name>-<type>@<path>
+  static std::string GenerateProjectName(const std::string& name,
+                                         const std::string& type,
+                                         const std::string& path);
+
   // Helper functions
   static void AppendStorageScanners(cmGeneratedFileStream& fout);
   static void AppendTarget         (cmGeneratedFileStream& fout,
@@ -91,6 +96,10 @@ private:
                                     const std::string&   runActionCommand,
                                     bool                 runActionUseDefault,
                                     bool                 sipParserEnabled);
+
+  std::string HomeDirectory;
+  std::string HomeOutputDirectory;
+
 };
 
 #endif
