@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: CMakeSetup.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/14 23:18:10 $
-  Version:   $Revision: 1.16 $
+  Date:      $Date: 2008/02/19 19:06:10 $
+  Version:   $Revision: 1.17 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -20,6 +20,7 @@
 #include <QDir>
 #include <QTranslator>
 #include <QLocale>
+#include "QMacInstallDialog.h"
 
 #include "CMakeSetupDialog.h"
 #include "cmDocumentation.h"
@@ -66,7 +67,17 @@ static const char * cmDocumentationOptions[][3] =
 int main(int argc, char** argv)
 {
   QApplication app(argc, argv);
-
+  
+  // if arg for install 
+  for(int i =0; i < argc; i++)
+    {
+    if(strcmp(argv[i], "--mac-install") == 0)
+      {
+      QMacInstallDialog setupdialog(0);
+      setupdialog.exec();
+      return 0;
+      }
+    }
   // tell the cmake library where cmake is 
   QDir cmExecDir(QApplication::applicationDirPath());
 #if defined(Q_OS_MAC)
