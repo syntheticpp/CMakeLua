@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmExtraEclipseCDT4Generator.h,v $
   Language:  C++
-  Date:      $Date: 2008/02/19 20:07:28 $
-  Version:   $Revision: 1.3 $
+  Date:      $Date: 2008/02/19 21:27:03 $
+  Version:   $Revision: 1.4 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   Copyright (c) 2004 Alexander Neundorf, neundorf@kde.org. All rights reserved.
@@ -52,8 +52,11 @@ public:
   virtual void Generate();
 
 private:
+  // create .project file in the source tree
+  void CreateSourceProjectFile() const;
+
   // create .project file
-  void CreateProjectFile() const;
+  void CreateProjectFile();
 
   // create .cproject file
   void CreateCProjectFile() const;
@@ -97,8 +100,16 @@ private:
                                     bool                 runActionUseDefault,
                                     bool                 sipParserEnabled);
 
+  static void AppendLinkedResource (cmGeneratedFileStream& fout,
+                                    const std::string&     name,
+                                    const std::string&     path);
+
+  std::vector<std::string> SrcLinkedResources;
+  std::vector<std::string> OutLinkedResources;
   std::string HomeDirectory;
   std::string HomeOutputDirectory;
+  bool IsOutOfSourceBuild;
+  bool GenerateSourceProject;
 
 };
 
