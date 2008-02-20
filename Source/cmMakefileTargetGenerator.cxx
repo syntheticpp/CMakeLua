@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefileTargetGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/18 21:38:34 $
-  Version:   $Revision: 1.90 $
+  Date:      $Date: 2008/02/20 19:56:29 $
+  Version:   $Revision: 1.91 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1563,13 +1563,15 @@ void
 cmMakefileTargetGenerator
 ::CreateLinkScript(const char* name,
                    std::vector<std::string> const& link_commands,
-                   std::vector<std::string>& makefile_commands)
+                   std::vector<std::string>& makefile_commands,
+                   std::vector<std::string>& makefile_depends)
 {
   // Create the link script file.
   std::string linkScriptName = this->TargetBuildDirectoryFull;
   linkScriptName += "/";
   linkScriptName += name;
   cmGeneratedFileStream linkScriptStream(linkScriptName.c_str());
+  linkScriptStream.SetCopyIfDifferent(true);
   for(std::vector<std::string>::const_iterator cmd = link_commands.begin();
       cmd != link_commands.end(); ++cmd)
     {
@@ -1588,6 +1590,7 @@ cmMakefileTargetGenerator
                                 cmLocalGenerator::SHELL);
   link_command += " --verbose=$(VERBOSE)";
   makefile_commands.push_back(link_command);
+  makefile_depends.push_back(linkScriptName);
 }
 
 //----------------------------------------------------------------------------

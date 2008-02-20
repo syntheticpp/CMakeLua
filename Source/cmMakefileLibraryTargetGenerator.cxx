@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefileLibraryTargetGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/18 21:38:34 $
-  Version:   $Revision: 1.56 $
+  Date:      $Date: 2008/02/20 19:56:29 $
+  Version:   $Revision: 1.57 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -788,7 +788,7 @@ void cmMakefileLibraryTargetGenerator::WriteLibraryRules
     {
     // Use a link script.
     const char* name = (relink? "relink.txt" : "link.txt");
-    this->CreateLinkScript(name, real_link_commands, commands1);
+    this->CreateLinkScript(name, real_link_commands, commands1, depends);
     }
   else
     {
