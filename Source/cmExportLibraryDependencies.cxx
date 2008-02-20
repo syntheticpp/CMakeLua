@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmExportLibraryDependencies.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/12 14:18:50 $
-  Version:   $Revision: 1.21 $
+  Date:      $Date: 2008/02/20 18:36:38 $
+  Version:   $Revision: 1.22 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -80,8 +80,8 @@ void cmExportLibraryDependenciesCommand::ConstFinalPass() const
 
   // Collect dependency information about all library targets built in
   // the project.
-  const cmake* cm = this->Makefile->GetCMakeInstance();
-  const cmGlobalGenerator* global = cm->GetGlobalGenerator();
+  cmake* cm = this->Makefile->GetCMakeInstance();
+  cmGlobalGenerator* global = cm->GetGlobalGenerator();
   const std::vector<cmLocalGenerator *>& locals = global->GetLocalGenerators();
   std::map<cmStdString, cmStdString> libDepsOld;
   std::map<cmStdString, cmStdString> libDepsNew;
@@ -137,9 +137,20 @@ void cmExportLibraryDependenciesCommand::ConstFinalPass() const
             ltValue = "optimized";
             break;
           }
-        valueOld += li->first;
+        std::string lib = li->first;
+        if(cmTarget* libtgt = global->FindTarget(0, lib.c_str()))
+          {
+          // Handle simple output name changes.  This command is
+          // deprecated so we do not support full target name
+          // translation (which requires per-configuration info).
+          if(const char* outname = libtgt->GetProperty("OUTPUT_NAME"))
+            {
+            lib = outname;
+            }
+          }
+        valueOld += lib;
         valueOld += ";";
-        valueNew += li->first;
+        valueNew += lib;
         valueNew += ";";
 
         std::string& ltEntry = libTypes[ltVar];
