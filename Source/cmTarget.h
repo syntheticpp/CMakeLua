@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmTarget.h,v $
   Language:  C++
-  Date:      $Date: 2008/02/18 21:38:34 $
-  Version:   $Revision: 1.106 $
+  Date:      $Date: 2008/02/21 16:41:11 $
+  Version:   $Revision: 1.107 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -281,6 +281,10 @@ public:
   /** Get the soname of the target.  Allowed only for a shared library.  */
   std::string GetSOName(const char* config);
 
+  /** Test for special case of a third-party shared library that has
+      no soname at all.  */
+  bool IsImportedSharedLibWithoutSOName(const char* config);
+
   /** Get the full path to the target according to the settings in its
       makefile and the configuration type.  */
   std::string GetFullPath(const char* config=0, bool implib = false,
@@ -501,6 +505,7 @@ private:
   // Cache import information from properties for each configuration.
   struct ImportInfo
   {
+    bool NoSOName;
     std::string Location;
     std::string SOName;
     std::string ImportLibrary;
