@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmOrderDirectories.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/21 18:58:40 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2008/02/21 18:59:34 $
+  Version:   $Revision: 1.3 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -177,7 +177,6 @@ bool cmOrderDirectoriesConstraintSOName::FindConflict(std::string const& dir)
     std::set<cmStdString>::const_iterator first = files.lower_bound(base);
     ++base[base.size()-1];
     std::set<cmStdString>::const_iterator last = files.upper_bound(base);
-    bool found = false;
     for(std::set<cmStdString>::const_iterator fi = first; fi != last; ++fi)
       {
       return true;
