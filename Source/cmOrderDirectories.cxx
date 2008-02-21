@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmOrderDirectories.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/21 16:41:11 $
-  Version:   $Revision: 1.1 $
+  Date:      $Date: 2008/02/21 18:58:40 $
+  Version:   $Revision: 1.2 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -119,6 +119,15 @@ public:
                                      const char* soname):
     cmOrderDirectoriesConstraint(od, file), SOName(soname? soname : "")
     {
+    if(this->SOName.empty())
+      {
+      // Try to guess the soname.
+      std::string soguess;
+      if(cmSystemTools::GuessLibrarySOName(file, soguess))
+        {
+        this->SOName = soguess;
+        }
+      }
     }
 
   virtual void Report(std::ostream& e)
@@ -164,7 +173,6 @@ bool cmOrderDirectoriesConstraintSOName::FindConflict(std::string const& dir)
     // Get the set of files that might conflict.  Since we do not
     // know the soname just look at all files that start with the
     // file name.  Usually the soname starts with the library name.
-    // TODO: Check if the library is a symlink and guess the soname.
     std::string base = this->FileName;
     std::set<cmStdString>::const_iterator first = files.lower_bound(base);
     ++base[base.size()-1];

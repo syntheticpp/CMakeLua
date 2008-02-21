@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmSystemTools.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/24 19:41:18 $
-  Version:   $Revision: 1.147 $
+  Date:      $Date: 2008/02/21 18:58:41 $
+  Version:   $Revision: 1.148 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -376,6 +376,10 @@ public:
   static void MakefileColorEcho(int color, const char* message,
                                 bool newLine, bool enabled);
 #endif
+
+  /** Try to guess the soname of a shared library.  */
+  static bool GuessLibrarySOName(std::string const& fullPath,
+                                 std::string& soname);
 
 private:
   static bool s_ForceUnixPaths;

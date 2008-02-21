@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmSystemTools.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/25 13:11:04 $
-  Version:   $Revision: 1.361 $
+  Date:      $Date: 2008/02/21 18:58:40 $
+  Version:   $Revision: 1.362 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -2150,3 +2150,34 @@ void cmSystemTools::MakefileColorEcho(int color, const char* message,
     }
 }
 #endif
+
+//----------------------------------------------------------------------------
+bool cmSystemTools::GuessLibrarySOName(std::string const& fullPath,
+                                       std::string& soname)
+{
+  // If the file is not a symlink we have no guess for its soname.
+  if(!cmSystemTools::FileIsSymlink(fullPath.c_str()))
+    {
+    return false;
+    }
+  if(!cmSystemTools::ReadSymlink(fullPath.c_str(), soname))
+    {
+    return false;
+    }
+
+  // If the symlink has a path component we have no guess for the soname.
+  if(!cmSystemTools::GetFilenamePath(soname).empty())
+    {
+    return false;
+    }
+
+  // If the symlink points at an extended version of the same name
+  // assume it is the soname.
+  std::string name = cmSystemTools::GetFilenameName(fullPath);
+  if(soname.length() > name.length() &&
+     soname.substr(0, name.length()) == name)
+    {
+    return true;
+    }
+  return false;
+}
