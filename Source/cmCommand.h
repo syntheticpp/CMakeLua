@@ -21,6 +21,7 @@
 #include "cmListFileCache.h"
 #include "cmMakefile.h"
 #include "cmCommandArgumentsHelper.h"
+struct lua_State;
 
 /** \class cmCommand
  * \brief Superclass for all commands in CMake.
@@ -40,8 +41,7 @@ public:
   /**
    * Construct the command. By default it is enabled with no makefile.
    */
-  cmCommand()  
-    {this->Makefile = 0; this->Enabled = true;}
+  cmCommand();
 
   /**
    * Need virtual destructor to destroy real command type.
@@ -175,9 +175,15 @@ public:
     this->Error += e;
     }
 
+  // some lua methods
+  bool GetExposeToLua() { return this->ExposeToLua; };
+  int (*LuaFunction)(lua_State *L);
+
 protected:
   cmMakefile* Makefile;
   cmCommandArgumentsHelper Helper;
+
+  bool ExposeToLua;
 
 private:
   bool Enabled;

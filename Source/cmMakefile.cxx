@@ -41,6 +41,12 @@
 
 #include <ctype.h> // for isspace
 
+extern "C" {
+#include "lua.h"
+#include "lauxlib.h"
+#include "lualib.h"
+}
+
 // default is not to be building executables
 cmMakefile::cmMakefile()
 {
@@ -457,6 +463,77 @@ bool cmMakefile::ReadListFile(const char* filename_in,
     {
     *fullPath=filenametoread;
     }
+
+
+  // *** Here is the core listfile reading code ***
+  // is it a lua file ?
+  if (cmSystemTools::GetFilenameLastExtension(filenametoread) == ".lua")
+    {
+    lua_State *L = this->GetCMakeInstance()->GetLuaState();
+    this->ListFiles.push_back( filenametoread);
+
+	// Run utility helper
+	std::string lua_helper_file;
+	lua_helper_file = this->GetModulesFile("LuaPublicAPIHelper.lua");
+	std::cerr << "Path to lua_helper file is: " << lua_helper_file << std::endl;
+	
+	int s = luaL_loadfile(L, lua_helper_file.c_str());
+    if ( s==0 )
+	{
+      // execute Lua program
+      s = lua_pcall(L, 0, 0, 0);
+		if ( s!=0 )
+		{
+			std::cerr << "-- " << lua_tostring(L, -1) << std::endl;
+			lua_pop(L, 1);
+		}
+	}
+	else
+	{
+			std::cerr << "-- " << lua_tostring(L, -1) << std::endl;
+			lua_pop(L, 1);
+	}
+
+
+
+    // get the current makefile setting
+    lua_pushstring(L,"cmCurrentMakefile");
+    lua_gettable(L, LUA_REGISTRYINDEX);
+    cmMakefile *previousMF = 
+      static_cast<cmMakefile *>(lua_touserdata(L,-1));
+
+    // make sure the current Makefile is set
+    lua_pushstring(L,"cmCurrentMakefile");
+    lua_pushlightuserdata(L, this);
+    lua_settable(L, LUA_REGISTRYINDEX);
+
+    // load and run the lua
+    int result = luaL_dofile(L, filenametoread);
+
+    // restore the prior makefile setting
+    lua_pushstring(L,"cmCurrentMakefile");
+    lua_pushlightuserdata(L, previousMF);
+    lua_settable(L, LUA_REGISTRYINDEX);
+
+    if (result)
+      {
+      cmSystemTools::Error("Error in Lua code: ",
+                           lua_tostring(L, -1));
+      lua_pop(L, 1);  /* pop error message from the stack */
+
+      // pop the listfile off the stack
+      this->ListFileStack.pop_back();
+      if(fullPath!=0)
+        {
+        *fullPath = "";
+        }
+      this->AddDefinition("CMAKE_PARENT_LIST_FILE", currentParentFile.c_str());
+      this->AddDefinition("CMAKE_CURRENT_LIST_FILE", currentFile.c_str());
+      return false;
+      }
+    }
+  else
+    {
   cmListFile cacheFile;
   if( !cacheFile.ParseFile(filenametoread, requireProjectCommand) )
     {
@@ -488,6 +565,8 @@ bool cmMakefile::ReadListFile(const char* filename_in,
       return true;
       }
     }
+  }
+  // *** end of listfile code
 
   // send scope ended to and function blockers
   if (filename)
