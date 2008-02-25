@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: CMakeSetupDialog.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/15 00:58:31 $
-  Version:   $Revision: 1.36 $
+  Date:      $Date: 2008/02/25 20:07:38 $
+  Version:   $Revision: 1.37 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -261,7 +261,6 @@ void CMakeSetupDialog::doConfigure()
     
   this->enterState(Configuring);
 
-  this->Output->clear();
   this->CacheValues->selectionModel()->clear();
   QMetaObject::invokeMethod(this->CMakeThread->cmakeInstance(),
     "setProperties", Qt::QueuedConnection, 
@@ -437,6 +436,7 @@ void CMakeSetupDialog::setBinaryDirectory(const QString& dir)
 
 void CMakeSetupDialog::onSourceDirectoryChanged(const QString& dir)
 {
+  this->Output->clear();
   QMetaObject::invokeMethod(this->CMakeThread->cmakeInstance(),
     "setSourceDirectory", Qt::QueuedConnection, Q_ARG(QString, dir));
 }
@@ -765,7 +765,6 @@ void CMakeSetupDialog::enterState(CMakeSetupDialog::State s)
   else if(s == Generating)
     {
     this->CacheModified = false;
-    this->Output->clear();
     this->setEnabledState(false);
     this->ConfigureButton->setEnabled(false);
     this->GenerateAction->setEnabled(false);
