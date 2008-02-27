@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefileExecutableTargetGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/20 19:56:29 $
-  Version:   $Revision: 1.45 $
+  Date:      $Date: 2008/02/27 22:10:45 $
+  Version:   $Revision: 1.46 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -328,6 +328,18 @@ void cmMakefileExecutableTargetGenerator::WriteExecutableRule(bool relink)
       }
     }
 
+  // Select whether to use a response file for objects.
+  bool useResponseFile = false;
+  {
+  std::string responseVar = "CMAKE_";
+  responseVar += linkLanguage;
+  responseVar += "_USE_RESPONSE_FILE_FOR_OBJECTS";
+  if(this->Makefile->IsOn(responseVar.c_str()))
+    {
+    useResponseFile = true;
+    }
+  }
+
   // Expand the rule variables.
   {
   // Set path conversion for link script shells.
@@ -343,7 +355,18 @@ void cmMakefileExecutableTargetGenerator::WriteExecutableRule(bool relink)
   std::string variableNameExternal;
   this->WriteObjectsVariable(variableName, variableNameExternal);
   std::string buildObjs;
-  if(useLinkScript)
+  if(useResponseFile)
+    {
+    std::string objects;
+    this->WriteObjectsString(objects);
+    std::string objects_rsp =
+      this->CreateResponseFile("objects.rsp", objects, depends);
+    buildObjs = "@";
+    buildObjs += this->Convert(objects_rsp.c_str(),
+                               cmLocalGenerator::NONE,
+                               cmLocalGenerator::SHELL);
+    }
+  else if(useLinkScript)
     {
     this->WriteObjectsString(buildObjs);
     }

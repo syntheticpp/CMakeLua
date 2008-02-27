@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefileTargetGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/24 19:05:21 $
-  Version:   $Revision: 1.92 $
+  Date:      $Date: 2008/02/27 22:10:45 $
+  Version:   $Revision: 1.93 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1581,6 +1581,30 @@ cmMakefileTargetGenerator
   link_command += " --verbose=$(VERBOSE)";
   makefile_commands.push_back(link_command);
   makefile_depends.push_back(linkScriptName);
+}
+
+//----------------------------------------------------------------------------
+std::string
+cmMakefileTargetGenerator
+::CreateResponseFile(const char* name, std::string const& options,
+                     std::vector<std::string>& makefile_depends)
+{
+  // Create the response file.
+  std::string responseFileNameFull = this->TargetBuildDirectoryFull;
+  responseFileNameFull += "/";
+  responseFileNameFull += name;
+  cmGeneratedFileStream responseStream(responseFileNameFull.c_str());
+  responseStream << options << "\n";
+
+  // Add a dependency so the target will rebuild when the set of
+  // objects changes.
+  makefile_depends.push_back(responseFileNameFull);
+
+  // Construct the name to be used on the command line.
+  std::string responseFileName = this->TargetBuildDirectory;
+  responseFileName += "/";
+  responseFileName += name;
+  return responseFileName;
 }
 
 //----------------------------------------------------------------------------
