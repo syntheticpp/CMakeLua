@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmELF.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/27 21:26:35 $
-  Version:   $Revision: 1.1 $
+  Date:      $Date: 2008/02/28 13:32:05 $
+  Version:   $Revision: 1.2 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -85,7 +85,7 @@ public:
     }
 
   // Destruct and delete the file stream object.
-  ~cmELFInternal()
+  virtual ~cmELFInternal()
     {
     delete &this->Stream;
     }
@@ -187,6 +187,9 @@ public:
       }
     switch(this->ELFType)
       {
+      case cmELF::FileTypeInvalid:
+        os << " invalid file";
+        break;
       case cmELF::FileTypeRelocatableObject:
         os << " relocatable object";
         break;
