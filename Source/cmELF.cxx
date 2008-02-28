@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmELF.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/28 13:32:05 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2008/02/28 13:43:10 $
+  Version:   $Revision: 1.3 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -24,6 +24,9 @@
 
 // Include the ELF format information system header.
 #include <elf.h>
+#if defined(__sun)
+# include <sys/link.h> // For dynamic section information
+#endif
 
 //----------------------------------------------------------------------------
 // Low-level byte swapping implementation.
