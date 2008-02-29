@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmComputeLinkInformation.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/21 18:58:40 $
-  Version:   $Revision: 1.21 $
+  Date:      $Date: 2008/02/29 14:15:32 $
+  Version:   $Revision: 1.22 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1074,7 +1074,8 @@ bool cmComputeLinkInformation::CheckImplicitDirItem(std::string const& item)
 
   // Only apply the policy below if the library file is one that can
   // be found by the linker.
-  if(!this->ExtractAnyLibraryName.find(item))
+  std::string file = cmSystemTools::GetFilenameName(item);
+  if(!this->ExtractAnyLibraryName.find(file))
     {
     return false;
     }
@@ -1085,7 +1086,6 @@ bool cmComputeLinkInformation::CheckImplicitDirItem(std::string const& item)
   // directory then just report the file name without the directory
   // portion.  This will allow the system linker to locate the proper
   // library for the architecture at link time.
-  std::string file = cmSystemTools::GetFilenameName(item);
   this->AddUserItem(file);
   return true;
 }
