@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmELF.h,v $
   Language:  C++
-  Date:      $Date: 2008/02/27 21:26:35 $
-  Version:   $Revision: 1.1 $
+  Date:      $Date: 2008/02/29 16:12:59 $
+  Version:   $Revision: 1.2 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -54,6 +54,16 @@ public:
     FileTypeCore
   };
 
+  /** Represent string table entries.  */
+  struct StringEntry
+  {
+    // The string value itself.
+    std::string Value;
+
+    // The position in the file at which the string appears.
+    unsigned long Position;
+  };
+
   /** Get the type of the file opened.  */
   FileType GetFileType() const;
 
@@ -62,6 +72,13 @@ public:
 
   /** Get the SONAME field if any.  */
   bool GetSOName(std::string& soname);
+  StringEntry const* GetSOName();
+
+  /** Get the RPATH field if any.  */
+  StringEntry const* GetRPath();
+
+  /** Get the RUNPATH field if any.  */
+  StringEntry const* GetRunPath();
 
   /** Print human-readable information about the ELF file.  */
   void PrintInfo(std::ostream& os) const;
