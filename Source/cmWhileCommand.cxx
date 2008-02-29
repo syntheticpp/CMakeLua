@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmWhileCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/23 15:27:59 $
-  Version:   $Revision: 1.10 $
+  Date:      $Date: 2008/02/29 17:18:11 $
+  Version:   $Revision: 1.11 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -93,9 +93,10 @@ ShouldRemove(const cmListFileFunction& lff, cmMakefile& mf)
 {
   if(!cmSystemTools::Strucmp(lff.Name.c_str(),"endwhile"))
     {
-    if (lff.Arguments == this->Args
-        || cmSystemTools::IsOn
-        (mf.GetPropertyOrDefinition("CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS")))
+    // if the endwhile has arguments, then make sure
+    // they match the arguments of the matching while
+    if (lff.Arguments.size() == 0 ||
+        lff.Arguments == this->Args)
       {
       return true;
       }

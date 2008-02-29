@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmIfCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/23 15:27:59 $
-  Version:   $Revision: 1.82 $
+  Date:      $Date: 2008/02/29 17:18:11 $
+  Version:   $Revision: 1.83 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -145,9 +145,10 @@ bool cmIfFunctionBlocker::ShouldRemove(const cmListFileFunction& lff,
 {
   if (!cmSystemTools::Strucmp(lff.Name.c_str(),"endif"))
     {
-    if (cmSystemTools::IsOn
-        (mf.GetPropertyOrDefinition("CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS"))
-        || lff.Arguments == this->Args)
+    // if the endif has arguments, then make sure
+    // they match the arguments of the matching if
+    if (lff.Arguments.size() == 0 ||
+        lff.Arguments == this->Args)
       {
       return true;
       }

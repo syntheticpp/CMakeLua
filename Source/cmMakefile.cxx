@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefile.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/14 21:42:29 $
-  Version:   $Revision: 1.437 $
+  Date:      $Date: 2008/02/29 17:18:11 $
+  Version:   $Revision: 1.438 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -3037,15 +3037,6 @@ void cmMakefile::DefineProperties(cmake *cm)
      "Should the output of custom commands be left.",
      "If this is true then the outputs of custom commands for this "
      "directory will not be removed during the \"make clean\" stage. ");
-
-  cm->DefineProperty
-    ("CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS", cmProperty::DIRECTORY,
-     "Allow loops to have non-matching closing statements.",
-     "If this is set then the closing statement of control "
-     "structures in CMake will not require an exact match to the "
-     "opening statement. For example  IF(foo) will not require "
-     "ENDIF(foo) but simple ENDIF() will work.",
-     true);
 
   cm->DefineProperty
     ("LISTFILE_STACK", cmProperty::DIRECTORY,
