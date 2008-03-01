@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefile.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/03/01 20:20:35 $
-  Version:   $Revision: 1.439 $
+  Date:      $Date: 2008/03/01 20:44:17 $
+  Version:   $Revision: 1.440 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -3149,6 +3149,7 @@ bool cmMakefile::EnforceUniqueName(std::string const& name, std::string& msg,
         case cmPolicies::OLD:
           return true;
         case cmPolicies::REQUIRED_IF_USED:
+        case cmPolicies::REQUIRED_ALWAYS:
           msg = this->GetPolicies()->
             GetRequiredPolicyError(cmPolicies::CMP_0002);
           return false;
@@ -3235,7 +3236,7 @@ bool cmMakefile::EnforceUniqueName(std::string const& name, std::string& msg,
 cmPolicies::PolicyStatus cmMakefile
 ::GetPolicyStatus(cmPolicies::PolicyID id)
 {
-  cmPolicies::PolicyStatus status;
+  cmPolicies::PolicyStatus status = cmPolicies::REQUIRED_IF_USED;
   PolicyMap::iterator mappos;
   unsigned int vecpos;
   bool done = false;

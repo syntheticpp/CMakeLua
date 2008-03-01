@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmAddCustomTargetCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/03/01 20:20:35 $
-  Version:   $Revision: 1.31 $
+  Date:      $Date: 2008/03/01 20:44:17 $
+  Version:   $Revision: 1.32 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -48,6 +48,7 @@ bool cmAddCustomTargetCommand
         return false;
         break;
       case cmPolicies::REQUIRED_IF_USED:
+      case cmPolicies::REQUIRED_ALWAYS:
         this->SetError(
           this->Makefile->GetPolicies()->GetRequiredPolicyError
             (cmPolicies::CMP_0001).c_str());
