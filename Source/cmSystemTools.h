@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmSystemTools.h,v $
   Language:  C++
-  Date:      $Date: 2008/02/21 18:58:41 $
-  Version:   $Revision: 1.148 $
+  Date:      $Date: 2008/03/01 17:51:07 $
+  Version:   $Revision: 1.149 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -380,6 +380,11 @@ public:
   /** Try to guess the soname of a shared library.  */
   static bool GuessLibrarySOName(std::string const& fullPath,
                                  std::string& soname);
+
+  /** Try to set the RPATH in an ELF binary.  */
+  static bool ChangeRPath(std::string const& file,
+                          std::string const& newRPath,
+                          std::string* emsg = 0);
 
 private:
   static bool s_ForceUnixPaths;

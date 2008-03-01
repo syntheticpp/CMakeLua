@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmComputeLinkInformation.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/29 14:15:32 $
-  Version:   $Revision: 1.22 $
+  Date:      $Date: 2008/03/01 17:51:07 $
+  Version:   $Revision: 1.23 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1475,10 +1475,4 @@ std::string cmComputeLinkInformation::GetChrpathString()
     }
 
   return this->GetRPathString(true);
-}
-
-//----------------------------------------------------------------------------
-std::string cmComputeLinkInformation::GetChrpathTool()
-{
-  return this->Makefile->GetSafeDefinition("CMAKE_CHRPATH");
 }

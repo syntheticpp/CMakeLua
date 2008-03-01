@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmTarget.h,v $
   Language:  C++
-  Date:      $Date: 2008/02/21 16:41:11 $
-  Version:   $Revision: 1.107 $
+  Date:      $Date: 2008/03/01 17:51:07 $
+  Version:   $Revision: 1.108 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -335,7 +335,7 @@ public:
   bool HaveBuildTreeRPATH();
   bool HaveInstallTreeRPATH();
 
-  /** Return true if chrpath might work for this target */
+  /** Return true if builtin chrpath will work for this target */
   bool IsChrpathUsed();
 
   std::string GetInstallNameDirForBuildTree(const char* config);
