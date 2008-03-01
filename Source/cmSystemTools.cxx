@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmSystemTools.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/03/01 17:51:07 $
-  Version:   $Revision: 1.364 $
+  Date:      $Date: 2008/03/01 18:17:01 $
+  Version:   $Revision: 1.365 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -2210,6 +2210,12 @@ bool cmSystemTools::ChangeRPath(std::string const& file,
     {
     rpathPosition = se->Position;
     rpathSize = se->Size;
+    }
+  else if(newRPath.empty())
+    {
+    // The new rpath is empty and there is no rpath anyway so it is
+    // okay.
+    return true;
     }
   else
     {
