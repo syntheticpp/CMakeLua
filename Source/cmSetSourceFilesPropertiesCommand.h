@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmSetSourceFilesPropertiesCommand.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/23 15:27:59 $
-  Version:   $Revision: 1.15 $
+  Date:      $Date: 2008/03/01 02:33:04 $
+  Version:   $Revision: 1.16 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -69,10 +69,9 @@ public:
         "added to a target.  Obviously, "
         "it must be created (presumably by a custom command) before the "
         "target is built.  "
-        "If the HEADER_FILE_ONLY (boolean) property is true then dependency "
-        "information is not created for that file (this is set "
-        "automatically, based on the file's name's extension and is probably "
-        "only used by Makefiles).  "
+        "If the HEADER_FILE_ONLY (boolean) property is true then the "
+        "file is not compiled.  This is useful if you want to add extra "
+        "non build files to an IDE. "
         "OBJECT_DEPENDS (string) adds dependencies to the object file.  "
         "COMPILE_FLAGS (string) is passed to the compiler as additional "
         "command line arguments when the source file is compiled.  "
