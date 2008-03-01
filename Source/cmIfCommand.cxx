@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmIfCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/29 17:18:11 $
-  Version:   $Revision: 1.83 $
+  Date:      $Date: 2008/03/01 02:33:33 $
+  Version:   $Revision: 1.84 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -141,7 +141,7 @@ IsFunctionBlocked(const cmListFileFunction& lff, cmMakefile &mf,
 }
 
 bool cmIfFunctionBlocker::ShouldRemove(const cmListFileFunction& lff,
-                                       cmMakefile& mf)
+                                       cmMakefile&)
 {
   if (!cmSystemTools::Strucmp(lff.Name.c_str(),"endif"))
     {
