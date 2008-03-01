@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmSystemTools.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/03/01 18:17:01 $
-  Version:   $Revision: 1.365 $
+  Date:      $Date: 2008/03/01 20:16:49 $
+  Version:   $Revision: 1.366 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -2281,6 +2281,7 @@ bool cmSystemTools::ChangeRPath(std::string const& file,
 #else
   (void)file;
   (void)newRPath;
+  (void)emsg;
   return false;
 #endif
 }
