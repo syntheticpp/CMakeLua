@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmPolicies.h,v $
   Language:  C++
-  Date:      $Date: 2008/02/29 20:28:46 $
-  Version:   $Revision: 1.1 $
+  Date:      $Date: 2008/03/01 20:26:15 $
+  Version:   $Revision: 1.2 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -26,7 +26,8 @@ class cmPolicy;
 /** \class cmPolicies
  * \brief Handles changes in CMake behavior and policies
  *
- * See the cmake wiki section on policies for an overview of this class's purpose
+ * See the cmake wiki section on policies for an overview of this class's
+ * purpose
  */
 class cmPolicies
 {
