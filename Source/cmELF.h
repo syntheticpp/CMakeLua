@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmELF.h,v $
   Language:  C++
-  Date:      $Date: 2008/02/29 16:12:59 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2008/03/01 17:50:42 $
+  Version:   $Revision: 1.3 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -62,6 +62,10 @@ public:
 
     // The position in the file at which the string appears.
     unsigned long Position;
+
+    // The size of the string table entry.  This includes the space
+    // allocated for one or more null terminators.
+    unsigned long Size;
   };
 
   /** Get the type of the file opened.  */
