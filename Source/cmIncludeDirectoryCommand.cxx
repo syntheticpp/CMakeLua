@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmIncludeDirectoryCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/23 15:27:59 $
-  Version:   $Revision: 1.27 $
+  Date:      $Date: 2008/03/01 20:20:35 $
+  Version:   $Revision: 1.28 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -61,7 +61,7 @@ bool cmIncludeDirectoryCommand
       else
         {
         this->SetError(errorMessage);
-        return 0;
+        return false;
         }
       }
 

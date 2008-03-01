@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCommand.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/23 15:27:59 $
-  Version:   $Revision: 1.26 $
+  Date:      $Date: 2008/03/01 20:20:35 $
+  Version:   $Revision: 1.27 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -92,14 +92,6 @@ public:
    * This determines if the command is invoked when in script mode.
    */
   virtual bool IsScriptable()
-    {
-    return false;
-    }
-
-  /**
-   * This determines if the method is deprecated or not. 
-   */
-  virtual bool IsDeprecated(int /*major*/, int /*minor*/)
     {
     return false;
     }

@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmAddCustomTargetCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/14 21:42:29 $
-  Version:   $Revision: 1.30 $
+  Date:      $Date: 2008/03/01 20:20:35 $
+  Version:   $Revision: 1.31 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -28,27 +28,33 @@ bool cmAddCustomTargetCommand
 
   // Check the target name.
   if(args[0].find_first_of("/\\") != args[0].npos)
+  {
+    // slashes are not allowed anymore in taret names CMP_0001
+    switch (this->Makefile->GetPolicyStatus(cmPolicies::CMP_0001))
     {
-    int major = 0;
-    int minor = 0;
-    if(const char* versionValue =
-       this->Makefile->GetDefinition("CMAKE_BACKWARDS_COMPATIBILITY"))
-      {
-      sscanf(versionValue, "%d.%d", &major, &minor);
-      }
-    if(!major || major > 3 || (major == 2 && minor > 2))
-      {
-      cmOStringStream e;
-      e << "called with invalid target name \"" << args[0]
-        << "\".  Target names may not contain a slash.  "
-        << "Use ADD_CUSTOM_COMMAND to generate files.  "
-        << "Set CMAKE_BACKWARDS_COMPATIBILITY to 2.2 "
-        << "or lower to skip this check.";
-      this->SetError(e.str().c_str());
-      return false;
-      }
+      case cmPolicies::WARN:
+        cmSystemTools::Message(
+          this->Makefile->GetPolicies()->GetPolicyWarning
+            (cmPolicies::CMP_0001).c_str(),"Warning");
+      case cmPolicies::OLD:
+//        if (this->Makefile->IsBWCompatibilityLessThan(2,2))
+//        {
+//          break;
+//        }
+      case cmPolicies::NEW:
+        this->SetError("You included a / or \\ in your target name and "
+          "this is not allowed according to policy CMP_0001. Run "
+          "cmake --help-policy CMP_0001 for more information.");
+        return false;
+        break;
+      case cmPolicies::REQUIRED_IF_USED:
+        this->SetError(
+          this->Makefile->GetPolicies()->GetRequiredPolicyError
+            (cmPolicies::CMP_0001).c_str());
+        return false;      
     }
-
+  }
+    
   // Accumulate one command line at a time.
   cmCustomCommandLine currentLine;
 

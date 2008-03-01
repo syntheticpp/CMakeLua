@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmake.h,v $
   Language:  C++
-  Date:      $Date: 2008/02/12 14:49:42 $
-  Version:   $Revision: 1.100 $
+  Date:      $Date: 2008/03/01 20:20:35 $
+  Version:   $Revision: 1.101 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -53,6 +53,7 @@ class cmVariableWatch;
 class cmFileTimeComparison;
 class cmExternalMakefileProjectGenerator;
 class cmDocumentationSection;
+class cmPolicies;
 
 class cmake
 {
@@ -238,6 +239,8 @@ class cmake
   ///! this is called by generators to update the progress
   void UpdateProgress(const char *msg, float prog);
 
+  ///!  get the cmake policies instance
+  cmPolicies *GetPolicies() {return this->Policies;} ;
 
   ///! Get the variable watch object
   cmVariableWatch* GetVariableWatch() { return this->VariableWatch; }
@@ -358,6 +361,7 @@ protected:
   void AddExtraGenerator(const char* name, 
                          CreateExtraGeneratorFunctionType newFunction);
 
+  cmPolicies *Policies;                       
   cmGlobalGenerator *GlobalGenerator;
   cmCacheManager *CacheManager;
   std::string cmHomeDirectory; 
