@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmTarget.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/03/01 17:51:07 $
-  Version:   $Revision: 1.201 $
+  Date:      $Date: 2008/03/01 18:02:08 $
+  Version:   $Revision: 1.202 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -3007,6 +3007,18 @@ void cmTarget::GetLanguages(std::set<cmStdString>& languages) const
 bool cmTarget::IsChrpathUsed()
 {
 #if defined(CMAKE_USE_ELF_PARSER)
+  // Skip chrpath if skipping rpath altogether.
+  if(this->Makefile->IsOn("CMAKE_SKIP_RPATH"))
+    {
+    return false;
+    }
+
+  // Skip chrpath if it does not need to be changed at install time.
+  if(this->GetPropertyAsBool("BUILD_WITH_INSTALL_RPATH"))
+    {
+    return false;
+    }
+
   // Enable if the rpath flag uses a separator and the target uses ELF
   // binaries.
   if(const char* ll = this->GetLinkerLanguage(
