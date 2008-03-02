@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmELF.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-02 21:19:40 $
-  Version:   $Revision: 1.6 $
+  Date:      $Date: 2008-03-02 21:31:06 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -360,6 +360,7 @@ private:
          (eti >= ET_LOPROC && eti <= ET_HIPROC)))
       {
       cmELFByteSwap(et);
+      eti = static_cast<unsigned int>(et);
       if(eti == ET_NONE || eti == ET_REL || eti == ET_EXEC ||
          eti == ET_DYN || eti == ET_CORE ||
          (eti >= ET_LOOS && eti <= ET_HIOS) ||
