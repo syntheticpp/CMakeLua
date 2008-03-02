@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmPolicies.h,v $
   Language:  C++
-  Date:      $Date: 2008-03-02 14:03:33 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2008-03-02 14:12:27 $
+  Version:   $Revision: 1.5 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -78,8 +78,9 @@ public:
   std::string GetRequiredPolicyError(cmPolicies::PolicyID id);
 
   private:
-  std::map<cmPolicies::PolicyID,cmPolicy *> Policies;
-  std::map<std::string,cmPolicies::PolicyID> PolicyStringMap;
+  // might have to make these internal for VS6 not sure yet
+  std::map<PolicyID,cmPolicy *> Policies;
+  std::map<std::string,PolicyID> PolicyStringMap;
   
 };
 
