@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefile.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/03/01 21:21:41 $
-  Version:   $Revision: 1.441 $
+  Date:      $Date: 2008-03-02 14:11:26 $
+  Version:   $Revision: 1.442 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -3242,7 +3242,8 @@ cmPolicies::PolicyStatus cmMakefile
   bool done = false;
 
   // check our policy stack first
-  for (vecpos = this->PolicyStack.size(); vecpos >= 0 && !done; vecpos--)
+  for (vecpos = static_cast<int>(this->PolicyStack.size()); 
+       vecpos >= 0 && !done; vecpos--)
   {
     mappos = this->PolicyStack[vecpos].find(id);
     if (mappos != this->PolicyStack[vecpos].end())
