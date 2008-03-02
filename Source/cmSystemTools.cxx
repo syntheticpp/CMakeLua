@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmSystemTools.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-02 19:35:23 $
-  Version:   $Revision: 1.367 $
+  Date:      $Date: 2008-03-02 21:19:26 $
+  Version:   $Revision: 1.368 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -2208,7 +2208,12 @@ bool cmSystemTools::ChangeRPath(std::string const& file,
   std::string rpathSuffix;
   {
   cmELF elf(file.c_str());
-  if(cmELF::StringEntry const* se = elf.GetRPath())
+  cmELF::StringEntry const* se = elf.GetRPath();
+  if(!se)
+    {
+    se = elf.GetRunPath();
+    }
+  if(se)
     {
     // Make sure the current rpath begins with the old rpath.
     if(se->Value.length() < oldRPath.length() ||
