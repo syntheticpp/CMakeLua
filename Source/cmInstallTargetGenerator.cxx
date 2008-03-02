@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmInstallTargetGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-02 19:35:23 $
-  Version:   $Revision: 1.61 $
+  Date:      $Date: 2008-03-02 21:48:50 $
+  Version:   $Revision: 1.62 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -571,6 +571,12 @@ cmInstallTargetGenerator
 
   // Get the install RPATH from the link information.
   std::string newRpath = cli->GetChrpathString();
+
+  // Skip the rule if the paths are identical
+  if(oldRpath == newRpath)
+    {
+    return;
+    }
 
   // Write a rule to run chrpath to set the install-tree RPATH
   os << indent << "FILE(CHRPATH FILE \"" << toDestDirPath << "\"\n"
