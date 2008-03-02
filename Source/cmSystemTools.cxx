@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmSystemTools.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/21 18:58:40 $
-  Version:   $Revision: 1.362 $
+  Date:      $Date: 2008/03/01 20:16:49 $
+  Version:   $Revision: 1.366 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -50,6 +50,10 @@
 #  include <fcntl.h>
 #  include <cm_zlib.h>
 #  include <cmsys/MD5.h>
+#endif
+
+#if defined(CMAKE_USE_ELF_PARSER)
+# include "cmELF.h"
 #endif
 
 #if defined(__sgi) && !defined(__GNUC__)
@@ -2155,6 +2159,16 @@ void cmSystemTools::MakefileColorEcho(int color, const char* message,
 bool cmSystemTools::GuessLibrarySOName(std::string const& fullPath,
                                        std::string& soname)
 {
+  // For ELF shared libraries use a real parser to get the correct
+  // soname.
+#if defined(CMAKE_USE_ELF_PARSER)
+  cmELF elf(fullPath.c_str());
+  if(elf)
+    {
+    return elf.GetSOName(soname);
+    }
+#endif
+
   // If the file is not a symlink we have no guess for its soname.
   if(!cmSystemTools::FileIsSymlink(fullPath.c_str()))
     {
@@ -2180,4 +2194,94 @@ bool cmSystemTools::GuessLibrarySOName(std::string const& fullPath,
     return true;
     }
   return false;
+}
+
+//----------------------------------------------------------------------------
+bool cmSystemTools::ChangeRPath(std::string const& file,
+                                std::string const& newRPath,
+                                std::string* emsg)
+{
+#if defined(CMAKE_USE_ELF_PARSER)
+  unsigned long rpathPosition = 0;
+  unsigned long rpathSize = 0;
+  {
+  cmELF elf(file.c_str());
+  if(cmELF::StringEntry const* se = elf.GetRPath())
+    {
+    rpathPosition = se->Position;
+    rpathSize = se->Size;
+    }
+  else if(newRPath.empty())
+    {
+    // The new rpath is empty and there is no rpath anyway so it is
+    // okay.
+    return true;
+    }
+  else
+    {
+    if(emsg)
+      {
+      *emsg = "No valid ELF RPATH entry exists in the file.";
+      }
+    return false;
+    }
+  }
+  // Make sure there is enough room to store the new rpath and at
+  // least one null terminator.
+  if(rpathSize < newRPath.length()+1)
+    {
+    if(emsg)
+      {
+      *emsg = "The replacement RPATH is too long.";
+      }
+    return false;
+    }
+
+  // Open the file for update and seek to the RPATH position.
+  std::ofstream f(file.c_str(),
+                  std::ios::in | std::ios::out | std::ios::binary);
+  if(!f)
+    {
+    if(emsg)
+      {
+      *emsg = "Error opening file for update.";
+      }
+    return false;
+    }
+  if(!f.seekp(rpathPosition))
+    {
+    if(emsg)
+      {
+      *emsg = "Error seeking to RPATH position.";
+      }
+    return false;
+    }
+
+  // Write the new rpath.  Follow it with enough null terminators to
+  // fill the string table entry.
+  f << newRPath;
+  for(unsigned long i=newRPath.length(); i < rpathSize; ++i)
+    {
+    f << '\0';
+    }
+
+  // Make sure everything was okay.
+  if(f)
+    {
+    return true;
+    }
+  else
+    {
+    if(emsg)
+      {
+      *emsg = "Error writing the new rpath to the file.";
+      }
+    return false;
+    }
+#else
+  (void)file;
+  (void)newRPath;
+  (void)emsg;
+  return false;
+#endif
 }

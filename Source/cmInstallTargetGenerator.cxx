@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmInstallTargetGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/06 19:20:35 $
-  Version:   $Revision: 1.59 $
+  Date:      $Date: 2008/03/01 17:51:07 $
+  Version:   $Revision: 1.60 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -576,12 +576,9 @@ cmInstallTargetGenerator
   // Get the install RPATH from the link information.
   std::string newRpath = cli->GetChrpathString();
 
-  // Fix the RPATH in installed ELF binaries using chrpath.
-  std::string chrpathTool = cli->GetChrpathTool();
-
   // Write a rule to run chrpath to set the install-tree RPATH
-  os << indent << "EXECUTE_PROCESS(COMMAND \"" << chrpathTool;
-  os << "\" -r \"" << newRpath << "\" \"" << toDestDirPath << "\")\n";
+  os << indent
+     << "FILE(CHRPATH \"" << toDestDirPath << "\" \"" << newRpath << "\")\n";
 }
 
 //----------------------------------------------------------------------------

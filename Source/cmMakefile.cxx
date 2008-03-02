@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefile.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/14 21:42:29 $
-  Version:   $Revision: 1.437 $
+  Date:      $Date: 2008/03/01 21:21:41 $
+  Version:   $Revision: 1.441 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -297,24 +297,14 @@ bool cmMakefile::ExecuteCommand(const cmListFileFunction& lff,
     this->GetCMakeInstance()->GetCommand(name.c_str());
   if(rm)
     {
-    const char* versionValue
-      = this->GetDefinition("CMAKE_BACKWARDS_COMPATIBILITY");
-    int major = 0;
-    int minor = 0;
-    if ( versionValue )
-      {
-      sscanf(versionValue, "%d.%d", &major, &minor);
-      }
-    if ( rm->IsDeprecated(major, minor) )
-      {
-      cmOStringStream error;
-      error << "Error in cmake code at\n"
-            << lff.FilePath << ":" << lff.Line << ":\n"
-            << rm->GetError() << std::endl
-            << "   Called from: " << this->GetListFileStack().c_str();
-      cmSystemTools::Error(error.str().c_str());
-      return false;
-      }
+    // const char* versionValue
+      // = this->GetDefinition("CMAKE_BACKWARDS_COMPATIBILITY");
+    // int major = 0;
+    // int minor = 0;
+    // if ( versionValue )
+      // {
+      // sscanf(versionValue, "%d.%d", &major, &minor);
+      // }
     cmCommand* usedCommand = rm->Clone();
     usedCommand->SetMakefile(this);
     bool keepCommand = false;
@@ -3118,15 +3108,6 @@ void cmMakefile::DefineProperties(cmake *cm)
      "directory will not be removed during the \"make clean\" stage. ");
 
   cm->DefineProperty
-    ("CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS", cmProperty::DIRECTORY,
-     "Allow loops to have non-matching closing statements.",
-     "If this is set then the closing statement of control "
-     "structures in CMake will not require an exact match to the "
-     "opening statement. For example  IF(foo) will not require "
-     "ENDIF(foo) but simple ENDIF() will work.",
-     true);
-
-  cm->DefineProperty
     ("LISTFILE_STACK", cmProperty::DIRECTORY,
      "The current stack of listfiles being processed.",
      "This property is mainly useful when trying to debug errors "
@@ -3236,8 +3217,25 @@ bool cmMakefile::EnforceUniqueName(std::string const& name, std::string& msg,
       msg = e.str();
       return false;
       }
-    else if(!this->NeedBackwardsCompatibility(2, 4))
+    else 
       {
+      // target names must be globally unique
+      switch (this->GetPolicyStatus(cmPolicies::CMP_0002))
+        {
+        case cmPolicies::WARN:
+          msg = this->GetPolicies()->
+            GetPolicyWarning(cmPolicies::CMP_0002);
+        case cmPolicies::OLD:
+          return true;
+        case cmPolicies::REQUIRED_IF_USED:
+        case cmPolicies::REQUIRED_ALWAYS:
+          msg = this->GetPolicies()->
+            GetRequiredPolicyError(cmPolicies::CMP_0002);
+          return false;
+        case cmPolicies::NEW:
+          break;
+        }
+      
       // The conflict is with a non-imported target.
       // Allow this if the user has requested support.
       cmake* cm =
@@ -3312,4 +3310,109 @@ bool cmMakefile::EnforceUniqueName(std::string const& name, std::string& msg,
       }
     }
   return true;
+}
+
+cmPolicies::PolicyStatus cmMakefile
+::GetPolicyStatus(cmPolicies::PolicyID id)
+{
+  cmPolicies::PolicyStatus status = cmPolicies::REQUIRED_IF_USED;
+  PolicyMap::iterator mappos;
+  int vecpos;
+  bool done = false;
+
+  // check our policy stack first
+  for (vecpos = this->PolicyStack.size(); vecpos >= 0 && !done; vecpos--)
+  {
+    mappos = this->PolicyStack[vecpos].find(id);
+    if (mappos != this->PolicyStack[vecpos].end())
+    {
+      status = mappos->second;
+      done = true;
+    }
+  }
+  
+  // if not found then 
+  if (!done)
+  {
+    // pass the buck to our parent if we have one
+    if (this->LocalGenerator->GetParent())
+    {
+      cmMakefile *parent = 
+        this->LocalGenerator->GetParent()->GetMakefile();
+      return parent->GetPolicyStatus(id);
+    }
+    // otherwise use the default
+    else
+    {
+      status = this->GetPolicies()->GetPolicyStatus(id);
+    }
+  }
+  
+  // warn if we see a REQUIRED_IF_USED above a OLD or WARN
+  if (!this->GetPolicies()->IsValidUsedPolicyStatus(id,status))
+  {
+    return cmPolicies::REQUIRED_IF_USED;
+  }
+  
+  return status;
+}
+
+bool cmMakefile::SetPolicy(const char *id, 
+                           cmPolicies::PolicyStatus status)
+{
+  cmPolicies::PolicyID pid;
+  if (!this->GetPolicies()->GetPolicyID(id, /* out */ pid))
+  {
+    cmSystemTools::Error("Invalid policy string used. Invalid string was "
+      , id);
+    return false;
+  }
+  return this->SetPolicy(pid,status);
+}
+
+bool cmMakefile::SetPolicy(cmPolicies::PolicyID id, 
+                           cmPolicies::PolicyStatus status)
+{
+  // setting a REQUIRED_ALWAYS policy to WARN or OLD is an insta error
+  if (this->GetPolicies()->
+      IsValidPolicyStatus(id,status))
+  {
+    this->PolicyStack.back()[id] = status;
+    return true;
+  }
+  return false;
+}
+
+bool cmMakefile::PushPolicy()
+{
+  // Allocate a new stack entry.
+  this->PolicyStack.push_back(PolicyMap());
+  return true;
+}
+
+bool cmMakefile::PopPolicy()
+{
+  if (PolicyStack.size() == 0)
+  {
+    cmSystemTools::Error("Attempt to pop the policy stack past "
+      "it's beginning.");
+    return false;
+  }
+  this->PolicyStack.pop_back();
+  return true;
+}
+
+bool cmMakefile::SetPolicyVersion(const char *version)
+{
+  return this->GetCMakeInstance()->GetPolicies()->
+    ApplyPolicyVersion(this,version);
+}
+
+cmPolicies *cmMakefile::GetPolicies()
+{ 
+  if (!this->GetCMakeInstance())
+  {
+    return 0;
+  }
+  return this->GetCMakeInstance()->GetPolicies();
 }

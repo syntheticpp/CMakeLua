@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmStandardIncludes.h,v $
   Language:  C++
-  Date:      $Date: 2007/12/29 04:07:14 $
-  Version:   $Revision: 1.71 $
+  Date:      $Date: 2008/02/24 19:05:11 $
+  Version:   $Revision: 1.72 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -83,6 +83,7 @@ public:
 // support the large integer types.
 #if defined(CMAKE_BUILD_WITH_CMAKE)
 # include <cmsys/IOStream.hxx>
+# undef GetCurrentDirectory // Borland <iosfwd> includes windows.h
 #endif
 
 // Avoid warnings in system headers.

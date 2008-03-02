@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmExportFileGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/01 13:56:00 $
-  Version:   $Revision: 1.10 $
+  Date:      $Date: 2008/02/24 19:05:11 $
+  Version:   $Revision: 1.11 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -135,16 +135,16 @@ cmExportFileGenerator
     }
 
   // Add the transitive link dependencies for this configuration.
-  if(cmTargetLinkInterface const* interface =
+  if(cmTargetLinkInterface const* iface =
      target->GetLinkInterface(config))
     {
     // This target provides a link interface, so use it.
     this->SetImportLinkProperty(suffix, target,
                                 "IMPORTED_LINK_INTERFACE_LIBRARIES",
-                                interface->Libraries, properties);
+                                iface->Libraries, properties);
     this->SetImportLinkProperty(suffix, target,
                                 "IMPORTED_LINK_DEPENDENT_LIBRARIES",
-                                interface->SharedDeps, properties);
+                                iface->SharedDeps, properties);
     }
   else if(target->GetType() == cmTarget::STATIC_LIBRARY ||
           target->GetType() == cmTarget::SHARED_LIBRARY)

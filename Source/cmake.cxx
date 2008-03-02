@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmake.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/18 18:03:40 $
-  Version:   $Revision: 1.361 $
+  Date:      $Date: 2008/03/01 20:20:35 $
+  Version:   $Revision: 1.362 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -150,6 +150,8 @@ cmake::cmake()
   this->ClearBuildSystem = false;
   this->FileComparison = new cmFileTimeComparison;
 
+  this->Policies = new cmPolicies();
+
   this->Properties.SetCMakeInstance(this);
 
   // initialize properties
@@ -188,7 +190,7 @@ cmake::cmake()
   this->ProgressCallback = 0;
   this->ProgressCallbackClientData = 0;
   this->ScriptMode = false;
-
+  
 #ifdef CMAKE_BUILD_WITH_CMAKE
   this->VariableWatch = new cmVariableWatch;
   this->VariableWatch->AddWatch("CMAKE_WORDS_BIGENDIAN",
@@ -214,6 +216,7 @@ cmake::cmake()
 cmake::~cmake()
 {
   delete this->CacheManager;
+  delete this->Policies;
   if (this->GlobalGenerator)
     {
     delete this->GlobalGenerator;

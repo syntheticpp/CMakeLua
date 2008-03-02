@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmTarget.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/21 16:41:11 $
-  Version:   $Revision: 1.199 $
+  Date:      $Date: 2008/03/01 18:02:08 $
+  Version:   $Revision: 1.202 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -3006,8 +3006,21 @@ void cmTarget::GetLanguages(std::set<cmStdString>& languages) const
 //----------------------------------------------------------------------------
 bool cmTarget::IsChrpathUsed()
 {
-  // Enable use of "chrpath" if it is available, the user has turned
-  // on the feature, and the rpath flag uses a separator.
+#if defined(CMAKE_USE_ELF_PARSER)
+  // Skip chrpath if skipping rpath altogether.
+  if(this->Makefile->IsOn("CMAKE_SKIP_RPATH"))
+    {
+    return false;
+    }
+
+  // Skip chrpath if it does not need to be changed at install time.
+  if(this->GetPropertyAsBool("BUILD_WITH_INSTALL_RPATH"))
+    {
+    return false;
+    }
+
+  // Enable if the rpath flag uses a separator and the target uses ELF
+  // binaries.
   if(const char* ll = this->GetLinkerLanguage(
        this->Makefile->GetLocalGenerator()->GetGlobalGenerator()))
     {
@@ -3017,13 +3030,16 @@ bool cmTarget::IsChrpathUsed()
     const char* sep = this->Makefile->GetDefinition(sepVar.c_str());
     if(sep && *sep)
       {
-      if(this->Makefile->IsSet("CMAKE_CHRPATH") &&
-         this->Makefile->IsOn("CMAKE_USE_CHRPATH"))
+      // TODO: Add ELF check to ABI detection and get rid of
+      // CMAKE_EXECUTABLE_FORMAT.
+      if(const char* fmt =
+         this->Makefile->GetDefinition("CMAKE_EXECUTABLE_FORMAT"))
         {
-        return true;
+        return strcmp(fmt, "ELF") == 0;
         }
       }
     }
+#endif
   return false;
 }
 
@@ -3282,11 +3298,11 @@ cmTargetLinkInterface const* cmTarget::GetLinkInterface(const char* config)
   if(i == this->LinkInterface.end())
     {
     // Compute the link interface for this configuration.
-    cmTargetLinkInterface* interface = this->ComputeLinkInterface(config);
+    cmTargetLinkInterface* iface = this->ComputeLinkInterface(config);
 
     // Store the information for this configuration.
     std::map<cmStdString, cmTargetLinkInterface*>::value_type
-      entry(config?config:"", interface);
+      entry(config?config:"", iface);
     i = this->LinkInterface.insert(entry).first;
     }
 
@@ -3329,14 +3345,14 @@ cmTargetLinkInterface* cmTarget::ComputeLinkInterface(const char* config)
     }
 
   // Allocate the interface.
-  cmTargetLinkInterface* interface = new cmTargetLinkInterface;
-  if(!interface)
+  cmTargetLinkInterface* iface = new cmTargetLinkInterface;
+  if(!iface)
     {
     return 0;
     }
 
   // Expand the list of libraries in the interface.
-  cmSystemTools::ExpandListArgument(libs, interface->Libraries);
+  cmSystemTools::ExpandListArgument(libs, iface->Libraries);
 
   // Now we need to construct a list of shared library dependencies
   // not included in the interface.
@@ -3346,8 +3362,8 @@ cmTargetLinkInterface* cmTarget::ComputeLinkInterface(const char* config)
     // either list.
     std::set<cmStdString> emitted;
     for(std::vector<std::string>::const_iterator
-          li = interface->Libraries.begin();
-        li != interface->Libraries.end(); ++li)
+          li = iface->Libraries.begin();
+        li != iface->Libraries.end(); ++li)
       {
       emitted.insert(*li);
       }
@@ -3384,7 +3400,7 @@ cmTargetLinkInterface* cmTarget::ComputeLinkInterface(const char* config)
         {
         if(tgt->GetType() == cmTarget::SHARED_LIBRARY)
           {
-          interface->SharedDeps.push_back(li->first);
+          iface->SharedDeps.push_back(li->first);
           }
         }
       else
@@ -3398,7 +3414,7 @@ cmTargetLinkInterface* cmTarget::ComputeLinkInterface(const char* config)
     }
 
   // Return the completed interface.
-  return interface;
+  return iface;
 }
 
 //----------------------------------------------------------------------------

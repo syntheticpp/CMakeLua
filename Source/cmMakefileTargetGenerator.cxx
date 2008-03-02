@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefileTargetGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/20 19:56:29 $
-  Version:   $Revision: 1.91 $
+  Date:      $Date: 2008/02/27 22:10:45 $
+  Version:   $Revision: 1.93 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1258,24 +1258,15 @@ public:
                                          std::string::size_type limit):
     Strings(strings), Makefile(mf), LocalGenerator(lg), LengthLimit(limit)
     {
-    this->NoQuotes = mf->IsOn("CMAKE_NO_QUOTED_OBJECTS");
     this->Space = "";
     }
   void Feed(std::string const& obj)
     {
     // Construct the name of the next object.
-    if(this->NoQuotes)
-      {
-      this->NextObject =
-        this->LocalGenerator->Convert(obj.c_str(),
-                                      cmLocalGenerator::START_OUTPUT,
-                                      cmLocalGenerator::SHELL);
-      }
-    else
-      {
-      this->NextObject =
-        this->LocalGenerator->ConvertToQuotedOutputPath(obj.c_str());
-      }
+    this->NextObject =
+      this->LocalGenerator->Convert(obj.c_str(),
+                                    cmLocalGenerator::START_OUTPUT,
+                                    cmLocalGenerator::SHELL);
 
     // Roll over to next string if the limit will be exceeded.
     if(this->LengthLimit != std::string::npos &&
@@ -1303,7 +1294,6 @@ private:
   cmMakefile* Makefile;
   cmLocalUnixMakefileGenerator3* LocalGenerator;
   std::string::size_type LengthLimit;
-  bool NoQuotes;
   std::string CurrentString;
   std::string NextObject;
   const char* Space;
@@ -1591,6 +1581,30 @@ cmMakefileTargetGenerator
   link_command += " --verbose=$(VERBOSE)";
   makefile_commands.push_back(link_command);
   makefile_depends.push_back(linkScriptName);
+}
+
+//----------------------------------------------------------------------------
+std::string
+cmMakefileTargetGenerator
+::CreateResponseFile(const char* name, std::string const& options,
+                     std::vector<std::string>& makefile_depends)
+{
+  // Create the response file.
+  std::string responseFileNameFull = this->TargetBuildDirectoryFull;
+  responseFileNameFull += "/";
+  responseFileNameFull += name;
+  cmGeneratedFileStream responseStream(responseFileNameFull.c_str());
+  responseStream << options << "\n";
+
+  // Add a dependency so the target will rebuild when the set of
+  // objects changes.
+  makefile_depends.push_back(responseFileNameFull);
+
+  // Construct the name to be used on the command line.
+  std::string responseFileName = this->TargetBuildDirectory;
+  responseFileName += "/";
+  responseFileName += name;
+  return responseFileName;
 }
 
 //----------------------------------------------------------------------------

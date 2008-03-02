@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCTestSubmitHandler.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/10 20:03:09 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2008/02/29 19:58:33 $
+  Version:   $Revision: 1.5 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -77,6 +77,7 @@ private:
   cmStdString   FTPProxy;
   int           FTPProxyType;
   std::ostream* LogFile;
+  bool CDash;
 };
 
 #endif
