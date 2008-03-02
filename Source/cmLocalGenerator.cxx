@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/03/01 14:08:34 $
-  Version:   $Revision: 1.266 $
+  Date:      $Date: 2008-03-02 19:35:23 $
+  Version:   $Revision: 1.267 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1590,17 +1590,6 @@ void cmLocalGenerator::OutputLinkLibraries(std::ostream& fout,
     {
     // All rpath entries are combined ("-Wl,-rpath,a:b:c").
     std::string rpath = cli.GetRPathString(relink);
-
-    // If not relinking, make sure the rpath string is long enough to
-    // support a subsequent chrpath on installation.
-    if(!relink)
-      {
-      std::string::size_type minLength = cli.GetChrpathString().size();
-      while(rpath.size() < minLength)
-        {
-        rpath += cli.GetRuntimeSep();
-        }
-      }
 
     // Store the rpath option in the stream.
     if(!rpath.empty())

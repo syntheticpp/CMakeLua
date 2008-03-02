@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmInstallTargetGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/03/01 17:51:07 $
-  Version:   $Revision: 1.60 $
+  Date:      $Date: 2008-03-02 19:35:23 $
+  Version:   $Revision: 1.61 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -552,15 +552,8 @@ cmInstallTargetGenerator
 ::AddChrpathPatchRule(std::ostream& os, Indent const& indent,
                       const char* config, std::string const& toDestDirPath)
 {
-  if(this->ImportLibrary ||
-     !(this->Target->GetType() == cmTarget::SHARED_LIBRARY ||
-       this->Target->GetType() == cmTarget::MODULE_LIBRARY ||
-       this->Target->GetType() == cmTarget::EXECUTABLE))
-    {
-    return;
-    }
-
-  if(!this->Target->IsChrpathUsed())
+  // Skip the chrpath if the target does not need it.
+  if(this->ImportLibrary || !this->Target->IsChrpathUsed())
     {
     return;
     }
@@ -573,12 +566,16 @@ cmInstallTargetGenerator
     return;
     }
 
+  // Construct the original rpath string to be replaced.
+  std::string oldRpath = cli->GetRPathString(false);
+
   // Get the install RPATH from the link information.
   std::string newRpath = cli->GetChrpathString();
 
   // Write a rule to run chrpath to set the install-tree RPATH
-  os << indent
-     << "FILE(CHRPATH \"" << toDestDirPath << "\" \"" << newRpath << "\")\n";
+  os << indent << "FILE(CHRPATH FILE \"" << toDestDirPath << "\"\n"
+     << indent << "     OLD_RPATH \"" << oldRpath << "\"\n"
+     << indent << "     NEW_RPATH \"" << newRpath << "\")\n";
 }
 
 //----------------------------------------------------------------------------
