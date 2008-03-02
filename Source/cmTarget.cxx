@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmTarget.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-02 19:35:23 $
-  Version:   $Revision: 1.203 $
+  Date:      $Date: 2008-03-02 21:37:34 $
+  Version:   $Revision: 1.204 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -3030,6 +3030,12 @@ bool cmTarget::IsChrpathUsed()
 
   // Skip chrpath if it does not need to be changed at install time.
   if(this->GetPropertyAsBool("BUILD_WITH_INSTALL_RPATH"))
+    {
+    return false;
+    }
+
+  // Allow the user to disable builtin chrpath explicitly.
+  if(this->Makefile->IsOn("CMAKE_NO_BUILTIN_CHRPATH"))
     {
     return false;
     }
