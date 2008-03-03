@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmAddCustomTargetCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-02 13:36:18 $
-  Version:   $Revision: 1.33 $
+  Date:      $Date: 2008-03-03 16:28:16 $
+  Version:   $Revision: 1.34 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -20,6 +20,18 @@
 bool cmAddCustomTargetCommand
 ::InitialPass(std::vector<std::string> const& args, cmExecutionStatus &)
 {
+  // This enum must be before an enum is used in a switch statment. 
+  // If not there is an ICE on the itanium version of gcc we are running
+  // on dash8
+  
+  // Keep track of parser state.
+  enum tdoing {
+    doing_command,
+    doing_depends,
+    doing_working_directory,
+    doing_comment,
+    doing_verbatim
+  };
   if(args.size() < 1 )
     {
     this->SetError("called with incorrect number of arguments");
@@ -69,13 +81,6 @@ bool cmAddCustomTargetCommand
   const char* comment = 0;
 
   // Keep track of parser state.
-  enum tdoing {
-    doing_command,
-    doing_depends,
-    doing_working_directory,
-    doing_comment,
-    doing_verbatim
-  };
   tdoing doing = doing_command;
 
   // Look for the ALL option.
