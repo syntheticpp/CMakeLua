@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmTarget.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-02 21:37:34 $
-  Version:   $Revision: 1.204 $
+  Date:      $Date: 2008-03-04 18:51:27 $
+  Version:   $Revision: 1.205 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -3543,6 +3543,8 @@ cmTargetInternalPointer::operator=(cmTargetInternalPointer const& r)
   // Ideally cmTarget instances should never be copied.  However until
   // we can make a sweep to remove that, this copy constructor avoids
   // allowing the resources (Internals) to be copied.
+  cmTargetInternals* oldPointer = this->Pointer;
   this->Pointer = new cmTargetInternals;
+  delete oldPointer;
   return *this;
 }
