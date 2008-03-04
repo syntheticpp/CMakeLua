@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefile.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-02 14:11:26 $
-  Version:   $Revision: 1.442 $
+  Date:      $Date: 2008-03-04 23:57:14 $
+  Version:   $Revision: 1.443 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -45,6 +45,9 @@
 cmMakefile::cmMakefile()
 {
   this->DefinitionStack.push_back(DefinitionMap());
+
+  // Enter a policy level for this directory.
+  this->PushPolicy();
 
   // Setup the default include file regular expression (match everything).
   this->IncludeFileRegularExpression = "^.*$";
@@ -3314,7 +3317,7 @@ bool cmMakefile::PushPolicy()
 
 bool cmMakefile::PopPolicy()
 {
-  if (PolicyStack.size() == 0)
+  if (PolicyStack.size() == 1)
   {
     cmSystemTools::Error("Attempt to pop the policy stack past "
       "it's beginning.");
