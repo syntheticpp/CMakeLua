@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmDocumentationFormatter.h,v $
   Language:  C++
-  Date:      $Date: 2008/02/19 19:33:43 $
-  Version:   $Revision: 1.6 $
+  Date:      $Date: 2008-03-04 14:16:33 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -33,7 +33,7 @@ public:
   { None, Usage, Single, SingleModule, SingleProperty, SingleVariable,
     List, ModuleList, PropertyList, VariableList,
     Full, Properties, Variables, Modules, CustomModules, Commands, 
-    CompatCommands, Copyright, Version };
+    CompatCommands, Copyright, Version, Policies, SinglePolicy };
 
   /** Forms of documentation output.  */
   enum Form { TextForm, HTMLForm, ManForm, UsageForm, DocbookForm };

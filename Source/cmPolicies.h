@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmPolicies.h,v $
   Language:  C++
-  Date:      $Date: 2008-03-02 14:12:27 $
-  Version:   $Revision: 1.5 $
+  Date:      $Date: 2008-03-04 14:16:33 $
+  Version:   $Revision: 1.6 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -76,6 +76,9 @@ public:
   
   ///! return an error string for when a required policy is unspecified
   std::string GetRequiredPolicyError(cmPolicies::PolicyID id);
+
+  ///! Get docs for policies
+  void GetDocumentation(std::vector<cmDocumentationEntry>& v);
 
   private:
   // might have to make these internal for VS6 not sure yet
