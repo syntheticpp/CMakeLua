@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmIncludeDirectoryCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/03/01 20:20:35 $
-  Version:   $Revision: 1.28 $
+  Date:      $Date: 2008-03-04 23:41:52 $
+  Version:   $Revision: 1.29 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -50,11 +50,9 @@ bool cmIncludeDirectoryCommand
       }
     if(i->size() == 0)
       {
-      const char* versionValue =
-        this->Makefile->GetDefinition("CMAKE_BACKWARDS_COMPATIBILITY");
       const char* errorMessage
         = "Empty Include Directory Passed into INCLUDE_DIRECTORIES command.";
-      if(atof(versionValue) < 2.5)
+      if(this->Makefile->NeedBackwardsCompatibility(2,4))
         {
         cmSystemTools::Error(errorMessage);
         }
