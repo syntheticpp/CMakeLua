@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefile.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-04 23:57:14 $
-  Version:   $Revision: 1.443 $
+  Date:      $Date: 2008-03-05 16:41:19 $
+  Version:   $Revision: 1.444 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -138,6 +138,7 @@ cmMakefile::cmMakefile(const cmMakefile& mf)
   this->PreOrder = mf.PreOrder;
   this->ListFileStack = mf.ListFileStack;
   this->Initialize();
+  this->PushPolicy();
 }
 
 //----------------------------------------------------------------------------
@@ -207,6 +208,7 @@ cmMakefile::~cmMakefile()
     delete b;
     }
   this->FunctionBlockers.clear();
+  this->PolicyStack.pop_back();
 }
 
 void cmMakefile::PrintStringVector(const char* s,
@@ -3245,7 +3247,7 @@ cmPolicies::PolicyStatus cmMakefile
   bool done = false;
 
   // check our policy stack first
-  for (vecpos = static_cast<int>(this->PolicyStack.size()); 
+  for (vecpos = static_cast<int>(this->PolicyStack.size()) - 1; 
        vecpos >= 0 && !done; vecpos--)
   {
     mappos = this->PolicyStack[vecpos].find(id);

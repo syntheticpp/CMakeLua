@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmPolicies.h,v $
   Language:  C++
-  Date:      $Date: 2008-03-04 14:16:33 $
-  Version:   $Revision: 1.6 $
+  Date:      $Date: 2008-03-05 16:41:25 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -40,7 +40,9 @@ public:
 
   enum PolicyID {CMP_0000, CMP_POLICY_SPECIFICATION = CMP_0000,
                  CMP_0001, CMP_TARGET_NAMES_WITH_SLASHES = CMP_0001,
-                 CMP_0002, CMP_REQUIRE_UNIQUE_TARGET_NAMES = CMP_0002};
+                 CMP_0002, CMP_REQUIRE_UNIQUE_TARGET_NAMES = CMP_0002,
+                 CMP_0003, CMP_CONFIGURE_FILE_IMMEDIATE = CMP_0003
+                 };
 
 
   ///! convert a string policy ID into a number
