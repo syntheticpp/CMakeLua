@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefile.h,v $
   Language:  C++
-  Date:      $Date: 2008/03/01 20:20:35 $
-  Version:   $Revision: 1.226 $
+  Date:      $Date: 2008-03-05 23:21:10 $
+  Version:   $Revision: 1.227 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -332,7 +332,7 @@ public:
   bool SetPolicy(const char *id, cmPolicies::PolicyStatus status);
   cmPolicies::PolicyStatus GetPolicyStatus(cmPolicies::PolicyID id);
   bool PushPolicy();
-  bool PopPolicy();
+  bool PopPolicy(bool reportError = true);
   bool SetPolicyVersion(const char *version);
   //@}
 

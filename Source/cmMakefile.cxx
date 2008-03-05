@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefile.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-05 16:41:19 $
-  Version:   $Revision: 1.444 $
+  Date:      $Date: 2008-03-05 23:21:10 $
+  Version:   $Revision: 1.445 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -3317,14 +3317,17 @@ bool cmMakefile::PushPolicy()
   return true;
 }
 
-bool cmMakefile::PopPolicy()
+bool cmMakefile::PopPolicy(bool reportError)
 {
-  if (PolicyStack.size() == 1)
-  {
-    cmSystemTools::Error("Attempt to pop the policy stack past "
-      "it's beginning.");
+  if(this->PolicyStack.size() == 1)
+    {
+    if(reportError)
+      {
+      cmSystemTools::Error("Attempt to pop the policy stack past "
+                           "it's beginning.");
+      }
     return false;
-  }
+    }
   this->PolicyStack.pop_back();
   return true;
 }
