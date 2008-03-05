@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmDocumentationFormatterHTML.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/19 19:33:43 $
-  Version:   $Revision: 1.9 $
+  Date:      $Date: 2008-03-05 16:05:21 $
+  Version:   $Revision: 1.10 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -205,4 +205,19 @@ void cmDocumentationFormatterHTML::PrintHTMLEscapes(std::ostream& os,
       cmDocumentationPrintHTMLChar(os, *p++);
       }
     }
+}
+
+void cmDocumentationFormatterHTML
+::PrintIndex(std::ostream& os,
+             std::vector<const cmDocumentationSection *>& sections)
+{
+  os << "<h2><a name=\"section_Index\"/>Master Index</h2>\n";
+  os << "<ul>\n";
+  for(unsigned int i=0; i < sections.size(); ++i)
+    {
+    std::string name = sections[i]->
+      GetName((this->GetForm()));
+    os << "  <li><a href=\"#section_" << name << "\"<b>" << name << "</b></a></li>\n";
+    }
+  os << "</ul>\n";
 }

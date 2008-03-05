@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmDocumentation.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-04 14:16:33 $
-  Version:   $Revision: 1.68 $
+  Date:      $Date: 2008-03-05 16:05:20 $
+  Version:   $Revision: 1.69 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -846,6 +846,9 @@ void cmDocumentation::Print(Form f, std::ostream& os)
 //----------------------------------------------------------------------------
 void cmDocumentation::Print(std::ostream& os)
 {
+  // if the formatter supports it, print a master index for 
+  // all sections
+  this->CurrentFormatter->PrintIndex(os, this->PrintSections);
   for(unsigned int i=0; i < this->PrintSections.size(); ++i)
     {
     std::string name = this->PrintSections[i]->

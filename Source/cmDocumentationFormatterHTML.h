@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmDocumentationFormatterHTML.h,v $
   Language:  C++
-  Date:      $Date: 2007/10/22 16:48:39 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2008-03-05 16:05:22 $
+  Version:   $Revision: 1.3 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -36,7 +36,9 @@ public:
                     const cmDocumentationSection& section,
                     const char* name);
   virtual void PrintPreformatted(std::ostream& os, const char* text);
-  virtual void PrintParagraph(std::ostream& os, const char* text);
+  virtual void PrintParagraph(std::ostream& os, const char* text); 
+  virtual void PrintIndex(std::ostream& ,
+                          std::vector<const cmDocumentationSection *>&);
 private:
   void PrintHTMLEscapes(std::ostream& os, const char* text);
 };
