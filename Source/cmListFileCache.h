@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmListFileCache.h,v $
   Language:  C++
-  Date:      $Date: 2007/05/11 12:36:05 $
-  Version:   $Revision: 1.18 $
+  Date:      $Date: 2008-03-06 15:57:39 $
+  Version:   $Revision: 1.19 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -26,6 +26,8 @@
  * cmake list files.
  */
 
+class cmMakefile;
+ 
 struct cmListFileArgument
 {
   cmListFileArgument(): Value(), Quoted(false), FilePath(0), Line(0) {}
@@ -62,7 +64,9 @@ struct cmListFile
     :ModifiedTime(0) 
     {
     }
-  bool ParseFile(const char* path, bool requireProjectCommand);
+  bool ParseFile(const char* path, 
+                 bool topLevel,
+                 cmMakefile *mf);
 
   long int ModifiedTime;
   std::vector<cmListFileFunction> Functions;

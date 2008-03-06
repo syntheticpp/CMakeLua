@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCMakeMinimumRequired.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-04 23:42:06 $
-  Version:   $Revision: 1.15 $
+  Date:      $Date: 2008-03-06 15:57:03 $
+  Version:   $Revision: 1.16 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -107,9 +107,6 @@ bool cmCMakeMinimumRequired
     cmSystemTools::Error(e.str().c_str());
     cmSystemTools::SetFatalErrorOccured();
     }
-
-  // set the policy version as well
-  this->Makefile->SetPolicyVersion(version_string.c_str());
 
   return true;
 }
