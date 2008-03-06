@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmListFileCache.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-06 20:51:51 $
-  Version:   $Revision: 1.33 $
+  Date:      $Date: 2008-03-06 21:03:48 $
+  Version:   $Revision: 1.34 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -163,6 +163,19 @@ bool cmListFile::ParseFile(const char* filename,
               (cmPolicies::CMP_0000).c_str());
           return false;
       }
+    }
+    else
+    {
+      // add in the old CMAKE_BACKWARDS_COMPATIBILITY var for old CMake compatibility
+      if (!mf->GetCacheManager()->
+          GetCacheValue("CMAKE_BACKWARDS_COMPATIBILITY"))
+      {
+        mf->AddCacheDefinition
+          ("CMAKE_BACKWARDS_COMPATIBILITY", "2.5",
+           "For backwards compatibility, what version of CMake commands and "
+           "syntax should this version of CMake try to support.",
+           cmCacheManager::INTERNAL);
+      }      
     }
   }
 
