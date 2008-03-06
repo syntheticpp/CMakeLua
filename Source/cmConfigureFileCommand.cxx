@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmConfigureFileCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-06 15:57:08 $
-  Version:   $Revision: 1.32 $
+  Date:      $Date: 2008-03-06 20:08:03 $
+  Version:   $Revision: 1.33 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -47,10 +47,21 @@ bool cmConfigureFileCommand
   const char* versionValue
     = this->Makefile->GetDefinition("CMAKE_BACKWARDS_COMPATIBILITY");
   if (versionValue && atof(versionValue) > 2.0)
-    {
+  {
     this->Immediate = true;
-    }
+  }
 
+  switch (this->Makefile->GetPolicyStatus(cmPolicies::CMP_0003))
+  {
+    case cmPolicies::WARN:
+    case cmPolicies::OLD:
+      break;
+    case cmPolicies::NEW:
+    case cmPolicies::REQUIRED_IF_USED:
+    case cmPolicies::REQUIRED_ALWAYS:
+      this->Immediate = true;
+  }
+    
   
   this->AtOnly = false;
   for(unsigned int i=2;i < args.size();++i)
