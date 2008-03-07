@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmFindBase.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/17 22:49:30 $
-  Version:   $Revision: 1.34 $
+  Date:      $Date: 2008-03-07 20:30:33 $
+  Version:   $Revision: 1.35 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -109,19 +109,7 @@ bool cmFindBase::ParseArguments(std::vector<std::string> const& argsIn)
   // CMake versions below 2.3 did not search all these extra
   // locations.  Preserve compatibility unless a modern argument is
   // passed.
-  bool compatibility = false;
-  const char* versionValue =
-    this->Makefile->GetDefinition("CMAKE_BACKWARDS_COMPATIBILITY");
-  int major = 0;
-  int minor = 0;
-  if(versionValue && sscanf(versionValue, "%d.%d", &major, &minor) != 2)
-    {
-    versionValue = 0;
-    }
-  if(versionValue && (major < 2 || major == 2 && minor < 3))
-    {
-    compatibility = true;
-    }
+  bool compatibility = this->Makefile->NeedBackwardsCompatibility(2,3);
 
   // copy argsIn into args so it can be modified,
   // in the process extract the DOC "documentation" 
