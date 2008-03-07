@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmake.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-04 19:51:25 $
-  Version:   $Revision: 1.364 $
+  Date:      $Date: 2008-03-07 16:43:47 $
+  Version:   $Revision: 1.365 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1899,6 +1899,19 @@ int cmake::ActualConfigure()
        cmCacheManager::INTERNAL);
     }
 
+  // set the default BACKWARDS compatibility to the current version
+  if(!this->CacheManager->GetCacheValue("CMAKE_BACKWARDS_COMPATIBILITY"))
+    {
+    char ver[256];
+    sprintf(ver,"%i.%i",cmVersion::GetMajorVersion(),
+            cmVersion::GetMinorVersion());
+    this->CacheManager->AddCacheEntry
+      ("CMAKE_BACKWARDS_COMPATIBILITY",ver, 
+       "For backwards compatibility, what version of CMake commands and "
+       "syntax should this version of CMake allow.",
+       cmCacheManager::INTERNAL);
+    }
+
   // no generator specified on the command line
   if(!this->GlobalGenerator)
     {
@@ -2378,6 +2391,19 @@ int cmake::LoadCache()
   if(!this->AddCMakePaths())
     {
     return -3;
+    }
+
+  // set the default BACKWARDS compatibility to the current version
+  if(!this->CacheManager->GetCacheValue("CMAKE_BACKWARDS_COMPATIBILITY"))
+    {
+    char ver[256];
+    sprintf(ver,"%i.%i",cmVersion::GetMajorVersion(),
+            cmVersion::GetMinorVersion());
+    this->CacheManager->AddCacheEntry
+      ("CMAKE_BACKWARDS_COMPATIBILITY",ver, 
+       "For backwards compatibility, what version of CMake commands and "
+       "syntax should this version of CMake allow.",
+       cmCacheManager::INTERNAL);
     }
 
   return 0;
