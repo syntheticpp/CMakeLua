@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefile.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-07 13:40:36 $
-  Version:   $Revision: 1.447 $
+  Date:      $Date: 2008-03-07 14:09:21 $
+  Version:   $Revision: 1.448 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -289,7 +289,7 @@ void cmMakefilePrintPrefixed(std::ostream& os,  const char* prefix,
   bool newline = true;
   for(const char* c = msg.c_str(); *c; ++c)
     {
-    if(newline)
+    if(newline && *c != '\n')
       {
       os << prefix;
       newline = false;
