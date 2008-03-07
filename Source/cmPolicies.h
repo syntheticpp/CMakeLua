@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmPolicies.h,v $
   Language:  C++
-  Date:      $Date: 2008-03-07 20:30:33 $
-  Version:   $Revision: 1.8 $
+  Date:      $Date: 2008-03-07 21:36:57 $
+  Version:   $Revision: 1.9 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -42,7 +42,11 @@ public:
   {
     CMP_0000, // Policy version specification
     CMP_0001, // Ignore old compatibility variable
-    CMP_0002
+    CMP_0002, // Target names must be unique
+
+    // Always the last entry.  Useful mostly to avoid adding a comma
+    // the last policy when adding a new one.
+    CMP_COUNT
   };
 
   ///! convert a string policy ID into a number
