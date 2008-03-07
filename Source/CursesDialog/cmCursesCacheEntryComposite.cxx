@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCursesCacheEntryComposite.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/03/16 15:44:55 $
-  Version:   $Revision: 1.8 $
+  Date:      $Date: 2008-03-07 21:32:09 $
+  Version:   $Revision: 1.9 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -30,7 +30,8 @@ cmCursesCacheEntryComposite::cmCursesCacheEntryComposite(const char* key,
 {
   this->Label = new cmCursesLabelWidget(this->LabelWidth, 1, 1, 1, key);
   this->IsNewLabel = new cmCursesLabelWidget(1, 1, 1, 1, " ");
-  this->Entry = 0;
+  this->Entry = 0; 
+  this->Entry = new cmCursesStringWidget(this->EntryWidth, 1, 1, 1);
 }
 
 cmCursesCacheEntryComposite::cmCursesCacheEntryComposite(
