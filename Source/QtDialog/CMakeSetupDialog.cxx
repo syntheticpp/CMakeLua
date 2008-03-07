@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: CMakeSetupDialog.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/25 20:07:38 $
-  Version:   $Revision: 1.37 $
+  Date:      $Date: 2008-03-07 16:50:11 $
+  Version:   $Revision: 1.38 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -118,6 +118,9 @@ CMakeSetupDialog::CMakeSetupDialog()
   this->BinaryDirectory->setCompleter(new QCMakeFileCompleter(this, true));
   this->SourceDirectory->setCompleter(new QCMakeFileCompleter(this, true));
 
+  // fixed pitch font in output window
+  QFont outputFont("Courier");
+  this->Output->setFont(outputFont);
 
   // start the cmake worker thread
   this->CMakeThread = new QCMakeThread(this);
