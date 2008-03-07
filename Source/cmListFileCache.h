@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmListFileCache.h,v $
   Language:  C++
-  Date:      $Date: 2008-03-06 15:57:39 $
-  Version:   $Revision: 1.19 $
+  Date:      $Date: 2008-03-07 13:40:36 $
+  Version:   $Revision: 1.20 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -50,12 +50,16 @@ struct cmListFileArgument
   long Line;
 };
 
-struct cmListFileFunction
+struct cmListFileContext
 {
   std::string Name;
-  std::vector<cmListFileArgument> Arguments;
   std::string FilePath;
   long Line;
+};
+
+struct cmListFileFunction: public cmListFileContext
+{
+  std::vector<cmListFileArgument> Arguments;
 };
 
 struct cmListFile

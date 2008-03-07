@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmListFileCache.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-06 21:03:48 $
-  Version:   $Revision: 1.34 $
+  Date:      $Date: 2008-03-07 13:40:36 $
+  Version:   $Revision: 1.35 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -152,15 +152,15 @@ bool cmListFile::ParseFile(const char* filename,
       switch (mf->GetPolicyStatus(cmPolicies::CMP_0000))
       {
         case cmPolicies::WARN:
-          cmSystemTools::Message(
-            mf->GetPolicies()->GetPolicyWarning
-              (cmPolicies::CMP_0000).c_str(),"Warning");
+          mf->IssueWarning(
+            mf->GetPolicies()->GetPolicyWarning(cmPolicies::CMP_0000)
+            );
         case cmPolicies::OLD:
           break; 
         default:
-          cmSystemTools::Error(
-            mf->GetPolicies()->GetRequiredPolicyError
-              (cmPolicies::CMP_0000).c_str());
+          mf->IssueError(
+            mf->GetPolicies()->GetRequiredPolicyError(cmPolicies::CMP_0000)
+            );
           return false;
       }
     }
