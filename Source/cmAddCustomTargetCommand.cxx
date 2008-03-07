@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmAddCustomTargetCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-07 20:30:32 $
-  Version:   $Revision: 1.36 $
+  Date:      $Date: 2008-03-07 22:05:06 $
+  Version:   $Revision: 1.37 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -19,7 +19,7 @@
 // cmAddCustomTargetCommand
 bool cmAddCustomTargetCommand
 ::InitialPass(std::vector<std::string> const& args,
-              cmExecutionStatus& status)
+              cmExecutionStatus&)
 {
   if(args.size() < 1 )
     {
