@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefile.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-08 14:13:13 $
-  Version:   $Revision: 1.452 $
+  Date:      $Date: 2008-03-08 14:21:30 $
+  Version:   $Revision: 1.453 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -315,9 +315,9 @@ void cmMakefile::IssueMessage(std::string const& text, bool isError) const
     {
     if(isError)
       {
-      i->Status->SetNestedError(true);
+      (*i).Status->SetNestedError(true);
       }
-    cmListFileContext const& lfc = *i->Context;
+    cmListFileContext const& lfc = *(*i).Context;
     msg
       << " at "
       << this->LocalGenerator->Convert(lfc.FilePath.c_str(),
@@ -341,7 +341,7 @@ void cmMakefile::IssueMessage(std::string const& text, bool isError) const
     msg << " with call stack {\n";
     while(i != this->CallStack.rend())
       {
-      cmListFileContext const& lfc = *i->Context;
+      cmListFileContext const& lfc = *(*i).Context;
       msg << "  "
           << this->LocalGenerator->Convert(lfc.FilePath.c_str(),
                                            cmLocalGenerator::HOME)
