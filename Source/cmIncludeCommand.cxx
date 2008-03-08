@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmIncludeCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/23 15:27:59 $
-  Version:   $Revision: 1.20 $
+  Date:      $Date: 2008-03-08 14:27:44 $
+  Version:   $Revision: 1.21 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -95,7 +95,9 @@ bool cmIncludeCommand
 
   if(!optional && !readit && !cmSystemTools::GetFatalErrorOccured())
     {
-    std::string m = "Could not find include file: ";
+    std::string m =
+      "could not find load file:\n"
+      "  ";
     m += fname;
     this->SetError(m.c_str());
     return false;
