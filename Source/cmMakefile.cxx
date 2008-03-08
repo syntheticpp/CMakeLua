@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefile.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-07 21:36:57 $
-  Version:   $Revision: 1.451 $
+  Date:      $Date: 2008-03-08 14:13:13 $
+  Version:   $Revision: 1.452 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -3239,9 +3239,10 @@ bool cmMakefile::EnforceUniqueName(std::string const& name, std::string& msg,
           return true;
         case cmPolicies::REQUIRED_IF_USED:
         case cmPolicies::REQUIRED_ALWAYS:
-          msg = this->GetPolicies()->
-            GetRequiredPolicyError(cmPolicies::CMP_0002);
-          return false;
+          this->IssueError(
+            this->GetPolicies()->GetRequiredPolicyError(cmPolicies::CMP_0002)
+            );
+          return true;
         case cmPolicies::NEW:
           break;
         }
