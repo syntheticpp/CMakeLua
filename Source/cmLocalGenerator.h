@@ -3,7 +3,7 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalGenerator.h,v $
   Language:  C++
-  Date:      $Date: 2008/02/14 20:31:08 $
+  Date:      $Date: 2008-02-14 20:31:08 $
   Version:   $Revision: 1.103 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
@@ -335,6 +335,7 @@ protected:
       definition.  Issues a warning.  */
   virtual bool CheckDefinition(std::string const& define) const;
 
+  friend class cmGlobalGenerator;
   cmMakefile *Makefile;
   cmGlobalGenerator *GlobalGenerator;
   // members used for relative path function ConvertToMakefilePath

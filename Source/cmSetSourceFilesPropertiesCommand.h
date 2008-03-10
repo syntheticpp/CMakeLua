@@ -3,7 +3,7 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmSetSourceFilesPropertiesCommand.h,v $
   Language:  C++
-  Date:      $Date: 2008/03/01 02:33:04 $
+  Date:      $Date: 2008-03-01 02:33:04 $
   Version:   $Revision: 1.16 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.

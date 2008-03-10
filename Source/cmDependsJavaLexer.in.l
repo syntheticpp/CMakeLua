@@ -4,7 +4,7 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmDependsJavaLexer.in.l,v $
   Language:  C++
-  Date:      $Date: 2006/08/08 18:00:27 $
+  Date:      $Date: 2006-08-08 18:00:27 $
   Version:   $Revision: 1.9 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.

@@ -3,7 +3,7 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmFindFileCommand.h,v $
   Language:  C++
-  Date:      $Date: 2007/10/10 15:47:43 $
+  Date:      $Date: 2007-10-10 15:47:43 $
   Version:   $Revision: 1.20 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.

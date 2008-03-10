@@ -4,7 +4,7 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmDependsFortranLexer.in.l,v $
   Language:  C++
-  Date:      $Date: 2007/10/03 19:41:39 $
+  Date:      $Date: 2007-10-03 19:41:39 $
   Version:   $Revision: 1.10 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.

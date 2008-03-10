@@ -3,7 +3,7 @@
   Program:   WXDialog - wxWidgets X-platform GUI Front-End for CMake
   Module:    $RCSfile: app_resources.h,v $
   Language:  C++
-  Date:      $Date: 2005/06/30 19:54:14 $
+  Date:      $Date: 2005-06-30 19:54:14 $
   Version:   $Revision: 1.1 $
 
   Author:    Jorgen Bodde

@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___ 
  *                             \___|\___/|_| \_\_____|
  *
- * $Id: curlgtk.c,v 1.1 2005/06/24 13:02:16 andy Exp $
+ * $Id: curlgtk.c,v 1.1 2005-06-24 13:02:16 andy Exp $
  */
 /* Copyright (c) 2000 David Odin (aka DindinX) for MandrakeSoft */
 /* an attempt to use the curl library in concert with a gtk-threaded application */

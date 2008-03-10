@@ -3,7 +3,7 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCommandArgumentParserHelper.h,v $
   Language:  C++
-  Date:      $Date: 2007/06/06 20:20:02 $
+  Date:      $Date: 2007-06-06 20:20:02 $
   Version:   $Revision: 1.11 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.

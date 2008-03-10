@@ -3,7 +3,7 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCursesDummyWidget.h,v $
   Language:  C++
-  Date:      $Date: 2002/10/23 22:03:27 $
+  Date:      $Date: 2002-10-23 22:03:27 $
   Version:   $Revision: 1.4 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.

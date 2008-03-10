@@ -3,7 +3,7 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCPackTarCompressGenerator.h,v $
   Language:  C++
-  Date:      $Date: 2007/02/02 19:40:26 $
+  Date:      $Date: 2007-02-02 19:40:26 $
   Version:   $Revision: 1.4 $
 
   Copyright (c) 2002 Kitware, Inc. All rights reserved.

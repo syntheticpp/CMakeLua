@@ -32,7 +32,7 @@
 
 #include "form.priv.h"
 
-MODULE_ID("$Id: frm_data.c,v 1.3 2002/06/18 20:30:00 king Exp $")
+MODULE_ID("$Id: frm_data.c,v 1.3 2002-06-18 20:30:00 king Exp $")
 
 extern int winnstr(WINDOW *, char *, int);
 

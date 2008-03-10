@@ -18,7 +18,7 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: url.c,v 1.3 2007/05/03 17:03:13 king Exp $
+ * $Id: url.c,v 1.3 2007-05-03 17:03:13 king Exp $
  ***************************************************************************/
 
 /* -- WIN32 approved -- */

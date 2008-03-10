@@ -3,7 +3,7 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmDependsFortran.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/09 15:30:10 $
+  Date:      $Date: 2008-01-09 15:30:10 $
   Version:   $Revision: 1.14 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.

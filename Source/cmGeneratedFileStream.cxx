@@ -3,7 +3,7 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmGeneratedFileStream.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/11/16 12:01:58 $
+  Date:      $Date: 2007-11-16 12:01:58 $
   Version:   $Revision: 1.19 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.

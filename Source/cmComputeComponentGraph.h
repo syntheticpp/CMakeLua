@@ -3,7 +3,7 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmComputeComponentGraph.h,v $
   Language:  C++
-  Date:      $Date: 2008/02/07 21:14:05 $
+  Date:      $Date: 2008-02-07 21:14:05 $
   Version:   $Revision: 1.1 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.

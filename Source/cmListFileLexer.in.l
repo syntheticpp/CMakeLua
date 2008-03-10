@@ -4,7 +4,7 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmListFileLexer.in.l,v $
   Language:  C++
-  Date:      $Date: 2006/08/09 13:45:04 $
+  Date:      $Date: 2006-08-09 13:45:04 $
   Version:   $Revision: 1.15 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.

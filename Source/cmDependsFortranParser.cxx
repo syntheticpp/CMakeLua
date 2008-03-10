@@ -141,7 +141,7 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmDependsFortranParser.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/08 04:08:42 $
+  Date:      $Date: 2008-01-08 04:08:42 $
   Version:   $Revision: 1.16 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.

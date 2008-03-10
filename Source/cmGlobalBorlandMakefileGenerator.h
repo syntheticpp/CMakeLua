@@ -3,7 +3,7 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmGlobalBorlandMakefileGenerator.h,v $
   Language:  C++
-  Date:      $Date: 2007/06/28 13:09:26 $
+  Date:      $Date: 2007-06-28 13:09:26 $
   Version:   $Revision: 1.7 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.

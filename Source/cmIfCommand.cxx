@@ -3,7 +3,7 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmIfCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/03/01 02:33:33 $
+  Date:      $Date: 2008-03-01 02:33:33 $
   Version:   $Revision: 1.84 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.

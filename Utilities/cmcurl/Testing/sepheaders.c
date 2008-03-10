@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___ 
  *                             \___|\___/|_| \_\_____|
  *
- * $Id: sepheaders.c,v 1.2 2007/04/15 15:56:07 andy Exp $
+ * $Id: sepheaders.c,v 1.2 2007-04-15 15:56:07 andy Exp $
  */
 
 /* to make this work under windows, use the win32-functions from the

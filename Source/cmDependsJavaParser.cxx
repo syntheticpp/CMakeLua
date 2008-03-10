@@ -287,7 +287,7 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmDependsJavaParser.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/03/05 15:36:06 $
+  Date:      $Date: 2007-03-05 15:36:06 $
   Version:   $Revision: 1.7 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.

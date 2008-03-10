@@ -3,7 +3,7 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmDynamicLoader.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/16 22:09:08 $
+  Date:      $Date: 2006-03-16 22:09:08 $
   Version:   $Revision: 1.9 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.

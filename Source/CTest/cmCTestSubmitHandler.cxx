@@ -3,8 +3,8 @@
 Program:   CMake - Cross-Platform Makefile Generator
 Module:    $RCSfile: cmCTestSubmitHandler.cxx,v $
 Language:  C++
-Date:      $Date: 2008/02/29 19:58:33 $
-Version:   $Revision: 1.30 $
+Date:      $Date: 2008-03-04 18:34:21 $
+Version:   $Revision: 1.31 $
 
 Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
 See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -963,8 +963,9 @@ int cmCTestSubmitHandler::ProcessHandler()
                  << "   Trigger site: "
                  << this->CTest->GetCTestConfiguration("TriggerSite")
                  << std::endl);
-      if ( !this->TriggerUsingHTTP(files, prefix,
-                                   this->CTest->GetCTestConfiguration("TriggerSite")) )
+      if ( !this->
+           TriggerUsingHTTP(files, prefix,
+                            this->CTest->GetCTestConfiguration("TriggerSite")))
         {
         cmCTestLog(this->CTest, ERROR_MESSAGE,
                    "   Problems when triggering via HTTP" << std::endl);
@@ -1017,8 +1018,9 @@ int cmCTestSubmitHandler::ProcessHandler()
                  << "   Trigger site: "
                  << this->CTest->GetCTestConfiguration("TriggerSite")
                  << std::endl);
-      if ( !this->TriggerUsingHTTP(files, prefix,
-                                   this->CTest->GetCTestConfiguration("TriggerSite")) )
+      if ( !this->
+           TriggerUsingHTTP(files, prefix,
+                            this->CTest->GetCTestConfiguration("TriggerSite")))
         {
         cmCTestLog(this->CTest, ERROR_MESSAGE,
                    "   Problems when triggering via HTTP" << std::endl);

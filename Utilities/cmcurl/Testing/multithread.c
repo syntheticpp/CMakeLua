@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___ 
  *                             \___|\___/|_| \_\_____|
  *
- * $Id: multithread.c,v 1.1 2005/06/24 13:02:16 andy Exp $
+ * $Id: multithread.c,v 1.1 2005-06-24 13:02:16 andy Exp $
  */
 
 /* A multi-threaded example that uses pthreads extensively to fetch

@@ -3,7 +3,7 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmExternalMakefileProjectGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/07/03 20:10:50 $
+  Date:      $Date: 2007-07-03 20:10:50 $
   Version:   $Revision: 1.2 $
 
   Copyright (c) 2007 Kitware, Inc., Insight Consortium.  All rights reserved.

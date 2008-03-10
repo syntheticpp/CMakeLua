@@ -3,7 +3,7 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmStandardLexer.h,v $
   Language:  C++
-  Date:      $Date: 2006/08/24 13:34:53 $
+  Date:      $Date: 2006-08-24 13:34:53 $
   Version:   $Revision: 1.4 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.

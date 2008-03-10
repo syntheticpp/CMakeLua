@@ -32,7 +32,7 @@
 
 #include "form.priv.h"
 
-MODULE_ID("$Id: fld_newftyp.c,v 1.1 2001/11/05 16:53:01 berk Exp $")
+MODULE_ID("$Id: fld_newftyp.c,v 1.1 2001-11-05 16:53:01 berk Exp $")
 
 static FIELDTYPE const default_fieldtype = {
   0,                   /* status                                      */

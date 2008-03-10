@@ -3,7 +3,7 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCacheManager.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/29 22:30:48 $
+  Date:      $Date: 2008-01-29 22:30:48 $
   Version:   $Revision: 1.100 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.

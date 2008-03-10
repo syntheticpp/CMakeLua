@@ -32,7 +32,7 @@
 
 #include "form.priv.h"
 
-MODULE_ID("$Id: frm_hook.c,v 1.1 2001/11/05 16:53:02 berk Exp $")
+MODULE_ID("$Id: frm_hook.c,v 1.1 2001-11-05 16:53:02 berk Exp $")
 
 /* "Template" macro to generate function to set application specific hook */
 #define GEN_HOOK_SET_FUNCTION( typ, name ) \

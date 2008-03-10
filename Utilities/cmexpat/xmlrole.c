@@ -4,7 +4,7 @@ See the file COPYING for copying permission.
 */
 
 static char RCSId[]
-  = "$Header: /cvsroot/CMake/CMake/Utilities/cmexpat/xmlrole.c,v 1.1 2004/06/25 18:04:12 andy Exp $";
+  = "$Header: /cvsroot/CMake/CMake/Utilities/cmexpat/xmlrole.c,v 1.1 2004-06-25 18:04:12 andy Exp $";
 const char* cm_expat_GetXMLRole_RCSId()
 {
   /* Avoid warning about unused static without removing RCSId from original. */

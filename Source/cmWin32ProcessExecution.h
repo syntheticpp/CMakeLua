@@ -3,7 +3,7 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmWin32ProcessExecution.h,v $
   Language:  C++
-  Date:      $Date: 2006/05/12 18:12:13 $
+  Date:      $Date: 2006-05-12 18:12:13 $
   Version:   $Revision: 1.13 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.

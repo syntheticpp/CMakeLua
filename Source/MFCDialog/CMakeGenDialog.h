@@ -3,7 +3,7 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: CMakeGenDialog.h,v $
   Language:  C++
-  Date:      $Date: 2005/03/28 18:23:07 $
+  Date:      $Date: 2005-03-28 18:23:07 $
   Version:   $Revision: 1.1 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.

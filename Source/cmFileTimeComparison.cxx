@@ -3,7 +3,7 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmFileTimeComparison.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/03 05:01:38 $
+  Date:      $Date: 2008-01-03 05:01:38 $
   Version:   $Revision: 1.7 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.

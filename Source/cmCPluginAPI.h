@@ -3,7 +3,7 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCPluginAPI.h,v $
   Language:  C++
-  Date:      $Date: 2006/12/07 14:44:45 $
+  Date:      $Date: 2006-12-07 14:44:45 $
   Version:   $Revision: 1.25 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.

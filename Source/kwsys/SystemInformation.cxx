@@ -3,7 +3,7 @@
   Program:   BatchMake
   Module:    $RCSfile: SystemInformation.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/03 13:20:11 $
+  Date:      $Date: 2008-02-03 13:20:11 $
   Version:   $Revision: 1.22 $
   Copyright (c) 2005 Insight Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.

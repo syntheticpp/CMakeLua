@@ -13,8 +13,6 @@ extern "C"
 
 /**
  * This function will create a nested table in Lua based on the 
- * the string you provide.
- * This function will create a nested table in Lua based on the 
  * the string you provide. Among other things, this may be used 
  * for things like namespaces when registering functions.
  * The original code was posted to the Lua mailing list by
@@ -96,15 +94,17 @@ bool LuaUtils_CreateNestedTable(lua_State * L, const std::string& table_name)
 
 
 
-bool LuaUtils_RegisterFunc(lua_State* script,
+bool LuaUtils_RegisterFunc(lua_State* lua_state,
 						   lua_CFunction function_ptr,
 						   const char* function_name,
 						   const char* library_name,
 						   void* user_light_data
 )
 {
+                                                                // stack: 
+
 	/* Validate arguments. */
-	if (!script || !function_ptr || !function_name)
+	if (!lua_state || !function_ptr || !function_name)
 	{
 		return false;
 	}
@@ -112,35 +112,37 @@ bool LuaUtils_RegisterFunc(lua_State* script,
 	{
 		return false;
 	}
-	fprintf(stderr, "Lua Register (start), end top = %d\n", lua_gettop(script));
-	
-//	fprintf(stderr, "Lua Register, start top = %d\n", lua_gettop(script));
+	//fprintf(stderr, "Lua Register (start), end top = %d\n", lua_gettop(lua_state));
+	//fprintf(stderr, "Lua Register, start top = %d\n", lua_gettop(script));
 	
 	/* This will embed the function in a namespace if
 		desired */
 	if(NULL != library_name)
 	{
-		LuaUtils_CreateNestedTable(script, library_name);
+		LuaUtils_CreateNestedTable(lua_state, library_name);   // stack: table
 	}
 	else
 	{
-		lua_pushvalue(script, LUA_GLOBALSINDEX);
+		lua_pushvalue(lua_state, LUA_GLOBALSINDEX);            // stack: table
 	}
 	
-	/* Register function into script object.
+	/* Register function into lua_state object.
 	 * Also passes pointer to a SpaceObjScriptIO instance 
 	 * via lightuserdata.
 	 */
-	lua_pushstring( script, function_name );  /* Add function name. */
-	lua_pushlightuserdata( script, user_light_data );  /* Add pointer to this object. */
-	lua_pushcclosure( script, function_ptr, 1 );  /* Add function pointer. */
-	lua_settable( script, -3);
+	// use function_name when calling from Lua
+	lua_pushstring( lua_state, function_name );               // stack: table string
+	// remember function_name as upvalue
+	lua_pushstring( lua_state, function_name );               // stack: table string string
+	// push closure on stack
+	lua_pushcclosure( lua_state, function_ptr, 1 );           // stack: table string func
+	// add function to namespace table
+	lua_settable( lua_state, -3);                             // stack: table
 	
 	/* pop the table that we created/getted */
-	lua_pop(script, 1);
+	lua_pop(lua_state, 1);									  // stack: 
 
-	fprintf(stderr, "Lua Register (end), end top = %d\n", lua_gettop(script));
-
+	//fprintf(stderr, "Lua Register (end), end top = %d\n", lua_gettop(lua_state));
 	
 	return true;
 }

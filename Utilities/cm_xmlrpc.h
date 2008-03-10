@@ -3,7 +3,7 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cm_xmlrpc.h,v $
   Language:  C++
-  Date:      $Date: 2006/10/19 19:00:09 $
+  Date:      $Date: 2006-10-19 19:00:09 $
   Version:   $Revision: 1.1 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.

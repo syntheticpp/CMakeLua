@@ -442,7 +442,7 @@ static yyconst flex_int16_t yy_chk[37] =
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmExprLexer.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/09/24 15:16:13 $
+  Date:      $Date: 2007-09-24 15:16:13 $
   Version:   $Revision: 1.7 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.

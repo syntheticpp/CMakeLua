@@ -3,7 +3,7 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCTestMemCheckHandler.h,v $
   Language:  C++
-  Date:      $Date: 2007/07/24 18:43:31 $
+  Date:      $Date: 2007-07-24 18:43:31 $
   Version:   $Revision: 1.4 $
 
   Copyright (c) 2002 Kitware, Inc. All rights reserved.

@@ -3,7 +3,7 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCursesLongMessageForm.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/11/29 22:25:46 $
+  Date:      $Date: 2006-11-29 22:25:46 $
   Version:   $Revision: 1.16 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.

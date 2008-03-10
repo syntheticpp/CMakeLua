@@ -3,7 +3,7 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: QCMakeCacheView.h,v $
   Language:  C++
-  Date:      $Date: 2008/02/15 00:58:31 $
+  Date:      $Date: 2008-02-15 00:58:31 $
   Version:   $Revision: 1.17 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.

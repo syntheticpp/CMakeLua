@@ -3,7 +3,7 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCTestBuildAndTestHandler.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/09/17 14:40:57 $
+  Date:      $Date: 2007-09-17 14:40:57 $
   Version:   $Revision: 1.20 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.

@@ -4,7 +4,7 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCommandArgumentLexer.in.l,v $
   Language:  C++
-  Date:      $Date: 2007/06/05 13:19:27 $
+  Date:      $Date: 2007-06-05 13:19:27 $
   Version:   $Revision: 1.10 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.

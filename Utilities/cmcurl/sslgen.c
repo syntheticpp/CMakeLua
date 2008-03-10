@@ -18,7 +18,7 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: sslgen.c,v 1.2 2007/03/15 19:22:13 andy Exp $
+ * $Id: sslgen.c,v 1.2 2007-03-15 19:22:13 andy Exp $
  ***************************************************************************/
 
 /* This file is for "generic" SSL functions that all libcurl internals should

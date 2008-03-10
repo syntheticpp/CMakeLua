@@ -36,7 +36,7 @@
 #if defined(__hpux)
   #undef _XOPEN_SOURCE_EXTENDED
 #endif
-MODULE_ID("$Id: fld_attr.c,v 1.2 2003/03/11 20:25:50 hoffman Exp $")
+MODULE_ID("$Id: fld_attr.c,v 1.2 2003-03-11 20:25:50 hoffman Exp $")
 
 /*----------------------------------------------------------------------------
   Field-Attribute manipulation routines

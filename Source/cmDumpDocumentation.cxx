@@ -3,7 +3,7 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmDumpDocumentation.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/13 22:56:49 $
+  Date:      $Date: 2007-12-13 22:56:49 $
   Version:   $Revision: 1.20 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.

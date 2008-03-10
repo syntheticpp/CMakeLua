@@ -32,7 +32,7 @@
 
 #include "form.priv.h"
 
-MODULE_ID("$Id: fld_type.c,v 1.2 2001/11/06 13:40:07 hoffman Exp $")
+MODULE_ID("$Id: fld_type.c,v 1.2 2001-11-06 13:40:07 hoffman Exp $")
 
 
 /*---------------------------------------------------------------------------

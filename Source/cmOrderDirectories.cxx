@@ -3,7 +3,7 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmOrderDirectories.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/22 14:44:11 $
+  Date:      $Date: 2008-02-22 14:44:11 $
   Version:   $Revision: 1.4 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.

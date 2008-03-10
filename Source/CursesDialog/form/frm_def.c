@@ -32,7 +32,7 @@
 
 #include "form.priv.h"
 
-MODULE_ID("$Id: frm_def.c,v 1.2 2002/01/25 14:06:39 king Exp $")
+MODULE_ID("$Id: frm_def.c,v 1.2 2002-01-25 14:06:39 king Exp $")
 
 /* this can't be readonly */
 static FORM default_form = {

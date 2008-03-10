@@ -3,7 +3,7 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmDocumentationFormatterDocbook.h,v $
   Language:  C++
-  Date:      $Date: 2008/02/19 19:33:43 $
+  Date:      $Date: 2008-02-19 19:33:43 $
   Version:   $Revision: 1.1 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.

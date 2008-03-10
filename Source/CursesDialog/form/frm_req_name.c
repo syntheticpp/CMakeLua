@@ -43,7 +43,7 @@
  #undef _XOPEN_SOURCE_EXTENDED
 #endif
 
-MODULE_ID("$Id: frm_req_name.c,v 1.7 2002/06/18 21:19:38 king Exp $")
+MODULE_ID("$Id: frm_req_name.c,v 1.7 2002-06-18 21:19:38 king Exp $")
 
 static const char *request_names[ MAX_FORM_COMMAND - MIN_FORM_COMMAND + 1 ] = {
   "NEXT_PAGE"	 ,

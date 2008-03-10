@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCMakeMinimumRequired.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/23 15:27:59 $
-  Version:   $Revision: 1.10 $
+  Date:      $Date: 2008-03-07 20:30:32 $
+  Version:   $Revision: 1.12 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -66,12 +66,20 @@ public:
   virtual const char* GetFullDocumentation()
     {
     return
-      "  cmake_minimum_required(VERSION versionNumber [FATAL_ERROR])\n"
-      "Let cmake know that the project requires a certain version of a "
-      "cmake, or newer.  CMake will also try to be backwards compatible to "
-      "the version of cmake specified, if a newer version of cmake is "
-      "running.  If FATAL_ERROR is given then failure to meet the "
-      "requirements will be considered an error instead of a warning.";
+      "  cmake_minimum_required(VERSION major[.minor[.patch]]\n"
+      "                         [FATAL_ERROR])\n"
+      "If the current version of CMake is lower than that required "
+      "it will stop processing the project and report an error.\n"
+      "When a version higher than 2.4 is specified the command implicitly "
+      "invokes\n"
+      "  cmake_policy(VERSION major[.minor[.patch]])\n"
+      "which sets the cmake policy version level to the version specified.\n"
+      "When version 2.4 or lower is given the command implicitly invokes\n"
+      "  cmake_policy(VERSION 2.4)\n"
+      "which enables compatibility features for CMake 2.4 and lower.\n"
+      "The FATAL_ERROR option is accepted but ignored.  It is left from "
+      "CMake versions 2.4 and lower in which failure to meet the minimum "
+      "version was a warning by default.";
     }
   
   cmTypeMacro(cmCMakeMinimumRequired, cmCommand);

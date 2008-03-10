@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmPolicies.h,v $
   Language:  C++
-  Date:      $Date: 2008/03/01 20:26:15 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2008-03-07 21:36:57 $
+  Version:   $Revision: 1.9 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -38,10 +38,16 @@ public:
   enum PolicyStatus { OLD, WARN, NEW, REQUIRED_IF_USED, REQUIRED_ALWAYS };
   static const char* PolicyStatusNames[];
 
-  enum PolicyID {CMP_0000, CMP_POLICY_SPECIFICATION = CMP_0000,
-                 CMP_0001, CMP_TARGET_NAMES_WITH_SLASHES = CMP_0001,
-                 CMP_0002, CMP_REQUIRE_UNIQUE_TARGET_NAMES = CMP_0002};
+  enum PolicyID
+  {
+    CMP_0000, // Policy version specification
+    CMP_0001, // Ignore old compatibility variable
+    CMP_0002, // Target names must be unique
 
+    // Always the last entry.  Useful mostly to avoid adding a comma
+    // the last policy when adding a new one.
+    CMP_COUNT
+  };
 
   ///! convert a string policy ID into a number
   bool GetPolicyID(const char *id, /* out */ cmPolicies::PolicyID &pid);
@@ -77,9 +83,13 @@ public:
   ///! return an error string for when a required policy is unspecified
   std::string GetRequiredPolicyError(cmPolicies::PolicyID id);
 
+  ///! Get docs for policies
+  void GetDocumentation(std::vector<cmDocumentationEntry>& v);
+
   private:
-  std::map<cmPolicies::PolicyID,cmPolicy *> Policies;
-  std::map<std::string,cmPolicies::PolicyID> PolicyStringMap;
+  // might have to make these internal for VS6 not sure yet
+  std::map<PolicyID,cmPolicy *> Policies;
+  std::map<std::string,PolicyID> PolicyStringMap;
   
 };
 

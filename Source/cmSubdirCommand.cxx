@@ -3,7 +3,7 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmSubdirCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/23 15:27:59 $
+  Date:      $Date: 2008-01-23 15:27:59 $
   Version:   $Revision: 1.19 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.

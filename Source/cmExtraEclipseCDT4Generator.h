@@ -3,7 +3,7 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmExtraEclipseCDT4Generator.h,v $
   Language:  C++
-  Date:      $Date: 2008/02/19 21:27:03 $
+  Date:      $Date: 2008-02-19 21:27:03 $
   Version:   $Revision: 1.4 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.

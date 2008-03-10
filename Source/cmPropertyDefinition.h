@@ -3,7 +3,7 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmPropertyDefinition.h,v $
   Language:  C++
-  Date:      $Date: 2007/10/24 18:43:10 $
+  Date:      $Date: 2007-10-24 18:43:10 $
   Version:   $Revision: 1.4 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.

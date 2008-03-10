@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: CMakeSetupGUIImplementation.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/08/21 20:21:09 $
+  Date:      $Date: 2007-08-21 20:21:09 $
   Version:   $Revision: 1.30 $
 
   Copyright (c) 2002 Insight Consortium. All rights reserved.

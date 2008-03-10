@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmGlobalGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/14 21:42:29 $
-  Version:   $Revision: 1.226 $
+  Date:      $Date: 2008-03-04 23:41:52 $
+  Version:   $Revision: 1.227 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -34,7 +34,7 @@
 
 #include <assert.h>
 
-cmGlobalGenerator::cmGlobalGenerator()
+cmGlobalGenerator::cmGlobalGenerator() : lua_state(0)
 {
   // By default the .SYMBOLIC dependency is not needed on symbolic rules.
   this->NeedSymbolicMark = false;
@@ -464,9 +464,7 @@ cmGlobalGenerator::EnableLanguage(std::vector<std::string>const& languages,
           // backwards compatibility files they have to load
           // These files have a bunch of try compiles in them so
           // should only be done
-          const char* versionValue
-            = mf->GetDefinition("CMAKE_BACKWARDS_COMPATIBILITY");
-          if (atof(versionValue) <= 1.4)
+          if (mf->NeedBackwardsCompatibility(1,4))
             {
             if(strcmp(lang, "C") == 0)
               {
@@ -699,6 +697,7 @@ void cmGlobalGenerator::Configure()
 
   // start with this directory
   cmLocalGenerator *lg = this->CreateLocalGenerator();
+  lg->Makefile->bindToLua((lua_State*) lua_state);
   this->LocalGenerators.push_back(lg);
 
   // set the Start directories

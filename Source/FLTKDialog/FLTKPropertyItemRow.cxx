@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: FLTKPropertyItemRow.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/08/21 20:21:09 $
+  Date:      $Date: 2007-08-21 20:21:09 $
   Version:   $Revision: 1.20 $
 
   Copyright (c) 2002 Insight Consortium. All rights reserved.

@@ -3,7 +3,7 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCTestCoverageHandler.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/30 16:17:36 $
+  Date:      $Date: 2008-01-30 16:17:36 $
   Version:   $Revision: 1.51 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.

@@ -13,7 +13,7 @@
 
 #include "form.priv.h"
 
-MODULE_ID("$Id: fty_regex.c,v 1.2 2002/06/18 21:19:38 king Exp $")
+MODULE_ID("$Id: fty_regex.c,v 1.2 2002-06-18 21:19:38 king Exp $")
 
 #if HAVE_REGEX_H_FUNCS	/* We prefer POSIX regex */
 #include <regex.h>

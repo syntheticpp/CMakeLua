@@ -2,7 +2,7 @@
 ## $RCSfile: CMakeLists.txt,v $
 ## $Source: /cvsroot/CMake/CMake/Source/WXDialog/CMakeLists.txt,v $
 ## $Revision: 1.25 $
-## $Date: 2007/11/05 19:47:20 $
+## $Date: 2007-11-05 19:47:20 $
 ##---------------------------------------------------------------------------
 ## Author:      Jorgen Bodde
 ## Copyright:   (c) Jorgen Bodde

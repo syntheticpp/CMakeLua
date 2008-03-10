@@ -3,7 +3,7 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmGlobalVisualStudioGenerator.h,v $
   Language:  C++
-  Date:      $Date: 2008/02/15 16:49:58 $
+  Date:      $Date: 2008-02-15 16:49:58 $
   Version:   $Revision: 1.7 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.

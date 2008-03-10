@@ -3,7 +3,7 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmExprParserHelper.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/15 16:02:01 $
+  Date:      $Date: 2006-03-15 16:02:01 $
   Version:   $Revision: 1.2 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.

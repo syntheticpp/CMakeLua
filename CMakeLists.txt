@@ -134,7 +134,9 @@ ENDMACRO(CMAKE_TEST_FOR_MFC)
 # for testing. Simply to improve readability of the main script.
 #-----------------------------------------------------------------------
 MACRO(CMAKE_SETUP_TESTING)
-  SET(MAKEPROGRAM ${CMAKE_MAKE_PROGRAM})
+  IF (NOT DART_ROOT)
+    SET(MAKEPROGRAM ${CMAKE_MAKE_PROGRAM})
+  ENDIF (NOT DART_ROOT)
   
   IF(BUILD_TESTING)
     SET(CMAKE_TEST_GENERATOR "" CACHE STRING 
@@ -188,6 +190,11 @@ MACRO(CMAKE_SETUP_TESTING)
     ${CMake_BINARY_DIR}/CTestCustom.cmake @ONLY)
   CONFIGURE_FILE(${CMake_SOURCE_DIR}/CTestCustom.ctest.in
     ${CMake_BINARY_DIR}/CTestCustom.ctest @ONLY)
+  IF(BUILD_TESTING AND DART_ROOT)
+    CONFIGURE_FILE(${CMake_SOURCE_DIR}/CMakeLogo.gif 
+      ${CMake_BINARY_DIR}/Testing/HTML/TestingResults/Icons/Logo.gif COPYONLY)
+  ENDIF(BUILD_TESTING AND DART_ROOT)
+  MARK_AS_ADVANCED(DART_ROOT)
   MARK_AS_ADVANCED(CURL_TESTING)
 ENDMACRO(CMAKE_SETUP_TESTING)
 
@@ -262,7 +269,7 @@ MACRO (CMAKE_BUILD_UTILITIES)
   ENDIF(CMAKE_USE_SYSTEM_CURL)
 
   #---------------------------------------------------------------------
-  # Build zlib library for Curl, CMake, and CTest.
+  # 
   add_subdirectory (Utilities/lua)
   get_directory_property (CMAKE_LUA_INCLUDES DIRECTORY Utilities/lua 
     DEFINITION LUA_INCLUDE_DIRS)
@@ -366,7 +373,7 @@ SET(CMake_VERSION_FULL "${CMake_VERSION}.${CMake_VERSION_PATCH}")
 
 # Include the standard Dart testing module
 ENABLE_TESTING()
-INCLUDE (${CMAKE_ROOT}/Modules/CTest.cmake)
+INCLUDE (${CMAKE_ROOT}/Modules/Dart.cmake)
 
 # where to write the resulting executables and libraries
 SET(BUILD_SHARED_LIBS OFF)
@@ -444,16 +451,15 @@ ENDIF(BUILD_QtDialog)
 # since this one has much better RPATH features than cmake 2.2.
 # The executables are then built with the RPATH for the libraries outside
 # the build tree, which is both the build and the install RPATH.
-IF (UNIX  AND  "${CMAKE_MAJOR_VERSION}${CMAKE_MINOR_VERSION}" GREATER 23)
+IF (UNIX)
   IF(   CMAKE_USE_SYSTEM_CURL   OR  CMAKE_USE_SYSTEM_ZLIB
         OR  CMAKE_USE_SYSTEM_EXPAT  OR  CMAKE_USE_SYSTEM_XMLRPC  OR  CURSES_NEED_RPATH  OR  QT_NEED_RPATH)
     SET(CMAKE_SKIP_RPATH OFF CACHE INTERNAL "CMake built with RPATH.")
     SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
     SET(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
-    MESSAGE(STATUS "Enabling RPATH")
   ENDIF(CMAKE_USE_SYSTEM_CURL   OR  CMAKE_USE_SYSTEM_ZLIB
         OR  CMAKE_USE_SYSTEM_EXPAT  OR  CMAKE_USE_SYSTEM_XMLRPC  OR  CURSES_NEED_RPATH  OR  QT_NEED_RPATH)
-ENDIF (UNIX  AND  "${CMAKE_MAJOR_VERSION}${CMAKE_MINOR_VERSION}" GREATER 23)
+ENDIF (UNIX)
 
 
 # should we build the MFC dialog? (a macro defined in this file)

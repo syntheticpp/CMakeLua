@@ -3,7 +3,7 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCPackCygwinBinaryGenerator.h,v $
   Language:  C++
-  Date:      $Date: 2007/10/31 12:50:17 $
+  Date:      $Date: 2007-10-31 12:50:17 $
   Version:   $Revision: 1.3 $
 
   Copyright (c) 2002 Kitware, Inc. All rights reserved.

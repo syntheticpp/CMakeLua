@@ -3,7 +3,7 @@
 ;  Program:   CMake - Cross-Platform Makefile Generator
 ;  Module:    $RCSfile: cmake-mode.el,v $
 ;
-;  Copyright (c) 2000-$Date: 2008/01/02 22:32:58 $ Kitware, Inc., Insight Consortium.  All rights reserved.
+;  Copyright (c) 2000-$Date: 2008-01-02 22:32:58 $ Kitware, Inc., Insight Consortium.  All rights reserved.
 ;  See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
 ;
 ;     This software is distributed WITHOUT ANY WARRANTY; without even

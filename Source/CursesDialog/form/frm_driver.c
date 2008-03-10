@@ -41,7 +41,7 @@
 #undef lines
 #undef columns
 
-MODULE_ID("$Id: frm_driver.c,v 1.15 2002/10/23 20:43:34 king Exp $")
+MODULE_ID("$Id: frm_driver.c,v 1.15 2002-10-23 20:43:34 king Exp $")
 
 /* These declarations are missing from curses.h on some platforms.  */
 extern int winnstr(WINDOW *, char *, int);

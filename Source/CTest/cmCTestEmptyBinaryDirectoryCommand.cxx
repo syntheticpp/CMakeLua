@@ -3,7 +3,7 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCTestEmptyBinaryDirectoryCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/23 15:28:01 $
+  Date:      $Date: 2008-01-23 15:28:01 $
   Version:   $Revision: 1.4 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.

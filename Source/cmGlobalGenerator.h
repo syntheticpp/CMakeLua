@@ -3,7 +3,7 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmGlobalGenerator.h,v $
   Language:  C++
-  Date:      $Date: 2008/02/14 21:42:29 $
+  Date:      $Date: 2008-02-14 21:42:29 $
   Version:   $Revision: 1.107 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
@@ -43,6 +43,10 @@ public:
   ///! Free any memory allocated with the GlobalGenerator
   cmGlobalGenerator();
   virtual ~cmGlobalGenerator();
+  
+
+  // TODO cleanup: getter/setter
+  void* lua_state;
   
   ///! Create a local generator appropriate to this Global Generator
   virtual cmLocalGenerator *CreateLocalGenerator();

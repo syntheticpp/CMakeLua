@@ -21,7 +21,7 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: escape.h,v 1.2 2007/03/15 19:22:13 andy Exp $
+ * $Id: escape.h,v 1.2 2007-03-15 19:22:13 andy Exp $
  ***************************************************************************/
 /* Escape and unescape URL encoding in strings. The functions return a new
  * allocated string or NULL if an error occurred.  */

@@ -3,7 +3,7 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmData.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/16 14:33:23 $
+  Date:      $Date: 2006-03-16 14:33:23 $
   Version:   $Revision: 1.4 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.

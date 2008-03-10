@@ -3,7 +3,7 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmHexFileConverter.h,v $
   Language:  C++
-  Date:      $Date: 2007/05/25 19:22:22 $
+  Date:      $Date: 2007-05-25 19:22:22 $
   Version:   $Revision: 1.1 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.

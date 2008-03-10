@@ -3,7 +3,7 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCPackPackageMakerGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/19 19:26:19 $
+  Date:      $Date: 2008-02-19 19:26:19 $
   Version:   $Revision: 1.23 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.

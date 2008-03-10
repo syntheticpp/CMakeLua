@@ -3,7 +3,7 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmExtraCodeBlocksGenerator.h,v $
   Language:  C++
-  Date:      $Date: 2007/11/25 12:45:18 $
+  Date:      $Date: 2007-11-25 12:45:18 $
   Version:   $Revision: 1.5 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.

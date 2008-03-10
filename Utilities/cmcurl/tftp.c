@@ -18,7 +18,7 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: tftp.c,v 1.3 2007/03/18 20:18:50 andy Exp $
+ * $Id: tftp.c,v 1.3 2007-03-18 20:18:50 andy Exp $
  ***************************************************************************/
 
 #include "setup.h"

@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmDocumentation.h,v $
   Language:  C++
-  Date:      $Date: 2008/02/19 19:33:43 $
-  Version:   $Revision: 1.32 $
+  Date:      $Date: 2008-03-04 14:16:33 $
+  Version:   $Revision: 1.33 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -138,11 +138,13 @@ private:
   bool PrintDocumentationSingle(std::ostream& os);
   bool PrintDocumentationSingleModule(std::ostream& os);
   bool PrintDocumentationSingleProperty(std::ostream& os);
+  bool PrintDocumentationSinglePolicy(std::ostream& os);
   bool PrintDocumentationSingleVariable(std::ostream& os);
   bool PrintDocumentationUsage(std::ostream& os);
   bool PrintDocumentationFull(std::ostream& os);
   bool PrintDocumentationModules(std::ostream& os);
   bool PrintDocumentationCustomModules(std::ostream& os);
+  bool PrintDocumentationPolicies(std::ostream& os);
   bool PrintDocumentationProperties(std::ostream& os);
   bool PrintDocumentationVariables(std::ostream& os);
   bool PrintDocumentationCurrentCommands(std::ostream& os);

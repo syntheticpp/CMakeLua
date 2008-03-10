@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: FLTKDialog.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/12/13 22:56:50 $
+  Date:      $Date: 2007-12-13 22:56:50 $
   Version:   $Revision: 1.8 $
 
   Copyright (c) 2002 Insight Consortium. All rights reserved.

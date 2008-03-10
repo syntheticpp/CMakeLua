@@ -2,6 +2,7 @@
 #include "cmake.h"
 #include "cmMakefile.h"
 #include "cmSourceFile.h"
+#include "cmVersion.h"
 #include <map>
 #include <set>
 #include <queue>
@@ -84,34 +85,60 @@ public:
 cmPolicies::cmPolicies()
 {
   // define all the policies
-  this->DefinePolicy(CMP_0000, "CMP_0000",
-    "Missing a CMake version specification. You must have a cmake_policy "
-    "or cmake_minimum_required call.",
-    "CMake requires that projects specify what version of CMake they have "
-    "been written to. The easiest way to do this is by placing a call to "
-    "cmake_policy such as the following cmake_policy(VERSION 2.6) Replace "
-    "2.6 in that example with the verison of CMake you are writing to. "
-    "This policy is being put in place because it aids us in detecting "
-    "and maintaining backwards compatibility.",
-    2,6,0, cmPolicies::WARN);
-  this->PolicyStringMap["CMP_POLICY_SPECIFICATION"] = CMP_0000;
-  
-  this->DefinePolicy(CMP_0001, "CMP_0001",
-    "CMake does not allow target names to include slash characters.",
-    "CMake requires that target names not include any / or \\ characters "
-    "please change the name of any targets to not use such characters."
-    ,
-    2,4,0, cmPolicies::REQUIRED_IF_USED); 
-  this->PolicyStringMap["CMP_TARGET_NAMES_WITH_SLASHES"] = CMP_0001;
-    
-  this->DefinePolicy(CMP_0002, "CMP_0002",
-    "CMake requires that target names be globaly unique.",
-    "CMake requires that target names not include any / or \\ characters "
-    "please change the name of any targets to not use such characters."
-    ,
-    2,6,0, cmPolicies::WARN);
-  this->PolicyStringMap["CMP_REQUIRE_UNIQUE_TARGET_NAMES"] = CMP_0002;
+  this->DefinePolicy(
+    CMP_0000, "CMP_0000",
+    "A policy version number must be specified.",
+    "CMake requires that projects specify the version of CMake to which "
+    "they have been written.  "
+    "This policy has been put in place to help CMake maintain backwards "
+    "compatibility with existing projects while allowing it to evolve "
+    "more rapidly.\n"
+    "The easiest way to specify a policy version number is to "
+    "call the cmake_policy command at the top of your CMakeLists file:\n"
+    "  cmake_policy(VERSION <major>.<minor>)\n"
+    "where <major>.<minor> is the version of CMake you want to support.  "
+    "The cmake_minimum_required command may also be used; see its "
+    "documentation for details.",
+    2,6,0, cmPolicies::WARN
+    );
 
+  this->DefinePolicy(
+    CMP_0001, "CMP_0001",
+    "CMAKE_BACKWARDS_COMPATIBILITY should no longer be used.",
+    "The OLD behavior is to check CMAKE_BACKWARDS_COMPATIBILITY and present "
+    "it to the user.  "
+    "The NEW behavior is to ignore CMAKE_BACKWARDS_COMPATIBILITY "
+    "completely.\n"
+    "In CMake 2.4 and below the variable CMAKE_BACKWARDS_COMPATIBILITY was "
+    "used to request compatibility with earlier versions of CMake.  "
+    "In CMake 2.6 and above all compatibility issues are handled by policies "
+    "and the cmake_policy command.  "
+    "However, CMake must still check CMAKE_BACKWARDS_COMPATIBILITY for "
+    "projects written for CMake 2.4 and below.",
+    2,6,0, cmPolicies::WARN
+    );
+
+  this->DefinePolicy(
+    CMP_0002, "CMP_0002",
+    "Logical target names must be globally unique.",
+    "Targets names created with "
+    "add_executable, add_library, or add_custom_target "
+    "are logical build target names.  "
+    "Logical target names must be globally unique because:\n"
+    "  - Unique names may be referenced unambiguously both in CMake\n"
+    "    code and on make tool command lines.\n"
+    "  - Logical names are used by Xcode and VS IDE generators\n"
+    "    to produce meaningful project names for the targets.\n"
+    "The logical name of executable and library targets does not "
+    "have to correspond to the physical file names built.  "
+    "Consider using the OUTPUT_NAME target property to create two "
+    "targets with the same physical name while keeping logical "
+    "names distinct.  "
+    "Custom targets must simply have globally unique names (unless one "
+    "uses the global property ALLOW_DUPLICATE_CUSTOM_TARGETS with a "
+    "Makefiles generator).",
+    2,6,0, cmPolicies::WARN
+    );
 }
 
 cmPolicies::~cmPolicies()
@@ -165,26 +192,29 @@ bool cmPolicies::ApplyPolicyVersion(cmMakefile *mf,
   unsigned int majorVer = 2;
   unsigned int minorVer = 0;
   unsigned int patchVer = 0;
-  
+
   // parse the string
-  std::string major = ver.substr(0,ver.find('.'));
-  std::string patch = ver.substr(ver.find('.'));
-  std::string minor = patch.substr(0,patch.find('.'));
-  patch = patch.substr(patch.find('.'));
+  if(sscanf(ver.c_str(), "%u.%u.%u",
+            &majorVer, &minorVer, &patchVer) < 2)
+    {
+    return false;
+    }
   
-  if (major.size())
+  // it is an error if the policy version is less than 2.4
+  if (majorVer < 2 || majorVer == 2 && minorVer < 4)
   {
-    majorVer = atoi(major.c_str());
+    mf->IssueError(
+      "An attempt was made to set the policy version of CMake to something "
+      "earlier than \"2.4\".  "
+      "In CMake 2.4 and below backwards compatibility was handled with the "
+      "CMAKE_BACKWARDS_COMPATIBILITY variable.  "
+      "In order to get compatibility features supporting versions earlier "
+      "than 2.4 set policy CMP_0001 to OLD to tell CMake to check the "
+      "CMAKE_BACKWARDS_COMPATIBILITY variable.  "
+      "One way to so this is to set the policy version to 2.4 exactly."
+      );
   }
-  if (minor.size())
-  {
-    minorVer = atoi(minor.c_str());
-  }
-  if (patch.size())
-  {
-    patchVer = atoi(patch.c_str());
-  }
- 
+
   // now loop over all the policies and set them as appropriate
   std::map<cmPolicies::PolicyID,cmPolicy *>::iterator i 
     = this->Policies.begin();
@@ -347,19 +377,15 @@ std::string cmPolicies::GetPolicyWarning(cmPolicies::PolicyID id)
     return "Request for warning text for undefined policy!";
   }
 
-  cmOStringStream error;
-  error << 
-    "Warning " <<
-    pos->second->IDString << ": " <<
-    pos->second->ShortDescription <<
-    " You can suppress this warning by adding either\n" <<
-    "cmake_policy (OLD " <<
-    pos->second->IDString << ") for the old behavior or " <<
-    "cmake_policy(NEW " <<
-    pos->second->IDString << ") for the new behavior. " <<
-    "Run cmake --help-policy " <<
-    pos->second->IDString << " for more information.";
-  return error.str();
+  cmOStringStream msg;
+  msg <<
+    "Policy " << pos->second->IDString << " is not set: "
+    "" << pos->second->ShortDescription << "\n"
+    "Run \"cmake --help-policy " << pos->second->IDString << "\" for "
+    "policy details.  "
+    "Use the cmake_policy command to set the policy "
+    "and suppress this warning.";
+  return msg.str();
 }
   
   
@@ -376,21 +402,19 @@ std::string cmPolicies::GetRequiredPolicyError(cmPolicies::PolicyID id)
   }
 
   cmOStringStream error;
-  error << 
-    "Error " <<
-    pos->second->IDString << ": " <<
-    pos->second->ShortDescription <<
-    " This behavior is required now. You can suppress this message by "
-    "specifying that your listfile is written to handle this new "
-    "behavior by adding either\n" <<
-    "cmake_policy (NEW " <<
-    pos->second->IDString << ")\n or \n. " <<
-    "cmake_policy (VERSION " << 
-    pos->second->GetVersionString() << " ) or later."
-    "Run cmake --help-policy " <<
-    pos->second->IDString << " for more information.";
+  error <<
+    "Policy " << pos->second->IDString << " is not set to NEW: "
+    "" << pos->second->ShortDescription << "\n"
+    "Run \"cmake --help-policy " << pos->second->IDString << "\" for "
+    "policy details.  "
+    "CMake now requires this policy to be set to NEW by the project.  "
+    "The policy may be set explicitly using the code\n"
+    "  cmake_policy(SET " << pos->second->IDString << " NEW)\n"
+    "or by upgrading all policies with the code\n"
+    "  cmake_policy(VERSION " << pos->second->GetVersionString() <<
+    ") # or later\n"
+    "Run \"cmake --help-command cmake_policy\" for more information.";
   return error.str();
-  
 }
 
 ///! Get the default status for a policy
@@ -409,3 +433,45 @@ cmPolicies::GetPolicyStatus(cmPolicies::PolicyID id)
   return pos->second->Status;
 }
 
+void cmPolicies::GetDocumentation(std::vector<cmDocumentationEntry>& v)
+{
+  // now loop over all the policies and set them as appropriate
+  std::map<cmPolicies::PolicyID,cmPolicy *>::iterator i 
+    = this->Policies.begin();
+  for (;i != this->Policies.end(); ++i)
+  {
+    cmOStringStream full;
+    full << i->second->LongDescription;
+    full << "\nThis policy was introduced in CMake version ";
+    full << i->second->GetVersionString() << ".  ";
+    full << "CMake version " << cmVersion::GetMajorVersion()
+         << "." << cmVersion::GetMinorVersion() << " ";
+    // add in some more text here based on status
+    switch (i->second->Status)
+    {
+      case cmPolicies::WARN:
+        full << "defaults to WARN for this policy.  "
+             << "Use the cmake_policy command to set it to OLD or NEW.";
+        break;
+      case cmPolicies::OLD:
+        full << "defaults to the OLD behavior for this policy.";
+        break;
+      case cmPolicies::NEW:
+        full << "defaults to the NEW behavior for this policy.";
+        break;
+      case cmPolicies::REQUIRED_IF_USED:
+        full << "requires the policy to be set to NEW if you use it.  "
+             << "Use the cmake_policy command to set it to NEW.";
+        break;
+      case cmPolicies::REQUIRED_ALWAYS:
+        full << "requires the policy to be set to NEW.  "
+             << "Use the cmake_policy command to set it to NEW.";
+        break;
+    }
+          
+    cmDocumentationEntry e(i->second->IDString.c_str(),
+                           i->second->ShortDescription.c_str(),
+                           full.str().c_str());
+    v.push_back(e);
+  }
+}

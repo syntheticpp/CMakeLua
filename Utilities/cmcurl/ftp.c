@@ -18,7 +18,7 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: ftp.c,v 1.3 2007/11/05 19:34:36 king Exp $
+ * $Id: ftp.c,v 1.3 2007-11-05 19:34:36 king Exp $
  ***************************************************************************/
 
 #include "setup.h"

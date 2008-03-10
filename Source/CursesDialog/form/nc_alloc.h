@@ -29,7 +29,7 @@
 /****************************************************************************
  *  Author: Thomas E. Dickey <dickey@clark.net> 1996,1997                   *
  ****************************************************************************/
-/* $Id: nc_alloc.h,v 1.2 2001/11/08 22:03:52 berk Exp $ */
+/* $Id: nc_alloc.h,v 1.2 2001-11-08 22:03:52 berk Exp $ */
 
 #ifndef NC_ALLOC_included
 #define NC_ALLOC_included 1

@@ -3,7 +3,7 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCursesStandardIncludes.h,v $
   Language:  C++
-  Date:      $Date: 2007/08/27 13:01:14 $
+  Date:      $Date: 2007-08-27 13:01:14 $
   Version:   $Revision: 1.16 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.

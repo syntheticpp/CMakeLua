@@ -32,7 +32,7 @@
 
 #include "form.priv.h"
 
-MODULE_ID("$Id: fld_dup.c,v 1.1 2001/11/05 16:53:00 berk Exp $")
+MODULE_ID("$Id: fld_dup.c,v 1.1 2001-11-05 16:53:00 berk Exp $")
 
 /*---------------------------------------------------------------------------
 |   Facility      :  libnform  

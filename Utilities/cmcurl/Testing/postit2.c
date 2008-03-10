@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___ 
  *                             \___|\___/|_| \_\_____|
  *
- * $Id: postit2.c,v 1.1 2005/06/24 13:02:16 andy Exp $
+ * $Id: postit2.c,v 1.1 2005-06-24 13:02:16 andy Exp $
  *
  * Example code that uploads a file name 'foo' to a remote script that accepts
  * "HTML form based" (as described in RFC1738) uploads using HTTP POST.

@@ -3,7 +3,7 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: CMakeCommandLineInfo.h,v $
   Language:  C++
-  Date:      $Date: 2003/07/23 21:31:25 $
+  Date:      $Date: 2003-07-23 21:31:25 $
   Version:   $Revision: 1.6 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
