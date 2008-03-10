@@ -269,6 +269,14 @@ MACRO (CMAKE_BUILD_UTILITIES)
   ENDIF(CMAKE_USE_SYSTEM_CURL)
 
   #---------------------------------------------------------------------
+  # Build zlib library for Curl, CMake, and CTest.
+  add_subdirectory (Utilities/lua)
+  get_directory_property (CMAKE_LUA_INCLUDES DIRECTORY Utilities/lua 
+    DEFINITION LUA_INCLUDE_DIRS)
+  get_directory_property (CMAKE_LUA_LIBRARIES DIRECTORY Utilities/lua 
+    DEFINITION LUA_LIBRARIES)
+
+  #---------------------------------------------------------------------
   # Build Tar library for CTest.
   SET(CMTAR_ZLIB_HEADER ${CMAKE_ZLIB_HEADER})
   SET(CMTAR_ZLIB_LIBRARIES ${CMAKE_ZLIB_LIBRARIES})

@@ -29,6 +29,13 @@
 #include "cmVersion.h"
 #include "cmTest.h"
 
+extern "C" {
+#include "lua.h"
+#include "lauxlib.h"
+#include "lualib.h"
+}
+#include "cmLuaUtils.h"
+
 #if defined(CMAKE_BUILD_WITH_CMAKE)
 # include "cmDependsFortran.h" // For -E cmake_copy_f90_mod callback.
 # include "cmVariableWatch.h"
@@ -194,10 +201,15 @@ cmake::cmake()
                             cmNeedBackwardsCompatibility);
 #endif
 
+  // setup lua
+  fprintf(stderr, "Opening Lua State\n");
+  this->LuaState = lua_open(); 
+  luaL_openlibs(this->LuaState);
+
   this->AddDefaultGenerators();
   this->AddDefaultExtraGenerators();
   this->AddDefaultCommands();
-
+  
   // Make sure we can capture the build tool output.
   cmSystemTools::EnableVSConsoleOutput();
 }
@@ -220,6 +232,8 @@ cmake::~cmake()
   delete this->VariableWatch;
 #endif
   delete this->FileComparison;
+
+  lua_close(this->LuaState);
 }
 
 void cmake::CleanupCommandsAndMacros()
@@ -310,6 +324,25 @@ void cmake::AddCommand(cmCommand* wg)
     this->Commands.erase(pos);
     }
   this->Commands.insert( RegisteredCommandsMap::value_type(name, wg));
+
+  // add to Lua
+  if (wg->GetExposeToLua())
+    {
+//#define CMAKELUA_NO_NAMESPACE
+#ifdef CMAKELUA_NO_NAMESPACE
+    lua_pushstring(this->LuaState, name.c_str());
+    lua_pushcclosure(this->LuaState, wg->LuaFunction, 1);
+  
+    // lua name is cm_*
+    std::string fname = "cm_";
+    fname += name;
+    lua_setglobal(this->LuaState, fname.c_str());
+#else
+	const char* cmakelua_api_namespace = "cmake";
+	//std::cerr << "RegisterFunc for: " << name << ".\n";
+	LuaUtils_RegisterFunc(this->LuaState, wg->LuaFunction, name.c_str(), cmakelua_api_namespace);
+#endif
+    }
 }
 
 
@@ -648,11 +681,17 @@ void cmake::SetDirectoriesFromFile(const char* arg)
     cacheFile += "/CMakeCache.txt";
     std::string listFile = path;
     listFile += "/CMakeLists.txt";
+    std::string luaListFile = path;
+    luaListFile += "/CMakeLists.lua";
     if(cmSystemTools::FileExists(cacheFile.c_str()))
       {
       cachePath = path;
       }
     if(cmSystemTools::FileExists(listFile.c_str()))
+      {
+      listPath = path;
+      }
+    if(cmSystemTools::FileExists(luaListFile.c_str()))
       {
       listPath = path;
       }
@@ -1673,6 +1712,9 @@ cmGlobalGenerator* cmake::CreateGlobalGenerator(const char* name)
   generator = (genIt->second)();
   generator->SetCMakeInstance(this);
   generator->SetExternalMakefileProjectGenerator(extraGenerator);
+   
+  generator->lua_state = (void*) LuaState;
+
   return generator;
 }
 
@@ -1751,7 +1793,10 @@ int cmake::DoPreConfigureChecks()
   // Make sure the Start directory contains a CMakeLists.txt file.
   std::string srcList = this->GetHomeDirectory();
   srcList += "/CMakeLists.txt";
-  if(!cmSystemTools::FileExists(srcList.c_str()))
+  std::string luaSrcList = this->GetHomeDirectory();
+  luaSrcList += "/CMakeLists.lua";
+  if(!cmSystemTools::FileExists(srcList.c_str()) &&
+     !cmSystemTools::FileExists(luaSrcList.c_str()))
     {
     cmOStringStream err;
     if(cmSystemTools::FileIsDirectory(this->GetHomeDirectory()))
@@ -1780,9 +1825,7 @@ int cmake::DoPreConfigureChecks()
     {
     std::string cacheStart = 
       this->CacheManager->GetCacheValue("CMAKE_HOME_DIRECTORY");
-    cacheStart += "/CMakeLists.txt";
     std::string currentStart = this->GetHomeDirectory();
-    currentStart += "/CMakeLists.txt";
     if(!cmSystemTools::SameFile(cacheStart.c_str(), currentStart.c_str()))
       {
       std::string message = "The source \"";

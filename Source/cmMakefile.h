@@ -28,6 +28,9 @@
 
 #if defined(CMAKE_BUILD_WITH_CMAKE)
 #include "cmSourceGroup.h"
+  #ifndef CMAKE_BUILD_WITH_CMAKELUA
+    #define CMAKE_BUILD_WITH_CMAKELUA CMAKE_BUILD_WITH_CMAKE
+  #endif
 #endif
 
 #include <cmsys/RegularExpression.hxx>
@@ -70,6 +73,8 @@ public:
    */
   cmMakefile();
   cmMakefile(const cmMakefile& mf);
+
+  void bindToLua(void* lua_state);
 
   /**
    * Destructor.
@@ -843,6 +848,14 @@ protected:
   bool IsFunctionBlocked(const cmListFileFunction& lff, 
                          cmExecutionStatus &status);
   
+
+#ifdef CMAKE_BUILD_WITH_CMAKELUA
+  bool IsCMakeBoolean(const char* value_string, bool& ret_value) const;
+  void ResyncWithLuaForAddDefinition(const char* name, const char* def);
+//void AddDefinitionForLuaResync(const char* name, const char* value);
+  const char* ResyncWithLuaForGetDefinition(const char* name, const char* def) const;
+#endif
+
 private:
   void Initialize();
 
@@ -901,6 +914,9 @@ private:
   typedef std::map<cmPolicies::PolicyID,
                    cmPolicies::PolicyStatus> PolicyMap;
   std::vector<PolicyMap> PolicyStack;
+
+  
+
 };
 
 

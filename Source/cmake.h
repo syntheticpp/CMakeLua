@@ -51,6 +51,7 @@ class cmMakefile;
 class cmCommand;
 class cmVariableWatch;
 class cmFileTimeComparison;
+struct lua_State;
 class cmExternalMakefileProjectGenerator;
 class cmDocumentationSection;
 class cmPolicies;
@@ -337,6 +338,10 @@ class cmake
     {
       this->CMakeEditCommand = s;
     }
+
+  // return the Lua state for lua commands
+  lua_State *GetLuaState() { return this->LuaState;};
+
 protected:
   int HandleDeleteCacheVariables(const char* var);
   cmPropertyMap Properties;
@@ -437,6 +442,8 @@ private:
   std::string GraphVizFile;
   
   void UpdateConversionPathTable();
+
+  lua_State *LuaState;
 };
 
 #define CMAKE_STANDARD_OPTIONS_TABLE \

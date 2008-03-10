@@ -43,6 +43,8 @@ public:
   ///! Free any memory allocated with the GlobalGenerator
   cmGlobalGenerator();
   virtual ~cmGlobalGenerator();
+
+  void* lua_state;
   
   ///! Create a local generator appropriate to this Global Generator
   virtual cmLocalGenerator *CreateLocalGenerator();
