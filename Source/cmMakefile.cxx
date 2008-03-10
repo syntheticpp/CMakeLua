@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefile.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-08 14:21:30 $
-  Version:   $Revision: 1.453 $
+  Date:      $Date: 2008-03-10 19:40:57 $
+  Version:   $Revision: 1.454 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -324,6 +324,21 @@ void cmMakefile::IssueMessage(std::string const& text, bool isError) const
                                        cmLocalGenerator::HOME)
       << ":" << lfc.Line << " " << lfc.Name;
     ++i;
+    }
+  else if(!this->ListFileStack.empty())
+    {
+    // We are processing the project but are not currently executing a
+    // command.  Add whatever context information we have.
+    if(this->LocalGenerator->GetParent())
+      {
+      msg << " in directory "
+          << this->LocalGenerator->Convert(this->GetCurrentDirectory(),
+                                           cmLocalGenerator::HOME);
+      }
+    else
+      {
+      msg << " in top-level directory";
+      }
     }
 
   // Add the message text.
