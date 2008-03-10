@@ -41,11 +41,17 @@
 
 #include <ctype.h> // for isspace
 
+#ifdef CMAKE_BUILD_WITH_CMAKELUA
 extern "C" {
 #include "lua.h"
 #include "lauxlib.h"
 #include "lualib.h"
 }
+#endif
+
+#include <algorithm> // for std::transform
+
+#include "cmLuaUtils.h"
 
 // default is not to be building executables
 cmMakefile::cmMakefile()
@@ -98,6 +104,22 @@ cmMakefile::cmMakefile()
   this->AddDefaultDefinitions();
   this->Initialize();
   this->PreOrder = false;
+}
+
+void cmMakefile::bindToLua(void* L)
+{
+  if (!L)
+    return;
+  registerMemberFunction((lua_State*)L, this, &cmMakefile::GetDefinition, "GetDefinition");
+  registerMemberFunction((lua_State*)L, this, &cmMakefile::AddDefinition, "AddDefinition");
+  
+// HACK: AddDefaultDefinitions is called before this class has
+// a CMake Instance. Without the instance, I can't reach the 
+// Lua state, so a bunch of values are missing in Lua.
+// I call AddDefaultDefinitions here for a second time hoping to
+// fill in the missing gaps without breaking the rest of 
+// the system too much.
+  this->AddDefaultDefinitions();
 }
 
 cmMakefile::cmMakefile(const cmMakefile& mf)
@@ -1406,20 +1428,40 @@ void cmMakefile::AddDefinition(const char* name, const char* value)
     }
 
 #ifdef CMAKE_STRICT
+	fprintf(stderr, "AddDefinition for %s=%s: CMAKE_STRICT\n", name, value);
+  
   if (this->GetCMakeInstance())
     {
+	fprintf(stderr, "AddDefinition for %s=%s: CMAKE_STRICT, in if GetCMakeInstance()\n", name, value);
     this->GetCMakeInstance()->
       RecordPropertyAccess(name,cmProperty::VARIABLE);
     }
 #endif
 
   this->TemporaryDefinitionKey = name;
+	fprintf(stderr, "AddDefinition for %s=%s: DefinitionStack->size()=%d\n", name, value, this->DefinitionStack.size());
   this->DefinitionStack.back()[this->TemporaryDefinitionKey] = value;
 
+	fprintf(stderr, "next AddDefinition for %s=%s: DefinitionStack->size()=%d\n", name, value, this->DefinitionStack.size());
+#ifdef CMAKE_BUILD_WITH_CMAKELUA
+	fprintf(stderr, "CMAKE_BUILD_WITH_CMAKELUA AddDefinition for %s=%s: DefinitionStack->size()=%d\n", name, value, this->DefinitionStack.size());
+  if(this->DefinitionStack.size() == 1)
+    {
+	fprintf(stderr, "CMAKE_BUILD_WITH_CMAKELUA if AddDefinition for %s=%s: DefinitionStack->size()=%d\n", name, value, this->DefinitionStack.size());
+    ResyncWithLuaForAddDefinition(name, value);
+    }
+  else
+  {
+	fprintf(stderr, "CMAKE_BUILD_WITH_CMAKELUA else AddDefinition for %s=%s: DefinitionStack->size()=%d\n", name, value, this->DefinitionStack.size());
+  }
+#endif
+
 #ifdef CMAKE_BUILD_WITH_CMAKE
+	fprintf(stderr, "GetDefintion for %s=%s: CMAKE_BUILD_WITH_CMAKE\n", name, value);
   cmVariableWatch* vv = this->GetVariableWatch();
   if ( vv )
     {
+	fprintf(stderr, "AddDefinition for %s=%s: CMAKE_BUILD_WITH_CMAKE, in if GetVariableWatch()\n", name, value);
     vv->VariableAccessed(this->TemporaryDefinitionKey,
                          cmVariableWatch::VARIABLE_MODIFIED_ACCESS,
                          value,
@@ -1427,6 +1469,165 @@ void cmMakefile::AddDefinition(const char* name, const char* value)
     }
 #endif
 }
+
+#ifdef CMAKE_BUILD_WITH_CMAKELUA
+bool cmMakefile::IsCMakeBoolean(const char* value_string, bool& ret_value) const
+{
+  ret_value = false;
+  if(!value_string)
+    {
+        return false;
+    }
+  std::string cpp_string(value_string);
+  std::transform( cpp_string.begin(), 
+    cpp_string.end(), 	// source
+    cpp_string.begin(), 	// destination
+    static_cast<int(*)(int)> (toupper));	// Make uppercase
+
+  if(cpp_string == "ON" || cpp_string == "1" || cpp_string == "YES" || cpp_string == "TRUE" || cpp_string == "Y")
+    {
+    ret_value = true;
+    return true;
+    }
+  else if(cpp_string == "OFF" || cpp_string == "0" || cpp_string == "NO" || cpp_string == "FALSE" || cpp_string == "N")
+    {
+    ret_value = false;
+    return true;
+    }
+  else
+    {
+    return false;
+    }
+}
+
+// So several things to know:
+// - It is possible the Lua value is out-of-sync with the CMake-internal
+// value because we are letting Lua play with it's own values without
+// tracking/monitoring. If the values are out of sync, we need to
+// resolve.
+// - We only want to pull a (global) Lua value if we are in the global
+// CMake-scope. I assume sharing local variables between CMake-native
+// and Lua is unhelpful and incorrect.
+// - Sharing a Lua table may present ambiguity problems trying to 
+// cross back-and-forth across the bridge. Rather than automatic 
+// conversion, I think we should not attempt it, but provide helper
+// functions to convert (via strings).
+// - CMake lacking typing makes everything a string. We may want to try
+// to preserve the Lua type if possible.
+void cmMakefile::ResyncWithLuaForAddDefinition(const char* name, const char* def)
+{
+   if(this->GetCMakeInstance() == 0)
+     {
+     fprintf(stderr, "Had to abort ResyncWithLuaForAddDefinition(%s, %s) because GetCMakeInstance() is 0\n", name, def);
+     return;
+     }
+    lua_State* lua_state = this->GetCMakeInstance()->GetLuaState();
+    if(lua_state == NULL)
+    {
+        fprintf(stderr, "lua_state is null in ResyncWithLuaForAddDefinition\n");
+        return;
+    }
+    lua_getglobal(lua_state, name);
+    int variable_type = lua_type(lua_state, -1);
+    if(LUA_TNIL == variable_type)
+      {
+      // This a new variable to Lua. So simply add it.
+      // Just push as a string since no previous type existed?
+      lua_pop(lua_state, 1);
+      lua_pushstring(lua_state, def);
+      lua_setglobal(lua_state, name);
+      }
+    else if(LUA_TSTRING == variable_type)
+      {
+      // The old variable is also a string, so I'm not going
+      // to worry about types here either. (Yes, I suppose I could,
+      // but I have to worry more about ambiguity problems.)
+      lua_pop(lua_state, 1);
+      lua_pushstring(lua_state, def);
+      lua_setglobal(lua_state, name);
+      }
+    else if(LUA_TBOOLEAN == variable_type)
+      {
+      // Lua value was previously a boolean. If the new value is also
+      // something that can be a number, we will try to preserve the type.          
+      bool bool_value = false;
+      if(IsCMakeBoolean(def, bool_value))
+        {
+        lua_pop(lua_state, 1);
+        lua_pushboolean(lua_state, bool_value);
+        lua_setglobal(lua_state, name);
+        }
+      else
+        {
+        lua_pop(lua_state, 1);
+        lua_pushstring(lua_state, def);
+        lua_setglobal(lua_state, name);
+        }
+      }
+    else if(LUA_TNUMBER == variable_type)
+      {
+      // FIXME: I would like to preserve the number type too, but
+      // I'm unclear on the best way to do this that is both safe and
+      // portable. strtod() is C99.
+      // Maybe I should invoke Lua.
+      lua_pop(lua_state, 1);
+      lua_pushstring(lua_state, def);
+      lua_setglobal(lua_state, name);
+      }
+    else
+      {
+      // Unsupported type for bridging. Just overwrite???
+      lua_pop(lua_state, 1);
+      lua_pushstring(lua_state, def);
+      lua_setglobal(lua_state, name);
+      }
+}
+#endif
+
+
+#if 0 // Drat, I can't use this because I want to call it from inside GetDefinition() which is declared const.
+
+// This is an unmodified copy of the original AddDefinition(const char*, const char*) function. I needed a pristine version so I can resync the variables
+// between lua and the CMake internal representation. But I modifed
+// the original AddDefinition to also do resyncing with Lua and didn't
+// want to create a circular chain of events.
+void cmMakefile::AddDefinitionForLuaResync(const char* name, const char* value)
+{
+  if (!value )
+    {
+    return;
+    }
+
+#ifdef CMAKE_STRICT
+	fprintf(stderr, "AddDefinition for %s=%s: CMAKE_STRICT\n", name, value);
+  
+  if (this->GetCMakeInstance())
+    {
+	fprintf(stderr, "AddDefinition for %s=%s: CMAKE_STRICT, in if GetCMakeInstance()\n", name, value);
+    this->GetCMakeInstance()->
+      RecordPropertyAccess(name,cmProperty::VARIABLE);
+    }
+#endif
+
+  this->TemporaryDefinitionKey = name;
+	fprintf(stderr, "AddDefinition for %s=%s: DefinitionStack->size()=%d\n", name, value, this->DefinitionStack.size());
+  this->DefinitionStack.back()[this->TemporaryDefinitionKey] = value;
+
+#ifdef CMAKE_BUILD_WITH_CMAKE
+	fprintf(stderr, "GetDefintion for %s=%s: CMAKE_BUILD_WITH_CMAKE\n", name, value);
+  cmVariableWatch* vv = this->GetVariableWatch();
+  if ( vv )
+    {
+	fprintf(stderr, "AddDefinition for %s=%s: CMAKE_BUILD_WITH_CMAKE, in if GetVariableWatch()\n", name, value);
+    vv->VariableAccessed(this->TemporaryDefinitionKey,
+                         cmVariableWatch::VARIABLE_MODIFIED_ACCESS,
+                         value,
+                         this);
+    }
+#endif
+}
+#endif
+
 
 
 void cmMakefile::AddCacheDefinition(const char* name, const char* value,
@@ -1462,6 +1663,11 @@ void cmMakefile::AddCacheDefinition(const char* name, const char* value,
 
     }
   this->GetCacheManager()->AddCacheEntry(name, val, doc, type);
+
+#ifdef CMAKE_BUILD_WITH_CMAKELUA
+  ResyncWithLuaForAddDefinition(name, val);
+#endif
+  
   // if there was a definition then remove it
   this->DefinitionStack.back().erase( DefinitionMap::key_type(name));
 }
@@ -1469,6 +1675,7 @@ void cmMakefile::AddCacheDefinition(const char* name, const char* value,
 
 void cmMakefile::AddDefinition(const char* name, bool value)
 {
+	fprintf(stderr, "AddDefinitionB for %s=%d\n", name, value);
   if(value)
     {
     this->DefinitionStack.back()
@@ -1483,10 +1690,21 @@ void cmMakefile::AddDefinition(const char* name, bool value)
     this->DefinitionStack.back()
       .insert(DefinitionMap::value_type(name, "OFF"));
     }
+#ifdef CMAKE_BUILD_WITH_CMAKELUA
+  if(this->DefinitionStack.size() == 1)
+    {
+    lua_State* lua_state = this->GetCMakeInstance()->GetLuaState();        
+    lua_pushboolean(lua_state, value);
+    lua_setglobal(lua_state, name);
+    }
+#endif
+  
 #ifdef CMAKE_BUILD_WITH_CMAKE
+	fprintf(stderr, "AddDefinitionB for %s=%d: CMAKE_BUILD_WITH_CMAKE, in if GetCMakeInstance()\n", name, value);
   cmVariableWatch* vv = this->GetVariableWatch();
   if ( vv )
     {
+	fprintf(stderr, "AddDefinitionB for %s=%d: CMAKE_BUILD_WITH_CMAKE, in if GetVariableWatch()\n", name, value);
     vv->VariableAccessed(name, cmVariableWatch::VARIABLE_MODIFIED_ACCESS,
       value?"ON":"OFF", this);
     }
@@ -1863,8 +2081,10 @@ bool cmMakefile::IsDefinitionSet(const char* name) const
 const char* cmMakefile::GetDefinition(const char* name) const
 {
 #ifdef CMAKE_STRICT
+	fprintf(stderr, "GetDefintion for %s: CMAKE_STRICT\n", name);
   if (this->GetCMakeInstance())
     {
+	fprintf(stderr, "GetDefintion for %s: CMAKE_STRICT, in if GetCMakeInstance()\n", name);
     this->GetCMakeInstance()->
       RecordPropertyAccess(name,cmProperty::VARIABLE);
     }
@@ -1872,18 +2092,41 @@ const char* cmMakefile::GetDefinition(const char* name) const
   const char* def = 0;
   DefinitionMap::const_iterator pos = 
     this->DefinitionStack.back().find(name);
+	fprintf(stderr, "GetDefintion for %s: DefinitionStack->size()=%d\n", name, this->DefinitionStack.size());
   if(pos != this->DefinitionStack.back().end())
     {
+	fprintf(stderr, "GetDefintion for %s: in DefinitionStack\n", name);
     def = (*pos).second.c_str();
+
+#ifdef CMAKE_BUILD_WITH_CMAKELUA    
+    // Is it safe to assume that if this->DefinitionStack.size() == 1,
+    // then we are dealing with globals, and we should conclude
+    // that we should skip this code path entirely if we are in local space.
+    if(this->DefinitionStack.size() == 1)
+      {
+      def = ResyncWithLuaForGetDefinition(name, def);
+      }
+#endif
     }
   else
     {
     def = this->GetCacheManager()->GetCacheValue(name);
+	fprintf(stderr, "GetDefintion for %s: in GetCacheManager, def=%s\n", name, def);
+/*
+#ifdef CMAKE_BUILD_WITH_CMAKELUA    
+    if(def != NULL)
+      {
+      def = ResyncWithLuaForGetDefinition(name, def);
+      }
+#endif
+*/
     }
 #ifdef CMAKE_BUILD_WITH_CMAKE
+	fprintf(stderr, "GetDefintion for %s: in CMAKE_BUILD_WITH_CMAKE\n", name);
   cmVariableWatch* vv = this->GetVariableWatch();
   if ( vv )
     {
+	fprintf(stderr, "GetDefintion for %s: in CMAKE_BUILD_WITH_CMAKE;GetVariableWatch\n", name);
     if ( def )
       {
       vv->VariableAccessed(name, cmVariableWatch::VARIABLE_READ_ACCESS,
@@ -1911,6 +2154,66 @@ const char* cmMakefile::GetDefinition(const char* name) const
 #endif
   return def;
 }
+
+#ifdef CMAKE_BUILD_WITH_CMAKELUA
+// So several things to know:
+// - It is possible the Lua value is out-of-sync with the CMake-internal
+// value because we are letting Lua play with it's own values without
+// tracking/monitoring. If the values are out of sync, we need to
+// resolve.
+// - We only want to pull a (global) Lua value if we are in the global
+// CMake-scope. I assume sharing local variables between CMake-native
+// and Lua is unhelpful and incorrect.
+// - Sharing a Lua table may present ambiguity problems trying to 
+// cross back-and-forth across the bridge. Rather than automatic 
+// conversion, I think we should not attempt it, but provide helper
+// functions to convert (via strings).
+// - CMake lacking typing makes everything a string. We may want to try
+// to preserve the Lua type if possible.
+const char* cmMakefile::ResyncWithLuaForGetDefinition(const char* name, const char* def) const
+{
+    lua_State* lua_state = this->GetCMakeInstance()->GetLuaState();
+    lua_getglobal(lua_state, name);
+    int variable_type = lua_type(lua_state, -1);
+    if(LUA_TNIL == variable_type)
+      {
+      // What to do??? Perhaps this means the user cleared the variable in Lua.
+      // Maybe we should delete the variable in CMake to match.
+      fprintf(stderr, "FIXME: Variable: %s=%s is not in Lua. If all is working, this variable should probably deleted from the CMake-internal list. If something is broken, it means variables were Added to CMake but somehow bypassed getting copied to Lua. (in ResyncWithLuaForGetDefinition)\n", name, def);
+      // Drat, GetDefinition() is marked const so I can't actually resync
+      // RemoveDefinition(name); // Untested
+      def = ""; // Need to return an empty def
+      }
+    else if( (LUA_TNUMBER == variable_type)
+        || (LUA_TBOOLEAN == variable_type)
+        || (LUA_TSTRING == variable_type) )
+      {
+      if(0 != strcmp(lua_tostring(lua_state, -1), def))
+        {
+        // The strings are not the same, so we are out of sync.
+        // Let's use the Lua value as the 'correct' value because
+        // this is a Get function, and the only way the values
+        // should be out of sync is if it was changed in a Lua 
+        // script. (We would catch the change in AddDefinition if it
+        // is a set function.)
+        def = lua_tostring(lua_state, -1);
+        // Drat, GetDefinition() is marked const so I can't actually resync
+//        AddDefinitionForLuaResync(name, def);
+        }
+      else
+        {
+        // Variables are in-sync. Don't need to do anything.
+        }
+      }
+    else
+      {
+      // Unsupported type for bridging
+      }
+    lua_pop(lua_state, 1);
+    return def;
+}
+#endif
+
 
 const char* cmMakefile::GetSafeDefinition(const char* def) const
 {
