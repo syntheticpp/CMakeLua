@@ -37,6 +37,8 @@
 
 #include "cmDocumentationFormatterText.h"
 
+#include "cmDocumentationFormatterText.h"
+
 #include <cmsys/RegularExpression.hxx>
 
 #include <cmsys/auto_ptr.hxx>
