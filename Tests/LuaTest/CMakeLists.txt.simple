@@ -1,0 +1,23 @@
+PROJECT(FOO)
+
+SET(ABC abc)
+FIND_PACKAGE(OpenAL)
+
+function(TestFunction)
+	SET(INNER_ABC innerABC)
+	MESSAGE("INNER_ABC is ${innerABC}")
+	#	raise_scope(${innerABC})
+	MESSAGE("INNER_ABC is ${innerABC}")
+endfunction(TestFunction)
+
+TestFunction()
+
+SET(ABC def)
+
+SET(XYZ1 ON)
+SET(XYZ1 OFF)
+SET(XYZ1 TRUE)
+SET(XYZ1 FALSE)
+SET(XYZ1 YES)
+SET(XYZ1 NO)
+

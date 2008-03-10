@@ -1,0 +1,15 @@
+
+MESSAGE("SomeLuaVariable: ${SomeLuaVariable}")
+if(${SomeLuaVariable} STREQUAL "Some Lua Variable")
+MESSAGE("MATCH on SomeLuaVariable suceeded")
+
+else(${SomeLuaVariable} STREQUAL "Some Lua Variable")
+
+MESSAGE("MATCH on SomeLuaVariable failed")
+endif(${SomeLuaVariable} STREQUAL "Some Lua Variable")
+
+set(A a)
+set(B b)
+
+#MESSAGE("testing OPENAL_FOUND in CMakeScriptTest: ${OPENAL_FOUND}")
+
