@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefile.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-10 19:40:57 $
-  Version:   $Revision: 1.454 $
+  Date:      $Date: 2008-03-10 19:41:07 $
+  Version:   $Revision: 1.455 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -579,6 +579,7 @@ bool cmMakefile::ReadListFile(const char* filename_in,
     }
   // add this list file to the list of dependencies
   this->ListFiles.push_back( filenametoread);
+  bool endScopeNicely = filename? true: false;
   const size_t numberFunctions = cacheFile.Functions.size();
   for(size_t i =0; i < numberFunctions; ++i)
     {
@@ -587,17 +588,14 @@ bool cmMakefile::ReadListFile(const char* filename_in,
     if (status.GetReturnInvoked() ||
         cmSystemTools::GetFatalErrorOccured() )
       {
-      // pop the listfile off the stack
-      this->ListFileStack.pop_back();
-      this->AddDefinition("CMAKE_PARENT_LIST_FILE",
-                          currentParentFile.c_str());
-      this->AddDefinition("CMAKE_CURRENT_LIST_FILE", currentFile.c_str());
-      return true;
+      // Exit early from processing this file.
+      endScopeNicely = false;
+      break;
       }
     }
 
   // send scope ended to and function blockers
-  if (filename)
+  if (endScopeNicely)
     {
     // loop over all function blockers to see if any block this command
     std::list<cmFunctionBlocker *>::iterator pos;
@@ -610,6 +608,20 @@ bool cmMakefile::ReadListFile(const char* filename_in,
         {
         (*pos)->ScopeEnded(*this);
         }
+      }
+    }
+
+  // If this is the directory-level CMakeLists.txt file then enforce
+  // policy stack depth.
+  if(this->ListFileStack.size() == 1)
+    {
+    while(this->PolicyStack.size() > 1)
+      {
+      if(endScopeNicely)
+        {
+        this->IssueError("cmake_policy PUSH without matching POP");
+        }
+      this->PopPolicy(false);
       }
     }
 
