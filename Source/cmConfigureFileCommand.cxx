@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmConfigureFileCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/23 15:27:59 $
-  Version:   $Revision: 1.30 $
+  Date:      $Date: 2008-03-07 20:30:33 $
+  Version:   $Revision: 1.34 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -40,18 +40,10 @@ bool cmConfigureFileCommand
   this->CopyOnly = false;
   this->EscapeQuotes = false;
 
-  
   // for CMake 2.0 and earlier CONFIGURE_FILE defaults to the FinalPass,
   // after 2.0 it only does InitialPass
-  this->Immediate = false;
-  const char* versionValue
-    = this->Makefile->GetDefinition("CMAKE_BACKWARDS_COMPATIBILITY");
-  if (versionValue && atof(versionValue) > 2.0)
-    {
-    this->Immediate = true;
-    }
+  this->Immediate = !this->Makefile->NeedBackwardsCompatibility(2,0);
 
-  
   this->AtOnly = false;
   for(unsigned int i=2;i < args.size();++i)
     {

@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCacheManager.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/29 22:30:48 $
-  Version:   $Revision: 1.48 $
+  Date:      $Date: 2008-03-07 16:43:47 $
+  Version:   $Revision: 1.49 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -66,6 +66,7 @@ public:
     bool GetValueAsBool() const;
     void SetValue(const char*);
     CacheEntryType GetType() const { return this->GetEntry().Type; }
+    void SetType(CacheEntryType ty) { this->GetEntry().Type = ty; }
     bool Initialized() { return this->GetEntry().Initialized; }
     cmCacheManager &Container;
     std::map<cmStdString, CacheEntry>::iterator Position;

@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmGlobalGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/14 21:42:29 $
-  Version:   $Revision: 1.226 $
+  Date:      $Date: 2008-03-04 23:41:52 $
+  Version:   $Revision: 1.227 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -464,9 +464,7 @@ cmGlobalGenerator::EnableLanguage(std::vector<std::string>const& languages,
           // backwards compatibility files they have to load
           // These files have a bunch of try compiles in them so
           // should only be done
-          const char* versionValue
-            = mf->GetDefinition("CMAKE_BACKWARDS_COMPATIBILITY");
-          if (atof(versionValue) <= 1.4)
+          if (mf->NeedBackwardsCompatibility(1,4))
             {
             if(strcmp(lang, "C") == 0)
               {

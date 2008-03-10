@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmExecutionStatus.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/23 15:28:26 $
-  Version:   $Revision: 1.1 $
+  Date:      $Date: 2008-03-07 13:40:36 $
+  Version:   $Revision: 1.2 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -42,12 +42,19 @@ public:
   { return this->BreakInvoked; }
             
   virtual void Clear()
-  { this->ReturnInvoked = false; this->BreakInvoked = false; }
+    {
+    this->ReturnInvoked = false;
+    this->BreakInvoked = false;
+    this->NestedError = false;
+    }
+  virtual void SetNestedError(bool val) { this->NestedError = val; }
+  virtual bool GetNestedError() { return this->NestedError; }
 
                                         
 protected:
   bool ReturnInvoked;
   bool BreakInvoked;
+  bool NestedError;
 };
 
 #endif

@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmake.h,v $
   Language:  C++
-  Date:      $Date: 2008/03/01 20:20:35 $
-  Version:   $Revision: 1.101 $
+  Date:      $Date: 2008-03-04 14:16:33 $
+  Version:   $Revision: 1.102 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -259,6 +259,7 @@ class cmake
   void GetPropertiesDocumentation(std::map<std::string,
                                   cmDocumentationSection *>&);
   void GetGeneratorDocumentation(std::vector<cmDocumentationEntry>&);
+  void GetPolicyDocumentation(std::vector<cmDocumentationEntry>& entries);
 
   ///! Set/Get a property of this target file
   void SetProperty(const char *prop, const char *value);

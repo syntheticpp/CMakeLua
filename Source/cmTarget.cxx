@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmTarget.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/03/01 18:02:08 $
-  Version:   $Revision: 1.202 $
+  Date:      $Date: 2008-03-04 18:51:27 $
+  Version:   $Revision: 1.205 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -3007,6 +3007,21 @@ void cmTarget::GetLanguages(std::set<cmStdString>& languages) const
 bool cmTarget::IsChrpathUsed()
 {
 #if defined(CMAKE_USE_ELF_PARSER)
+  // Only certain target types have an rpath.
+  if(!(this->GetType() == cmTarget::SHARED_LIBRARY ||
+       this->GetType() == cmTarget::MODULE_LIBRARY ||
+       this->GetType() == cmTarget::EXECUTABLE))
+    {
+    return false;
+    }
+
+  // If the target will not be installed we do not need to change its
+  // rpath.
+  if(!this->GetHaveInstallRule())
+    {
+    return false;
+    }
+
   // Skip chrpath if skipping rpath altogether.
   if(this->Makefile->IsOn("CMAKE_SKIP_RPATH"))
     {
@@ -3015,6 +3030,12 @@ bool cmTarget::IsChrpathUsed()
 
   // Skip chrpath if it does not need to be changed at install time.
   if(this->GetPropertyAsBool("BUILD_WITH_INSTALL_RPATH"))
+    {
+    return false;
+    }
+
+  // Allow the user to disable builtin chrpath explicitly.
+  if(this->Makefile->IsOn("CMAKE_NO_BUILTIN_CHRPATH"))
     {
     return false;
     }
@@ -3522,6 +3543,8 @@ cmTargetInternalPointer::operator=(cmTargetInternalPointer const& r)
   // Ideally cmTarget instances should never be copied.  However until
   // we can make a sweep to remove that, this copy constructor avoids
   // allowing the resources (Internals) to be copied.
+  cmTargetInternals* oldPointer = this->Pointer;
   this->Pointer = new cmTargetInternals;
+  delete oldPointer;
   return *this;
 }
