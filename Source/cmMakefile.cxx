@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefile.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-11 19:17:58 $
-  Version:   $Revision: 1.457 $
+  Date:      $Date: 2008-03-11 21:27:24 $
+  Version:   $Revision: 1.458 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -303,7 +303,7 @@ void cmMakefile::IssueMessage(cmake::MessageType t, std::string const& text) con
         {
         return;
         }
-      msg << "(Code)";
+      msg << "(dev)";
       }
     msg << ":";
     }
@@ -333,6 +333,10 @@ void cmMakefile::IssueMessage(cmake::MessageType t, std::string const& text) con
       msg << " in directory "
           << this->LocalGenerator->Convert(this->GetCurrentDirectory(),
                                            cmLocalGenerator::HOME);
+      }
+    else if(this->GetCMakeInstance()->GetIsInTryCompile())
+      {
+      msg << " in directory " << this->GetCurrentDirectory();
       }
     else
       {
