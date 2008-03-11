@@ -121,4 +121,44 @@ message(STATUS "t4  : ${t4}")
 message(STATUS "ref : ${ref}")
 message(STATUS "T   : unknown in cmake. ${T}")
 
+set(cml1 a1 a2 a3)
+set(cml2 "b 1" "b 2" "b 3")
+
+lua("
+require \"list\"
+require \"string_ext\"
+")
+
+lua("
+CMakeString \"cml1\" 
+CMakeString \"num\" 
+l1 = string.split(\";\", cml1)
+num = #l1
+")
+
+lua("
+CMakeString \"joined_list1\" 
+joined_list1 = string.join(\"-\", l1)
+")
+
+lua("
+CMakeString \"joined_list2\" 
+l2 = string.split(\";\", cml2)
+joined_list2 = string.join(\"  ,  \", l2)
+")
+
+lua("
+CMakeString \"joined_list3\" 
+joined_list3 = string.join(\";\", list.reverse(list.concat(l1, l2)) )
+")
+
+message(STATUS "")
+message(STATUS "list exmaples")
+message(STATUS "-------------")
+message(STATUS "number of entries        : ${num}")
+message(STATUS "joined with \"-\"          : ${joined_list1}")
+message(STATUS "joined with \"  ,  \"      : ${joined_list2}")
+message(STATUS "join(\";\", reverse(concat): ${joined_list3}")
+message(STATUS "")
+
 
