@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmakemain.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-11 19:17:58 $
-  Version:   $Revision: 1.79 $
+  Date:      $Date: 2008-03-11 20:02:10 $
+  Version:   $Revision: 1.80 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -81,12 +81,6 @@ static const char * cmDocumentationOptions[][3] =
    "variables being created. If A is specified, then it will display also "
    "advanced variables. If H is specified, it will also display help for "
    "each variable."},
-  {"-Wno-dev", "Suppress developer warnings.",
-   "Suppress warnings that are meant for the author"
-   " of the CMakeLists.txt files."},
-  {"-Wdev", "Enable developer warnings.",
-   "Enable warnings that are meant for the author"
-   " of the CMakeLists.txt files."},
   {"-N", "View mode only.",
    "Only load the cache. Do not actually run configure and generate steps."},
   {"-P <file>", "Process script mode.",

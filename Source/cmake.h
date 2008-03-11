@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmake.h,v $
   Language:  C++
-  Date:      $Date: 2008-03-11 14:29:56 $
-  Version:   $Revision: 1.103 $
+  Date:      $Date: 2008-03-11 20:02:10 $
+  Version:   $Revision: 1.104 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -471,7 +471,14 @@ private:
    "CMake may support multiple native build systems on certain platforms.  " \
    "A makefile generator is responsible for generating a particular build " \
    "system.  Possible generator names are specified in the Generators " \
-   "section."}
+   "section."},\
+  {"-Wno-dev", "Suppress developer warnings.",\
+   "Suppress warnings that are meant for the author"\
+   " of the CMakeLists.txt files."},\
+  {"-Wdev", "Enable developer warnings.",\
+   "Enable warnings that are meant for the author"\
+   " of the CMakeLists.txt files."}
+
 
 #define CMAKE_STANDARD_INTRODUCTION \
   {0, \
