@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmake.h,v $
   Language:  C++
-  Date:      $Date: 2008-03-04 14:16:33 $
-  Version:   $Revision: 1.102 $
+  Date:      $Date: 2008-03-11 14:29:56 $
+  Version:   $Revision: 1.103 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -58,6 +58,13 @@ class cmPolicies;
 class cmake
 {
  public:
+  enum MessageType
+  { AUTHOR_WARNING,
+    FATAL_ERROR,
+    MESSAGE,
+    WARNING,
+    LOG
+  };
   typedef std::map<cmStdString, cmCommand*> RegisteredCommandsMap;
 
   ///! construct an instance of cmake
