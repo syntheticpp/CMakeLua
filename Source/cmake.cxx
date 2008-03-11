@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmake.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-07 21:36:57 $
-  Version:   $Revision: 1.367 $
+  Date:      $Date: 2008-03-11 19:17:58 $
+  Version:   $Revision: 1.368 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -372,6 +372,23 @@ bool cmake::SetCacheArgs(const std::vector<std::string>& args)
         cmSystemTools::Error("No cmake scrpt provided.");
         return false;
         }
+      }
+    else if(arg.find("-Wno-dev",0) == 0)
+      {
+      this->CacheManager->
+        AddCacheEntry("CMAKE_SUPPRESS_DEVELOPER_WARNINGS", "TRUE",
+                      "Suppress Warnings that are meant for"
+                      " the author of the CMakeLists.txt files.",
+                      cmCacheManager::INTERNAL);
+      }
+    else if(arg.find("-Wdev",0) == 0)
+      {
+      this->CacheManager->
+        AddCacheEntry("CMAKE_SUPPRESS_DEVELOPER_WARNINGS", "FALSE",
+                      "Suppress Warnings that are meant for"
+                      " the author of the CMakeLists.txt files.",
+                      cmCacheManager::INTERNAL);
+      
       }
     else if(arg.find("-U",0) == 0)
       {
