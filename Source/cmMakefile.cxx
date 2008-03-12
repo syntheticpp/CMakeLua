@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefile.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-11 21:27:24 $
-  Version:   $Revision: 1.458 $
+  Date:      $Date: 2008-03-12 13:25:14 $
+  Version:   $Revision: 1.459 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -284,7 +284,8 @@ bool cmMakefile::CommandExists(const char* name) const
 
 
 //----------------------------------------------------------------------------
-void cmMakefile::IssueMessage(cmake::MessageType t, std::string const& text) const
+void cmMakefile::IssueMessage(cmake::MessageType t,
+                              std::string const& text) const
 {
   cmOStringStream msg;
   bool isError = false;
@@ -622,7 +623,8 @@ bool cmMakefile::ReadListFile(const char* filename_in,
       {
       if(endScopeNicely)
         {
-        this->IssueMessage(cmake::FATAL_ERROR, "cmake_policy PUSH without matching POP");
+        this->IssueMessage(cmake::FATAL_ERROR, 
+                           "cmake_policy PUSH without matching POP");
         }
       this->PopPolicy(false);
       }
