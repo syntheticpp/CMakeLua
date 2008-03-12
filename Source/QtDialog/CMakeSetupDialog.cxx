@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: CMakeSetupDialog.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-12 02:51:56 $
-  Version:   $Revision: 1.39 $
+  Date:      $Date: 2008-03-12 02:52:53 $
+  Version:   $Revision: 1.40 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -308,7 +308,6 @@ void CMakeSetupDialog::finishGenerate(int err)
     }
 }
 
-#include <iostream>
 void CMakeSetupDialog::doSuppressDev()
 {
   this->SuppressDevWarnings = !this->SuppressDevWarnings;
