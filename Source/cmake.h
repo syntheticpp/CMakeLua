@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmake.h,v $
   Language:  C++
-  Date:      $Date: 2008-03-12 02:50:35 $
-  Version:   $Revision: 1.106 $
+  Date:      $Date: 2008-03-12 21:02:30 $
+  Version:   $Revision: 1.107 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -349,6 +349,7 @@ class cmake
       this->SuppressDevWarnings = v;
     }
 protected:
+  void InitializeProperties();
   int HandleDeleteCacheVariables(const char* var);
   cmPropertyMap Properties;
   std::set<std::pair<cmStdString,cmProperty::ScopeType> > AccessedProperties;
