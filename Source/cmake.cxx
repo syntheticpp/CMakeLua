@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmake.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-11 21:25:48 $
-  Version:   $Revision: 1.369 $
+  Date:      $Date: 2008-03-12 02:50:35 $
+  Version:   $Revision: 1.370 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -139,6 +139,7 @@ void cmNeedBackwardsCompatibility(const std::string& variable,
 
 cmake::cmake()
 {
+  this->SuppressDevWarnings = false;
   this->DebugOutput = false;
   this->DebugTryCompile = false;
   this->ClearBuildSystem = false;
@@ -376,20 +377,11 @@ bool cmake::SetCacheArgs(const std::vector<std::string>& args)
       }
     else if(arg.find("-Wno-dev",0) == 0)
       {
-      this->CacheManager->
-        AddCacheEntry("CMAKE_SUPPRESS_DEVELOPER_WARNINGS", "TRUE",
-                      "Suppress Warnings that are meant for"
-                      " the author of the CMakeLists.txt files.",
-                      cmCacheManager::INTERNAL);
+      this->SuppressDevWarnings = true;
       }
     else if(arg.find("-Wdev",0) == 0)
       {
-      this->CacheManager->
-        AddCacheEntry("CMAKE_SUPPRESS_DEVELOPER_WARNINGS", "FALSE",
-                      "Suppress Warnings that are meant for"
-                      " the author of the CMakeLists.txt files.",
-                      cmCacheManager::INTERNAL);
-      
+      this->SuppressDevWarnings = false;
       }
     else if(arg.find("-U",0) == 0)
       {
@@ -1885,6 +1877,23 @@ int cmake::HandleDeleteCacheVariables(const char* var)
 
 int cmake::Configure()
 {
+  if(this->SuppressDevWarnings)
+    {
+    this->CacheManager->
+      AddCacheEntry("CMAKE_SUPPRESS_DEVELOPER_WARNINGS", "TRUE",
+                    "Suppress Warnings that are meant for"
+                    " the author of the CMakeLists.txt files.",
+                    cmCacheManager::INTERNAL);
+    }
+  else
+    {
+    this->CacheManager->
+      AddCacheEntry("CMAKE_SUPPRESS_DEVELOPER_WARNINGS", "FALSE",
+                    "Suppress Warnings that are meant for"
+                    " the author of the CMakeLists.txt files.",
+                    cmCacheManager::INTERNAL);
+    }
+
   int ret = this->ActualConfigure();
   const char* delCacheVars =
     this->GetProperty("__CMAKE_DELETE_CACHE_CHANGE_VARS_");
@@ -2185,7 +2194,6 @@ int cmake::Run(const std::vector<std::string>& args, bool noconfigure)
     {
     this->AddCMakePaths();
     }
-
   // Add any cache args
   if ( !this->SetCacheArgs(args) )
     {
