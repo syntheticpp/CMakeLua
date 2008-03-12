@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmListCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/23 15:27:59 $
-  Version:   $Revision: 1.17 $
+  Date:      $Date: 2008-03-12 21:02:10 $
+  Version:   $Revision: 1.18 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -58,6 +58,10 @@ bool cmListCommand
   if(subCommand == "REMOVE_ITEM")
     {
     return this->HandleRemoveItemCommand(args);
+    }
+  if(subCommand == "REMOVE_DUPLICATES")
+    {
+    return this->HandleRemoveDuplicatesCommand(args);
     }
   if(subCommand == "SORT")
     {
@@ -387,6 +391,68 @@ bool cmListCommand
       }
     value += it->c_str();
     }
+
+  this->Makefile->AddDefinition(listName.c_str(), value.c_str());
+  return true;
+}
+
+//----------------------------------------------------------------------------
+bool cmListCommand
+::HandleRemoveDuplicatesCommand(std::vector<std::string> const& args)
+{
+  if(args.size() < 2)
+    {
+    this->SetError("sub-command REMOVE_DUPLICATES requires a list as an argument.");
+    return false;
+    }
+
+  const std::string& listName = args[1];
+  // expand the variable
+  std::vector<std::string> varArgsExpanded;
+  if ( !this->GetList(varArgsExpanded, listName.c_str()) )
+    {
+    this->SetError("sub-command REMOVE_DUPLICATES requires list to be present.");
+    return false;
+    }
+
+  std::string value;
+
+#if 0 
+  // Fast version, but does not keep the ordering
+
+  std::set<std::string> unique(varArgsExpanded.begin(), varArgsExpanded.end());
+  std::set<std::string>::iterator it;
+  for ( it = unique.begin(); it != unique.end(); ++ it )
+    {
+    if (value.size())
+      {
+      value += ";";
+      }
+    value += it->c_str();
+    }
+
+#else
+
+  // Slower version, keep the ordering
+
+  std::set<std::string> unique;
+  std::vector<std::string>::iterator it;
+  for ( it = varArgsExpanded.begin(); it != varArgsExpanded.end(); ++ it )
+    {
+    if (unique.find(*it) != unique.end())
+      {
+      continue;
+      }
+    unique.insert(*it);
+
+    if (value.size())
+      {
+      value += ";";
+      }
+    value += it->c_str();
+    }
+#endif
+
 
   this->Makefile->AddDefinition(listName.c_str(), value.c_str());
   return true;
