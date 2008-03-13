@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmFileCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-02 19:35:23 $
-  Version:   $Revision: 1.102 $
+  Date:      $Date: 2008-03-13 13:28:26 $
+  Version:   $Revision: 1.103 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -2060,6 +2060,17 @@ cmFileCommand::HandleDownloadCommand(std::vector<std::string>
       }
     i++;
     }
+
+  std::string dir = cmSystemTools::GetFilenamePath(file.c_str());
+  if(!cmSystemTools::FileExists(dir.c_str()) &&
+     !cmSystemTools::MakeDirectory(dir.c_str()))
+    {
+    std::string errstring = "FILE(DOWNLOAD ) error; cannot create directory: "
+      + dir + ". Maybe need administrative privileges.";
+    this->SetError(errstring.c_str());
+    return false;
+    }
+
   std::ofstream fout(file.c_str(), std::ios::binary);
   if(!fout)
     {
