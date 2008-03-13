@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefile.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-13 17:48:57 $
-  Version:   $Revision: 1.462 $
+  Date:      $Date: 2008-03-13 18:13:44 $
+  Version:   $Revision: 1.463 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -3332,11 +3332,12 @@ bool cmMakefile::SetPolicy(const char *id,
 {
   cmPolicies::PolicyID pid;
   if (!this->GetPolicies()->GetPolicyID(id, /* out */ pid))
-  {
-    cmSystemTools::Error("Invalid policy string used. Invalid string was "
-      , id);
+    {
+    cmOStringStream e;
+    e << "Policy \"" << id << "\" is not known to this version of CMake.";
+    this->IssueMessage(cmake::FATAL_ERROR, e.str());
     return false;
-  }
+    }
   return this->SetPolicy(pid,status);
 }
 
