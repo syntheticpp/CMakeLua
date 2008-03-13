@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefile.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-13 21:11:57 $
-  Version:   $Revision: 1.464 $
+  Date:      $Date: 2008-03-13 21:38:51 $
+  Version:   $Revision: 1.465 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1024,7 +1024,7 @@ bool cmMakefile::ParseDefineFlag(std::string const& def, bool remove)
 {
   // Create a regular expression to match valid definitions.
   static cmsys::RegularExpression
-    valid("^[-/]D[A-Za-z_][A-Za-z0-9_]*(=.*)$");
+    valid("^[-/]D[A-Za-z_][A-Za-z0-9_]*(=.*)?$");
 
   // Make sure the definition matches.
   if(!valid.find(def.c_str()))
