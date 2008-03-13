@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefile.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-12 13:25:14 $
-  Version:   $Revision: 1.459 $
+  Date:      $Date: 2008-03-13 01:06:32 $
+  Version:   $Revision: 1.460 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -294,6 +294,11 @@ void cmMakefile::IssueMessage(cmake::MessageType t,
     {
     isError = true;
     msg << "CMake Error:";
+    }
+  else if(t == cmake::INTERNAL_ERROR)
+    {
+    isError = true;
+    msg << "CMake Internal Error, please report a bug: ";
     }
   else
     {
@@ -2029,7 +2034,9 @@ const char *cmMakefile::ExpandVariablesInString(std::string& source,
       {
       // This case should never be called.  At-only is for
       // configure-file/string which always does no escapes.
-      abort();
+      this->IssueMessage(cmake::INTERNAL_ERROR,
+                         "ExpandVariablesInString @ONLY called "
+                         "on something with escapes.");
       }
 
     // Store an original copy of the input.

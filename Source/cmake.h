@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmake.h,v $
   Language:  C++
-  Date:      $Date: 2008-03-12 21:02:30 $
-  Version:   $Revision: 1.107 $
+  Date:      $Date: 2008-03-13 01:06:32 $
+  Version:   $Revision: 1.108 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -61,6 +61,7 @@ class cmake
   enum MessageType
   { AUTHOR_WARNING,
     FATAL_ERROR,
+    INTERNAL_ERROR,
     MESSAGE,
     WARNING,
     LOG

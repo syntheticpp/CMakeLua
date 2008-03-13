@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalUnixMakefileGenerator3.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-11 21:53:54 $
-  Version:   $Revision: 1.239 $
+  Date:      $Date: 2008-03-13 01:06:32 $
+  Version:   $Revision: 1.240 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1915,7 +1915,10 @@ cmLocalUnixMakefileGenerator3
   // Make sure we never hit this old case.
   if(source.GetProperty("MACOSX_PACKAGE_LOCATION"))
     {
-    abort();
+    std::string msg = "MACOSX_PACKAGE_LOCATION set on source file: ";
+    msg += source.GetFullPath();
+    this->GetMakefile()->IssueMessage(cmake::INTERNAL_ERROR,
+                                      msg.c_str());
     }
 
   // Start with the target directory.
