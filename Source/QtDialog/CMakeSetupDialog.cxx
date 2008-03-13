@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: CMakeSetupDialog.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-12 02:52:53 $
-  Version:   $Revision: 1.40 $
+  Date:      $Date: 2008-03-13 20:13:40 $
+  Version:   $Revision: 1.41 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -483,6 +483,7 @@ void CMakeSetupDialog::error(const QString& message)
     m.replace(QString("&"), QString("&amp;"));
     m.replace(QString("<"), QString("&lt;"));
     m.replace(QString(">"), QString("&gt;"));
+    m.replace(QString(" "), QString("&nbsp;"));
     this->Output->append(QString("<b><font color=red>%1</font></b>").arg(m));
     }
 }
