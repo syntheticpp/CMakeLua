@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmake.h,v $
   Language:  C++
-  Date:      $Date: 2008-03-13 01:06:32 $
-  Version:   $Revision: 1.108 $
+  Date:      $Date: 2008-03-13 17:48:57 $
+  Version:   $Revision: 1.109 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -54,6 +54,7 @@ class cmFileTimeComparison;
 class cmExternalMakefileProjectGenerator;
 class cmDocumentationSection;
 class cmPolicies;
+class cmListFileBacktrace;
 
 class cmake
 {
@@ -349,6 +350,10 @@ class cmake
     {
       this->SuppressDevWarnings = v;
     }
+
+  /** Display a message to the user.  */
+  void IssueMessage(cmake::MessageType t, std::string const& text,
+                    cmListFileBacktrace const& backtrace);
 protected:
   void InitializeProperties();
   int HandleDeleteCacheVariables(const char* var);

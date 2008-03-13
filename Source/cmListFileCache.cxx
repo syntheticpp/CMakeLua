@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmListFileCache.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-13 15:38:46 $
-  Version:   $Revision: 1.40 $
+  Date:      $Date: 2008-03-13 17:48:57 $
+  Version:   $Revision: 1.41 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -267,4 +267,19 @@ bool cmListFileCacheParseFunction(cmListFileLexer* lexer,
   cmSystemTools::Error(error.str().c_str());
 
   return false;
+}
+
+//----------------------------------------------------------------------------
+std::ostream& operator<<(std::ostream& os, cmListFileContext const& lfc)
+{
+  os << lfc.FilePath;
+  if(lfc.Line)
+    {
+    os << ":" << lfc.Line;
+    if(!lfc.Name.empty())
+      {
+      os << " (" << lfc.Name << ")";
+      }
+    }
+  return os;
 }

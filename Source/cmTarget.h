@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmTarget.h,v $
   Language:  C++
-  Date:      $Date: 2008/03/01 17:51:07 $
-  Version:   $Revision: 1.108 $
+  Date:      $Date: 2008-03-13 17:48:57 $
+  Version:   $Revision: 1.109 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -25,6 +25,7 @@ class cmMakefile;
 class cmSourceFile;
 class cmGlobalGenerator;
 class cmComputeLinkInformation;
+class cmListFileBacktrace;
 
 struct cmTargetLinkInformationMap:
   public std::map<cmStdString, cmComputeLinkInformation*>
@@ -373,6 +374,9 @@ public:
 
   /** Return whether this target is an executable Bundle on Apple.  */
   bool IsAppBundleOnApple();
+
+  /** Get a backtrace from the creation of the target.  */
+  cmListFileBacktrace const& GetBacktrace() const;
 
 private:
   /**

@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefile.h,v $
   Language:  C++
-  Date:      $Date: 2008-03-11 14:29:55 $
-  Version:   $Revision: 1.229 $
+  Date:      $Date: 2008-03-13 17:48:57 $
+  Version:   $Revision: 1.230 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -605,6 +605,11 @@ public:
      * Get the list file stack as a string
      */
     std::string GetListFileStack();
+
+  /**
+   * Get the current context backtrace.
+   */
+  bool GetBacktrace(cmListFileBacktrace& backtrace) const;
 
   /**
    * Get the vector of  files created by this makefile
