@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmPolicies.h,v $
   Language:  C++
-  Date:      $Date: 2008-03-13 20:35:39 $
-  Version:   $Revision: 1.12 $
+  Date:      $Date: 2008-03-13 21:11:57 $
+  Version:   $Revision: 1.13 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -45,6 +45,7 @@ public:
     CMP0002, // Target names must be unique
     CMP0003, // Linking does not include extra -L paths
     CMP0004, // Libraries linked may not have leading or trailing whitespace
+    CMP0005, // Definition value escaping
 
     // Always the last entry.  Useful mostly to avoid adding a comma
     // the last policy when adding a new one.
