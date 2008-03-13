@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmSetCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/23 15:27:59 $
-  Version:   $Revision: 1.32 $
+  Date:      $Date: 2008-03-13 17:52:49 $
+  Version:   $Revision: 1.33 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -139,17 +139,7 @@ bool cmSetCommand
       args.size() > 1 && args[args.size() - 2] == "CACHE" ||
       force && !cache)
     {
-    std::string message;
-    message += "Syntax error in SET:\n";
-    message += "See the help for the SET command:\n";
-    message += "SET (";
-    for(std::vector<std::string>::const_iterator i = args.begin();
-        i != args.end(); ++i)
-      {
-      message += *i;
-      }
-    message += ")\n";
-    this->SetError(message.c_str());
+    this->SetError("given invalid arguments for CACHE mode.");
     return false;
     }
   
