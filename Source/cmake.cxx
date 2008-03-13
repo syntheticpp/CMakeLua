@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmake.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-13 17:48:57 $
-  Version:   $Revision: 1.373 $
+  Date:      $Date: 2008-03-13 19:06:35 $
+  Version:   $Revision: 1.374 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -582,6 +582,16 @@ void cmake::SetArgs(const std::vector<std::string>& args)
       // skip for now
       }
     else if(arg.find("-P",0) == 0)
+      {
+      // skip for now
+      i++;
+      }
+    else if(arg.find("-Wno-dev",0) == 0)
+      {
+      // skip for now
+      i++;
+      }
+    else if(arg.find("-Wdev",0) == 0)
       {
       // skip for now
       i++;
@@ -4170,6 +4180,12 @@ void cmake::IssueMessage(cmake::MessageType t, std::string const& text,
       msg << "  " << lfc << "\n";
       ++i;
       }
+    }
+
+  // Add a note about warning suppression.
+  if(t == cmake::AUTHOR_WARNING)
+    {
+    msg << "This warning may be suppressed using the -Wno-dev option.";
     }
 
   // Add a terminating blank line.
