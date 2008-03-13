@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmake.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-13 19:06:35 $
-  Version:   $Revision: 1.374 $
+  Date:      $Date: 2008-03-13 19:34:17 $
+  Version:   $Revision: 1.375 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -221,6 +221,8 @@ void cmake::InitializeProperties()
 {
   this->Properties.clear();
   this->Properties.SetCMakeInstance(this);
+  this->AccessedProperties.clear();
+  this->PropertyDefinitions.clear();
 
   // initialize properties
   cmSourceFile::DefineProperties(this);
@@ -228,8 +230,6 @@ void cmake::InitializeProperties()
   cmMakefile::DefineProperties(this);
   cmTest::DefineProperties(this);
   cmake::DefineProperties(this);
-  this->AccessedProperties.clear();
-  this->PropertyDefinitions.clear();
 }
 
 void cmake::CleanupCommandsAndMacros()
