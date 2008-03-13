@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefile.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-13 01:06:32 $
-  Version:   $Revision: 1.460 $
+  Date:      $Date: 2008-03-13 15:38:46 $
+  Version:   $Revision: 1.461 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -3278,17 +3278,17 @@ bool cmMakefile::EnforceUniqueName(std::string const& name, std::string& msg,
     else 
       {
       // target names must be globally unique
-      switch (this->GetPolicyStatus(cmPolicies::CMP_0002))
+      switch (this->GetPolicyStatus(cmPolicies::CMP0002))
         {
         case cmPolicies::WARN:
           this->IssueMessage(cmake::AUTHOR_WARNING, this->GetPolicies()->
-                             GetPolicyWarning(cmPolicies::CMP_0002));
+                             GetPolicyWarning(cmPolicies::CMP0002));
         case cmPolicies::OLD:
           return true;
         case cmPolicies::REQUIRED_IF_USED:
         case cmPolicies::REQUIRED_ALWAYS:
           this->IssueMessage(cmake::FATAL_ERROR,
-            this->GetPolicies()->GetRequiredPolicyError(cmPolicies::CMP_0002)
+            this->GetPolicies()->GetRequiredPolicyError(cmPolicies::CMP0002)
             );
           return true;
         case cmPolicies::NEW:
@@ -3333,7 +3333,7 @@ bool cmMakefile::EnforceUniqueName(std::string const& name, std::string& msg,
         }
       e << "created in source directory \""
         << existing->GetMakefile()->GetCurrentDirectory() << "\".  "
-        << "See documentation for policy CMP_0002 for more details.";
+        << "See documentation for policy CMP0002 for more details.";
       msg = e.str();
       return false;
       }
@@ -3411,7 +3411,7 @@ bool cmMakefile::SetPolicy(cmPolicies::PolicyID id,
 
     // Special hook for presenting compatibility variable as soon as
     // the user requests it.
-    if(id == cmPolicies::CMP_0001 &&
+    if(id == cmPolicies::CMP0001 &&
        (status == cmPolicies::WARN || status == cmPolicies::OLD))
       {
       if(!(this->GetCacheManager()

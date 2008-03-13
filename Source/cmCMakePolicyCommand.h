@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCMakePolicyCommand.h,v $
   Language:  C++
-  Date:      $Date: 2008-03-07 20:30:32 $
-  Version:   $Revision: 1.3 $
+  Date:      $Date: 2008-03-13 15:38:46 $
+  Version:   $Revision: 1.4 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -80,10 +80,10 @@ public:
       "The policy version specified must be at least 2.4 or the command "
       "will report an error.  "
       "In order to get compatibility features supporting versions earlier "
-      "than 2.4 see documentation of policy CMP_0001."
+      "than 2.4 see documentation of policy CMP0001."
       "\n"
-      "  cmake_policy(SET <CMP_NNNN> NEW)\n"
-      "  cmake_policy(SET <CMP_NNNN> OLD)\n"
+      "  cmake_policy(SET <CMPNNNN> NEW)\n"
+      "  cmake_policy(SET <CMPNNNN> OLD)\n"
       "Tell CMake to use the OLD or NEW behavior for a given policy.  "
       "Projects depending on the old behavior of a given policy may "
       "silence a policy warning by setting the policy state to OLD.  "

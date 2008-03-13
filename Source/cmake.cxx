@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmake.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-12 21:02:30 $
-  Version:   $Revision: 1.371 $
+  Date:      $Date: 2008-03-13 15:38:46 $
+  Version:   $Revision: 1.372 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -3344,7 +3344,7 @@ void cmake::DefineProperties(cmake *cm)
     "ALLOW_DUPLICATE_CUSTOM_TARGETS", cmProperty::GLOBAL,
     "Allow duplicate custom targets to be created.",
     "Normally CMake requires that all targets built in a project have "
-    "globally unique logical names (see policy CMP_0002).  "
+    "globally unique logical names (see policy CMP0002).  "
     "This is necessary to generate meaningful project file names in "
     "Xcode and VS IDE generators.  "
     "It also allows the target names to be referenced unambiguously.\n"
