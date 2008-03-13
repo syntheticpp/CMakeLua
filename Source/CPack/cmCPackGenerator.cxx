@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCPackGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-07 16:06:44 $
-  Version:   $Revision: 1.5 $
+  Date:      $Date: 2008-03-13 01:54:27 $
+  Version:   $Revision: 1.6 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -817,7 +817,15 @@ bool cmCPackGenerator::IsSet(const char* name) const
 //----------------------------------------------------------------------
 const char* cmCPackGenerator::GetOption(const char* op)
 { 
-  return this->MakefileMap->GetDefinition(op);
+  const char* ret = this->MakefileMap->GetDefinition(op);
+  if(!ret)
+    { 
+    cmCPackLogger(cmCPackLog::LOG_DEBUG, 
+                  "Warning, GetOption return NULL for: "
+                  << op 
+                  << std::endl);
+    }
+  return ret;
 }
 
 //----------------------------------------------------------------------
