@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmTarget.h,v $
   Language:  C++
-  Date:      $Date: 2008-03-13 20:23:18 $
-  Version:   $Revision: 1.110 $
+  Date:      $Date: 2008-03-13 20:35:39 $
+  Version:   $Revision: 1.111 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -109,6 +109,10 @@ public:
   /** Get the status of policy CMP0003 when the target was created.  */
   cmPolicies::PolicyStatus GetPolicyStatusCMP0003() const
     { return this->PolicyStatusCMP0003; }
+
+  /** Get the status of policy CMP0004 when the target was created.  */
+  cmPolicies::PolicyStatus GetPolicyStatusCMP0004() const
+    { return this->PolicyStatusCMP0004; }
 
   /**
    * Get the list of the custom commands for this target
@@ -537,6 +541,7 @@ private:
 
   // Policy status recorded when target was created.
   cmPolicies::PolicyStatus PolicyStatusCMP0003;
+  cmPolicies::PolicyStatus PolicyStatusCMP0004;
 
   // Internal representation details.
   friend class cmTargetInternals;
