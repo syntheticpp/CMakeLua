@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmTarget.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-13 17:48:57 $
-  Version:   $Revision: 1.207 $
+  Date:      $Date: 2008-03-13 20:23:18 $
+  Version:   $Revision: 1.208 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -53,6 +53,7 @@ public:
 cmTarget::cmTarget()
 {
   this->Makefile = 0;
+  this->PolicyStatusCMP0003 = cmPolicies::WARN;
   this->LinkLibrariesAnalyzed = false;
   this->HaveInstallRule = false;
   this->DLLPlatform = false;
@@ -726,6 +727,10 @@ void cmTarget::SetMakefile(cmMakefile* mf)
 
   // Save the backtrace of target construction.
   this->Makefile->GetBacktrace(this->Internal->Backtrace);
+
+  // Record current policies for later use.
+  this->PolicyStatusCMP0003 =
+    this->Makefile->GetPolicyStatus(cmPolicies::CMP0003);
 }
 
 //----------------------------------------------------------------------------
