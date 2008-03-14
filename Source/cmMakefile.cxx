@@ -523,9 +523,12 @@ bool cmMakefile::ReadListFile(const char* filename_in,
       }
     }
 
+  bool endScopeNicely = false;
+
   // keep track of the current file being read
   if (filename)
     {
+    endScopeNicely = true;
     if(this->cmCurrentListFile != filename)
       {
       this->cmCurrentListFile = filename;
@@ -656,7 +659,6 @@ bool cmMakefile::ReadListFile(const char* filename_in,
     }
   // add this list file to the list of dependencies
   this->ListFiles.push_back( filenametoread);
-  bool endScopeNicely = filename? true: false;
   const size_t numberFunctions = cacheFile.Functions.size();
   for(size_t i =0; i < numberFunctions; ++i)
     {
