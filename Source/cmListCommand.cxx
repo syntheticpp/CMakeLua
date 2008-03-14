@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmListCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-12 21:02:10 $
-  Version:   $Revision: 1.18 $
+  Date:      $Date: 2008-03-14 20:39:20 $
+  Version:   $Revision: 1.19 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -402,7 +402,8 @@ bool cmListCommand
 {
   if(args.size() < 2)
     {
-    this->SetError("sub-command REMOVE_DUPLICATES requires a list as an argument.");
+    this->SetError(
+      "sub-command REMOVE_DUPLICATES requires a list as an argument.");
     return false;
     }
 
@@ -411,7 +412,8 @@ bool cmListCommand
   std::vector<std::string> varArgsExpanded;
   if ( !this->GetList(varArgsExpanded, listName.c_str()) )
     {
-    this->SetError("sub-command REMOVE_DUPLICATES requires list to be present.");
+    this->SetError(
+      "sub-command REMOVE_DUPLICATES requires list to be present.");
     return false;
     }
 
