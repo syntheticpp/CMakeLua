@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmListFileCache.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-07 20:30:33 $
-  Version:   $Revision: 1.38 $
+  Date:      $Date: 2008-03-13 17:48:57 $
+  Version:   $Revision: 1.41 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -143,11 +143,11 @@ bool cmListFile::ParseFile(const char* filename,
     // if no policy command is found this is an error
     if(!hasPolicy)
     {
-      switch (mf->GetPolicyStatus(cmPolicies::CMP_0000))
+      switch (mf->GetPolicyStatus(cmPolicies::CMP0000))
       {
         case cmPolicies::WARN:
-          mf->IssueWarning(
-            mf->GetPolicies()->GetPolicyWarning(cmPolicies::CMP_0000)
+          mf->IssueMessage(cmake::AUTHOR_WARNING,
+            mf->GetPolicies()->GetPolicyWarning(cmPolicies::CMP0000)
             );
 
           // Implicitly set the version for the user.
@@ -155,8 +155,8 @@ bool cmListFile::ParseFile(const char* filename,
         case cmPolicies::OLD:
           break; 
         default:
-          mf->IssueError(
-            mf->GetPolicies()->GetRequiredPolicyError(cmPolicies::CMP_0000)
+          mf->IssueMessage(cmake::FATAL_ERROR,
+            mf->GetPolicies()->GetRequiredPolicyError(cmPolicies::CMP0000)
             );
           return false;
       }
@@ -267,4 +267,19 @@ bool cmListFileCacheParseFunction(cmListFileLexer* lexer,
   cmSystemTools::Error(error.str().c_str());
 
   return false;
+}
+
+//----------------------------------------------------------------------------
+std::ostream& operator<<(std::ostream& os, cmListFileContext const& lfc)
+{
+  os << lfc.FilePath;
+  if(lfc.Line)
+    {
+    os << ":" << lfc.Line;
+    if(!lfc.Name.empty())
+      {
+      os << " (" << lfc.Name << ")";
+      }
+    }
+  return os;
 }

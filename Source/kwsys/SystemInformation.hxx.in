@@ -3,8 +3,8 @@
   Program:   KWSys - Kitware System Library
   Module:    $RCSfile: SystemInformation.hxx.in,v $
   Language:  C++
-  Date:      $Date: 2008/01/31 19:34:11 $
-  Version:   $Revision: 1.7 $
+  Date:      $Date: 2008-03-11 21:37:17 $
+  Version:   $Revision: 1.8 $
   Copyright (c) 2005 Insight Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
 
@@ -31,7 +31,7 @@ namespace @KWSYS_NAMESPACE@
 // forward declare the implementation class  
 class SystemInformationImplementation;
   
-class SystemInformation 
+class @KWSYS_NAMESPACE@_EXPORT SystemInformation 
 {
 
 public:

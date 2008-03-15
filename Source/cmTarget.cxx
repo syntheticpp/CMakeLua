@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmTarget.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-04 18:51:27 $
-  Version:   $Revision: 1.205 $
+  Date:      $Date: 2008-03-13 20:35:39 $
+  Version:   $Revision: 1.209 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -21,6 +21,7 @@
 #include "cmLocalGenerator.h"
 #include "cmGlobalGenerator.h"
 #include "cmComputeLinkInformation.h"
+#include "cmListFileCache.h"
 #include <map>
 #include <set>
 #include <queue>
@@ -43,12 +44,17 @@ public:
   typedef cmTarget::SourceFileFlags SourceFileFlags;
   std::map<cmSourceFile const*, SourceFileFlags> SourceFlagsMap;
   bool SourceFileFlagsConstructed;
+
+  // The backtrace when the target was created.
+  cmListFileBacktrace Backtrace;
 };
 
 //----------------------------------------------------------------------------
 cmTarget::cmTarget()
 {
   this->Makefile = 0;
+  this->PolicyStatusCMP0003 = cmPolicies::WARN;
+  this->PolicyStatusCMP0004 = cmPolicies::WARN;
   this->LinkLibrariesAnalyzed = false;
   this->HaveInstallRule = false;
   this->DLLPlatform = false;
@@ -643,7 +649,11 @@ void cmTarget::SetType(TargetType type, const char* name)
      type == cmTarget::INSTALL_PROGRAMS ||
      type == cmTarget::INSTALL_DIRECTORY)
     {
-    abort();
+    this->Makefile->
+      IssueMessage(cmake::INTERNAL_ERROR,
+                   "SetType called on cmTarget for INSTALL_FILES, "
+                   "INSTALL_PROGRAMS, or INSTALL_DIRECTORY ");
+    return;
     }
   // only add dependency information for library targets
   this->TargetTypeValue = type;
@@ -715,6 +725,21 @@ void cmTarget::SetMakefile(cmMakefile* mf)
       this->SetPropertyDefault(property.c_str(), 0);
       }
     }
+
+  // Save the backtrace of target construction.
+  this->Makefile->GetBacktrace(this->Internal->Backtrace);
+
+  // Record current policies for later use.
+  this->PolicyStatusCMP0003 =
+    this->Makefile->GetPolicyStatus(cmPolicies::CMP0003);
+  this->PolicyStatusCMP0004 =
+    this->Makefile->GetPolicyStatus(cmPolicies::CMP0004);
+}
+
+//----------------------------------------------------------------------------
+cmListFileBacktrace const& cmTarget::GetBacktrace() const
+{
+  return this->Internal->Backtrace;
 }
 
 //----------------------------------------------------------------------------
@@ -2099,7 +2124,11 @@ std::string cmTarget::NormalGetRealName(const char* config)
   // enforcement of the limited imported target API.
   if(this->IsImported())
     {
-    abort();
+    std::string msg =  "NormalGetRealName called on imported target: ";
+    msg += this->GetName();
+    this->GetMakefile()->
+      IssueMessage(cmake::INTERNAL_ERROR,
+                   msg.c_str());
     }
 
   if(this->GetType() == cmTarget::EXECUTABLE)
@@ -2424,7 +2453,11 @@ void cmTarget::GetLibraryNamesInternal(std::string& name,
   // enforcement of the limited imported target API.
   if(this->IsImported())
     {
-    abort();
+    std::string msg =  "GetLibraryNamesInternal called on imported target: ";
+    msg += this->GetName();
+    this->Makefile->IssueMessage(cmake::INTERNAL_ERROR,
+                                 msg.c_str());
+    return;
     }
 
   // Construct the name of the soname flag variable for this language.
@@ -2553,7 +2586,11 @@ void cmTarget::GetExecutableNamesInternal(std::string& name,
   // enforcement of the limited imported target API.
   if(this->IsImported())
     {
-    abort();
+    std::string msg =  "GetExecutableNamesInternal called on imported target: ";
+    msg += this->GetName();
+    this->GetMakefile()->
+      IssueMessage(cmake::INTERNAL_ERROR,
+                   msg.c_str());
     }
 
   // This versioning is supported only for executables and then only
@@ -2828,11 +2865,21 @@ const char* cmTarget::GetAndCreateOutputDir(bool implib, bool create)
   if(implib &&
      !this->Makefile->GetDefinition("CMAKE_IMPORT_LIBRARY_SUFFIX"))
     {
-    abort();
+    std::string msg =  "GetAndCreateOutputDir, imlib set but there is no "
+      "CMAKE_IMPORT_LIBRARY_SUFFIX for target: ";
+    msg += this->GetName();
+    this->GetMakefile()->
+      IssueMessage(cmake::INTERNAL_ERROR,
+                   msg.c_str());
     }
   if(implib && !this->DLLPlatform)
     {
-    abort();
+    std::string msg =  "implib set for platform that does not "
+      " support DLL's for target: ";
+    msg += this->GetName();
+    this->GetMakefile()->
+      IssueMessage(cmake::INTERNAL_ERROR,
+                   msg.c_str());
     }
 
   // Select whether we are constructing the directory for the main

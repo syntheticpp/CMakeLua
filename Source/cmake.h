@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmake.h,v $
   Language:  C++
-  Date:      $Date: 2008-03-04 14:16:33 $
-  Version:   $Revision: 1.102 $
+  Date:      $Date: 2008-03-13 17:48:57 $
+  Version:   $Revision: 1.109 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -55,10 +55,19 @@ struct lua_State;
 class cmExternalMakefileProjectGenerator;
 class cmDocumentationSection;
 class cmPolicies;
+class cmListFileBacktrace;
 
 class cmake
 {
  public:
+  enum MessageType
+  { AUTHOR_WARNING,
+    FATAL_ERROR,
+    INTERNAL_ERROR,
+    MESSAGE,
+    WARNING,
+    LOG
+  };
   typedef std::map<cmStdString, cmCommand*> RegisteredCommandsMap;
 
   ///! construct an instance of cmake
@@ -338,11 +347,19 @@ class cmake
     {
       this->CMakeEditCommand = s;
     }
+  void SetSuppressDevWarnings(bool v)
+    {
+      this->SuppressDevWarnings = v;
+    }
+
+  /** Display a message to the user.  */
+  void IssueMessage(cmake::MessageType t, std::string const& text,
+                    cmListFileBacktrace const& backtrace);
 
   // return the Lua state for lua commands
   lua_State *GetLuaState() { return this->LuaState;};
-
 protected:
+  void InitializeProperties();
   int HandleDeleteCacheVariables(const char* var);
   cmPropertyMap Properties;
   std::set<std::pair<cmStdString,cmProperty::ScopeType> > AccessedProperties;
@@ -374,7 +391,7 @@ protected:
   std::string HomeOutputDirectory;
   std::string cmStartDirectory; 
   std::string StartOutputDirectory;
-
+  bool SuppressDevWarnings;
   std::set<cmStdString> WrittenFiles;
 
   ///! return true if the same cmake was used to make the cache.
@@ -433,6 +450,7 @@ private:
   std::string CCEnvironment;
   std::string CheckBuildSystemArgument;
   std::string CheckStampFile;
+  std::string CheckStampList;
   std::string VSSolutionFile;
   std::string CTestCommand;
   std::string CPackCommand;
@@ -471,7 +489,14 @@ private:
    "CMake may support multiple native build systems on certain platforms.  " \
    "A makefile generator is responsible for generating a particular build " \
    "system.  Possible generator names are specified in the Generators " \
-   "section."}
+   "section."},\
+  {"-Wno-dev", "Suppress developer warnings.",\
+   "Suppress warnings that are meant for the author"\
+   " of the CMakeLists.txt files."},\
+  {"-Wdev", "Enable developer warnings.",\
+   "Enable warnings that are meant for the author"\
+   " of the CMakeLists.txt files."}
+
 
 #define CMAKE_STANDARD_INTRODUCTION \
   {0, \

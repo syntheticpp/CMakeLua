@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmakemain.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-04 14:16:33 $
-  Version:   $Revision: 1.78 $
+  Date:      $Date: 2008-03-11 20:02:10 $
+  Version:   $Revision: 1.80 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.

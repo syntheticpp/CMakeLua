@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalUnixMakefileGenerator3.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/18 21:38:34 $
-  Version:   $Revision: 1.238 $
+  Date:      $Date: 2008-03-13 01:06:32 $
+  Version:   $Revision: 1.240 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -24,6 +24,7 @@
 #include "cmSourceFile.h"
 #include "cmake.h"
 #include "cmVersion.h"
+#include "cmFileTimeComparison.h"
 
 // Include dependency scanners for supported languages.  Only the
 // C/C++ scanner is needed for bootstrapping CMake.
@@ -1307,15 +1308,39 @@ bool cmLocalUnixMakefileGenerator3::UpdateDependencies(const char* tgtInfo,
   std::string internalDependFile = dir + "/depend.internal";
   std::string dependFile = dir + "/depend.make";
 
+  // If the target DependInfo.cmake file has changed since the last
+  // time dependencies were scanned then force rescanning.  This may
+  // happen when a new source file is added and CMake regenerates the
+  // project but no other sources were touched.
+  bool needRescan = false;
+  cmFileTimeComparison* ftc =
+    this->GlobalGenerator->GetCMakeInstance()->GetFileComparison();
+  {
+  int result;
+  if(!ftc->FileTimeCompare(internalDependFile.c_str(), tgtInfo, &result) ||
+     result < 0)
+    {
+    if(verbose)
+      {
+      cmOStringStream msg;
+      msg << "Dependee \"" << tgtInfo
+          << "\" is newer than depender \""
+          << internalDependFile << "\"." << std::endl;
+      cmSystemTools::Stdout(msg.str().c_str());
+      }
+    needRescan = true;
+    }
+  }
+
   // Check the implicit dependencies to see if they are up to date.
   // The build.make file may have explicit dependencies for the object
   // files but these will not affect the scanning process so they need
   // not be considered.
   cmDependsC checker;
   checker.SetVerbose(verbose);
-  checker.SetFileComparison
-    (this->GlobalGenerator->GetCMakeInstance()->GetFileComparison());
-  if(!checker.Check(dependFile.c_str(), internalDependFile.c_str()))
+  checker.SetFileComparison(ftc);
+  if(needRescan ||
+     !checker.Check(dependFile.c_str(), internalDependFile.c_str()))
     {
     // The dependencies must be regenerated.
     std::string targetName = cmSystemTools::GetFilenameName(dir);
@@ -1890,7 +1915,10 @@ cmLocalUnixMakefileGenerator3
   // Make sure we never hit this old case.
   if(source.GetProperty("MACOSX_PACKAGE_LOCATION"))
     {
-    abort();
+    std::string msg = "MACOSX_PACKAGE_LOCATION set on source file: ";
+    msg += source.GetFullPath();
+    this->GetMakefile()->IssueMessage(cmake::INTERNAL_ERROR,
+                                      msg.c_str());
     }
 
   // Start with the target directory.

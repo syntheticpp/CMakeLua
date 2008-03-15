@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefile.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-10 19:41:07 $
-  Version:   $Revision: 1.455 $
+  Date:      $Date: 2008-03-13 21:38:51 $
+  Version:   $Revision: 1.465 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -34,8 +34,6 @@
 #include "cmInstallGenerator.h"
 #include "cmake.h"
 #include <stdlib.h> // required for atoi
-
-#include "cmDocumentationFormatterText.h"
 
 #include <cmsys/RegularExpression.hxx>
 
@@ -288,104 +286,56 @@ bool cmMakefile::CommandExists(const char* name) const
   return this->GetCMakeInstance()->CommandExists(name);
 }
 
-//----------------------------------------------------------------------------
-void cmMakefile::IssueError(std::string const& msg) const
-{
-  this->IssueMessage(msg, true);
-}
 
 //----------------------------------------------------------------------------
-void cmMakefile::IssueWarning(std::string const& msg) const
+void cmMakefile::IssueMessage(cmake::MessageType t,
+                              std::string const& text) const
 {
-  this->IssueMessage(msg, false);
-}
-
-//----------------------------------------------------------------------------
-void cmMakefile::IssueMessage(std::string const& text, bool isError) const
-{
-  cmOStringStream msg;
-
-  // Construct the message header.
-  if(isError)
+  // Collect context information.
+  cmListFileBacktrace backtrace;
+  if(!this->CallStack.empty())
     {
-    msg << "CMake Error:";
-    }
-  else
-    {
-    msg << "CMake Warning:";
-    }
-
-  // Add the immediate context.
-  CallStackType::const_reverse_iterator i = this->CallStack.rbegin();
-  if(i != this->CallStack.rend())
-    {
-    if(isError)
+    if((t == cmake::FATAL_ERROR) || (t == cmake::INTERNAL_ERROR))
       {
-      (*i).Status->SetNestedError(true);
+      this->CallStack.back().Status->SetNestedError(true);
       }
-    cmListFileContext const& lfc = *(*i).Context;
-    msg
-      << " at "
-      << this->LocalGenerator->Convert(lfc.FilePath.c_str(),
-                                       cmLocalGenerator::HOME)
-      << ":" << lfc.Line << " " << lfc.Name;
-    ++i;
+    this->GetBacktrace(backtrace);
     }
   else if(!this->ListFileStack.empty())
     {
     // We are processing the project but are not currently executing a
     // command.  Add whatever context information we have.
-    if(this->LocalGenerator->GetParent())
+    cmListFileContext lfc;
+    lfc.FilePath = this->ListFileStack.back();
+    lfc.Line = 0;
+    if(!this->GetCMakeInstance()->GetIsInTryCompile())
       {
-      msg << " in directory "
-          << this->LocalGenerator->Convert(this->GetCurrentDirectory(),
-                                           cmLocalGenerator::HOME);
+      lfc.FilePath = this->LocalGenerator->Convert(lfc.FilePath.c_str(),
+                                                   cmLocalGenerator::HOME);
       }
-    else
-      {
-      msg << " in top-level directory";
-      }
+    backtrace.push_back(lfc);
     }
 
-  // Add the message text.
-  {
-  msg << " {\n";
-  cmDocumentationFormatterText formatter;
-  formatter.SetIndent("  ");
-  formatter.PrintFormatted(msg, text.c_str());
-  msg << "}";
-  }
+  // Issue the message.
+  this->GetCMakeInstance()->IssueMessage(t, text, backtrace);
+}
 
-  // Add the rest of the context.
-  if(i != this->CallStack.rend())
+//----------------------------------------------------------------------------
+bool cmMakefile::GetBacktrace(cmListFileBacktrace& backtrace) const
+{
+  if(this->CallStack.empty())
     {
-    msg << " with call stack {\n";
-    while(i != this->CallStack.rend())
-      {
-      cmListFileContext const& lfc = *(*i).Context;
-      msg << "  "
-          << this->LocalGenerator->Convert(lfc.FilePath.c_str(),
-                                           cmLocalGenerator::HOME)
-          << ":" << lfc.Line << " " << lfc.Name << "\n";
-      ++i;
-      }
-    msg << "}\n";
+    return false;
     }
-  else
+  for(CallStackType::const_reverse_iterator i = this->CallStack.rbegin();
+      i != this->CallStack.rend(); ++i)
     {
-    msg << "\n";
+    cmListFileContext lfc = *(*i).Context;
+    lfc.FilePath = this->LocalGenerator->Convert(lfc.FilePath.c_str(),
+                                                 cmLocalGenerator::HOME);
+    backtrace.push_back(lfc);
     }
-
-  // Output the message.
-  if(isError)
-    {
-    cmSystemTools::SetErrorOccured();
-    cmSystemTools::Message(msg.str().c_str(), "Error");
-    }
-  else
-    {
-    cmSystemTools::Message(msg.str().c_str(), "Warning");
-    }
+  return true;
 }
 
 //----------------------------------------------------------------------------
@@ -445,7 +395,7 @@ bool cmMakefile::ExecuteCommand(const cmListFileFunction& lff,
         if(!status.GetNestedError())
           {
           // The command invocation requested that we report an error.
-          this->IssueError(pcmd->GetError());
+          this->IssueMessage(cmake::FATAL_ERROR, pcmd->GetError());
           }
         result = false;
         if ( this->GetCMakeInstance()->GetScriptMode() )
@@ -465,7 +415,7 @@ bool cmMakefile::ExecuteCommand(const cmListFileFunction& lff,
       std::string error = "Command ";
       error += pcmd->GetName();
       error += "() is not scriptable";
-      this->IssueError(error);
+      this->IssueMessage(cmake::FATAL_ERROR, error);
       result = false;
       cmSystemTools::SetFatalErrorOccured();
       }
@@ -477,7 +427,7 @@ bool cmMakefile::ExecuteCommand(const cmListFileFunction& lff,
       std::string error = "Unknown CMake command \"";
       error += lff.Name;
       error += "\".";
-      this->IssueError(error);
+      this->IssueMessage(cmake::FATAL_ERROR, error);
       result = false;
       cmSystemTools::SetFatalErrorOccured();
       }
@@ -700,7 +650,8 @@ bool cmMakefile::ReadListFile(const char* filename_in,
       {
       if(endScopeNicely)
         {
-        this->IssueError("cmake_policy PUSH without matching POP");
+        this->IssueMessage(cmake::FATAL_ERROR, 
+                           "cmake_policy PUSH without matching POP");
         }
       this->PopPolicy(false);
       }
@@ -1153,14 +1104,11 @@ void cmMakefile::RemoveDefineFlag(const char* flag)
 bool cmMakefile::ParseDefineFlag(std::string const& def, bool remove)
 {
   // Create a regular expression to match valid definitions.
-  // Definitions with non-trivial values must not be matched because
-  // escaping them could break compatibility with escapes added by
-  // users.
   static cmsys::RegularExpression
-    regex("^[-/]D[A-Za-z_][A-Za-z0-9_]*(=[A-Za-z0-9_.]+)?$");
+    valid("^[-/]D[A-Za-z_][A-Za-z0-9_]*(=.*)?$");
 
   // Make sure the definition matches.
-  if(!regex.find(def.c_str()))
+  if(!valid.find(def.c_str()))
     {
     return false;
     }
@@ -1171,6 +1119,37 @@ bool cmMakefile::ParseDefineFlag(std::string const& def, bool remove)
      (def.find("=") != def.npos))
     {
     return false;
+    }
+
+  // Definitions with non-trivial values require a policy check.
+  static cmsys::RegularExpression
+    trivial("^[-/]D[A-Za-z_][A-Za-z0-9_]*(=[A-Za-z0-9_.]+)?$");
+  if(!trivial.find(def.c_str()))
+    {
+    // This definition has a non-trivial value.
+    switch(this->GetPolicyStatus(cmPolicies::CMP0005))
+      {
+      case cmPolicies::WARN:
+        this->IssueMessage(
+          cmake::AUTHOR_WARNING,
+          this->GetPolicies()->GetPolicyWarning(cmPolicies::CMP0005)
+          );
+      case cmPolicies::OLD:
+        // OLD behavior is to not escape the value.  We should not
+        // convert the definition to use the property.
+        return false;
+      case cmPolicies::REQUIRED_IF_USED:
+      case cmPolicies::REQUIRED_ALWAYS:
+        this->IssueMessage(
+          cmake::FATAL_ERROR,
+          this->GetPolicies()->GetRequiredPolicyError(cmPolicies::CMP0005)
+          );
+        return false;
+      case cmPolicies::NEW:
+        // NEW behavior is to escape the value.  Proceed to convert it
+        // to an entry in the property.
+        break;
+      }
     }
 
   // Get the definition part after the flag.
@@ -1718,12 +1697,11 @@ cmTarget* cmMakefile::AddExecutable(const char *exeName,
 cmTarget*
 cmMakefile::AddNewTarget(cmTarget::TargetType type, const char* name)
 {
-  cmTargets::iterator it;
-  cmTarget target;
+  cmTargets::iterator it =
+    this->Targets.insert(cmTargets::value_type(name, cmTarget())).first;
+  cmTarget& target = it->second;
   target.SetType(type, name);
   target.SetMakefile(this);
-  it=this->Targets.insert(
-      cmTargets::value_type(target.GetName(), target)).first;
   this->LocalGenerator->GetGlobalGenerator()->AddTarget(*it);
   return &it->second;
 }
@@ -2105,7 +2083,9 @@ const char *cmMakefile::ExpandVariablesInString(std::string& source,
       {
       // This case should never be called.  At-only is for
       // configure-file/string which always does no escapes.
-      abort();
+      this->IssueMessage(cmake::INTERNAL_ERROR,
+                         "ExpandVariablesInString @ONLY called "
+                         "on something with escapes.");
       }
 
     // Store an original copy of the input.
@@ -2553,7 +2533,16 @@ int cmMakefile::TryCompile(const char *srcdir, const char *bindir,
   // to save time we pass the EnableLanguage info directly
   gg->EnableLanguagesFromGenerator
     (this->LocalGenerator->GetGlobalGenerator());
-
+  if(this->IsOn("CMAKE_SUPPRESS_DEVELOPER_WARNINGS"))
+    {
+    cm.AddCacheEntry("CMAKE_SUPPRESS_DEVELOPER_WARNINGS",
+                     "TRUE", "", cmCacheManager::INTERNAL);
+    }
+  else
+    {
+    cm.AddCacheEntry("CMAKE_SUPPRESS_DEVELOPER_WARNINGS",
+                     "FALSE", "", cmCacheManager::INTERNAL);
+    }    
   if (cm.Configure() != 0)
     {
     cmSystemTools::Error(
@@ -3338,17 +3327,17 @@ bool cmMakefile::EnforceUniqueName(std::string const& name, std::string& msg,
     else 
       {
       // target names must be globally unique
-      switch (this->GetPolicyStatus(cmPolicies::CMP_0002))
+      switch (this->GetPolicyStatus(cmPolicies::CMP0002))
         {
         case cmPolicies::WARN:
-          this->IssueWarning(this->GetPolicies()->
-                             GetPolicyWarning(cmPolicies::CMP_0002));
+          this->IssueMessage(cmake::AUTHOR_WARNING, this->GetPolicies()->
+                             GetPolicyWarning(cmPolicies::CMP0002));
         case cmPolicies::OLD:
           return true;
         case cmPolicies::REQUIRED_IF_USED:
         case cmPolicies::REQUIRED_ALWAYS:
-          this->IssueError(
-            this->GetPolicies()->GetRequiredPolicyError(cmPolicies::CMP_0002)
+          this->IssueMessage(cmake::FATAL_ERROR,
+            this->GetPolicies()->GetRequiredPolicyError(cmPolicies::CMP0002)
             );
           return true;
         case cmPolicies::NEW:
@@ -3393,7 +3382,7 @@ bool cmMakefile::EnforceUniqueName(std::string const& name, std::string& msg,
         }
       e << "created in source directory \""
         << existing->GetMakefile()->GetCurrentDirectory() << "\".  "
-        << "See documentation for policy CMP_0002 for more details.";
+        << "See documentation for policy CMP0002 for more details.";
       msg = e.str();
       return false;
       }
@@ -3452,11 +3441,12 @@ bool cmMakefile::SetPolicy(const char *id,
 {
   cmPolicies::PolicyID pid;
   if (!this->GetPolicies()->GetPolicyID(id, /* out */ pid))
-  {
-    cmSystemTools::Error("Invalid policy string used. Invalid string was "
-      , id);
+    {
+    cmOStringStream e;
+    e << "Policy \"" << id << "\" is not known to this version of CMake.";
+    this->IssueMessage(cmake::FATAL_ERROR, e.str());
     return false;
-  }
+    }
   return this->SetPolicy(pid,status);
 }
 
@@ -3471,7 +3461,7 @@ bool cmMakefile::SetPolicy(cmPolicies::PolicyID id,
 
     // Special hook for presenting compatibility variable as soon as
     // the user requests it.
-    if(id == cmPolicies::CMP_0001 &&
+    if(id == cmPolicies::CMP0001 &&
        (status == cmPolicies::WARN || status == cmPolicies::OLD))
       {
       if(!(this->GetCacheManager()

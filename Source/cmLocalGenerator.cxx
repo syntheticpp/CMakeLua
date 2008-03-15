@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-07 20:30:33 $
-  Version:   $Revision: 1.268 $
+  Date:      $Date: 2008-03-13 15:38:46 $
+  Version:   $Revision: 1.269 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -2678,7 +2678,7 @@ bool cmLocalGenerator::NeedBackwardsCompatibility(unsigned int major,
 {
   // Check the policy to decide whether to pay attention to this
   // variable.
-  switch(this->Makefile->GetPolicyStatus(cmPolicies::CMP_0001))
+  switch(this->Makefile->GetPolicyStatus(cmPolicies::CMP0001))
     {
     case cmPolicies::WARN:
       // WARN is just OLD without warning because user code does not

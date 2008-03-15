@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCPackCygwinBinaryGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-07 16:06:44 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2008-03-13 01:54:27 $
+  Version:   $Revision: 1.5 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -106,7 +106,7 @@ const char* cmCPackCygwinBinaryGenerator::GetOutputExtension()
                   "CPACK_CYGWIN_PATCH_NUMBER not specified using 1"
                   << std::endl);
     }
-  this->OutputExtension += 
+  this->OutputExtension += patchNumber;
   this->OutputExtension += ".tar.bz2";
   return this->OutputExtension.c_str();
 }

@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: CMakeSetupDialog.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-07 16:50:11 $
-  Version:   $Revision: 1.38 $
+  Date:      $Date: 2008-03-13 20:21:44 $
+  Version:   $Revision: 1.42 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -59,6 +59,7 @@ void QCMakeThread::run()
 CMakeSetupDialog::CMakeSetupDialog()
   : ExitAfterGenerate(true), CacheModified(false), CurrentState(Interrupting)
 {
+  this->SuppressDevWarnings = false;
   // create the GUI
   QSettings settings;
   settings.beginGroup("Settings/StartPath");
@@ -95,8 +96,11 @@ CMakeSetupDialog::CMakeSetupDialog()
   this->GenerateAction = ToolsMenu->addAction(tr("&Generate"));
   QObject::connect(this->GenerateAction, SIGNAL(triggered(bool)), 
                    this, SLOT(doGenerate()));
+  this->SuppressDevWarningsAction = ToolsMenu->addAction(tr("&Suppress dev Warnings (-Wno-dev)"));
+  QObject::connect(this->SuppressDevWarningsAction, SIGNAL(triggered(bool)), 
+                   this, SLOT(doSuppressDev()));
+  this->SuppressDevWarningsAction->setCheckable(true);
   
-
   QMenu* HelpMenu = this->menuBar()->addMenu(tr("&Help"));
   QAction* a = HelpMenu->addAction(tr("About"));
   QObject::connect(a, SIGNAL(triggered(bool)),
@@ -304,6 +308,13 @@ void CMakeSetupDialog::finishGenerate(int err)
     }
 }
 
+void CMakeSetupDialog::doSuppressDev()
+{
+  this->SuppressDevWarnings = !this->SuppressDevWarnings;
+  this->CMakeThread->cmakeInstance()->
+    SetSuppressDevWarnings(this->SuppressDevWarnings);
+}
+
 void CMakeSetupDialog::doGenerate()
 {
   if(this->CurrentState == Generating)
@@ -472,6 +483,7 @@ void CMakeSetupDialog::error(const QString& message)
     m.replace(QString("&"), QString("&amp;"));
     m.replace(QString("<"), QString("&lt;"));
     m.replace(QString(">"), QString("&gt;"));
+    m.replace(QString(" "), QString("&nbsp;"));
     this->Output->append(QString("<b><font color=red>%1</font></b>").arg(m));
     }
 }

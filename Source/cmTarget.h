@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmTarget.h,v $
   Language:  C++
-  Date:      $Date: 2008/03/01 17:51:07 $
-  Version:   $Revision: 1.108 $
+  Date:      $Date: 2008-03-13 20:35:39 $
+  Version:   $Revision: 1.111 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -19,12 +19,14 @@
 
 #include "cmCustomCommand.h"
 #include "cmPropertyMap.h"
+#include "cmPolicies.h"
 
 class cmake;
 class cmMakefile;
 class cmSourceFile;
 class cmGlobalGenerator;
 class cmComputeLinkInformation;
+class cmListFileBacktrace;
 
 struct cmTargetLinkInformationMap:
   public std::map<cmStdString, cmComputeLinkInformation*>
@@ -103,6 +105,14 @@ public:
   ///! Set the cmMakefile that owns this target
   void SetMakefile(cmMakefile *mf);
   cmMakefile *GetMakefile() const { return this->Makefile;};
+
+  /** Get the status of policy CMP0003 when the target was created.  */
+  cmPolicies::PolicyStatus GetPolicyStatusCMP0003() const
+    { return this->PolicyStatusCMP0003; }
+
+  /** Get the status of policy CMP0004 when the target was created.  */
+  cmPolicies::PolicyStatus GetPolicyStatusCMP0004() const
+    { return this->PolicyStatusCMP0004; }
 
   /**
    * Get the list of the custom commands for this target
@@ -374,6 +384,9 @@ public:
   /** Return whether this target is an executable Bundle on Apple.  */
   bool IsAppBundleOnApple();
 
+  /** Get a backtrace from the creation of the target.  */
+  cmListFileBacktrace const& GetBacktrace() const;
+
 private:
   /**
    * A list of direct dependencies. Use in conjunction with DependencyMap.
@@ -525,6 +538,10 @@ private:
   // The cmMakefile instance that owns this target.  This should
   // always be set.
   cmMakefile* Makefile;
+
+  // Policy status recorded when target was created.
+  cmPolicies::PolicyStatus PolicyStatusCMP0003;
+  cmPolicies::PolicyStatus PolicyStatusCMP0004;
 
   // Internal representation details.
   friend class cmTargetInternals;

@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmListCommand.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/23 15:27:59 $
-  Version:   $Revision: 1.14 $
+  Date:      $Date: 2008-03-12 21:02:10 $
+  Version:   $Revision: 1.15 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -73,6 +73,7 @@ public:
       "  list(INSERT <list> <element_index> <element> [<element> ...])\n"
       "  list(REMOVE_ITEM <list> <value> [<value> ...])\n"
       "  list(REMOVE_AT <list> <index> [<index> ...])\n"
+      "  list(REMOVE_DUPLICATES <list>)\n"
       "  list(REVERSE <list>)\n"
       "  list(SORT <list>)\n"
       "LENGTH will return a given list's length.\n"
@@ -84,6 +85,7 @@ public:
       "REMOVE_AT and REMOVE_ITEM will remove items from the list. The "
       "difference is that REMOVE_ITEM will remove the given items, while "
       "REMOVE_AT will remove the items at the given indices.\n"
+      "REMOVE_DUPLICATES will remove duplicated items in the list.\n"
       "REVERSE reverses the contents of the list in-place.\n"
       "SORT sorts the list in-place alphabetically.\n"
       "NOTES: A list in cmake is a ; separated group of strings. "
@@ -110,6 +112,7 @@ protected:
   bool HandleInsertCommand(std::vector<std::string> const& args);
   bool HandleRemoveAtCommand(std::vector<std::string> const& args);
   bool HandleRemoveItemCommand(std::vector<std::string> const& args);
+  bool HandleRemoveDuplicatesCommand(std::vector<std::string> const& args);
   bool HandleSortCommand(std::vector<std::string> const& args);
   bool HandleReverseCommand(std::vector<std::string> const& args);
 
