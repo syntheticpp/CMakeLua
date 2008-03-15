@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: QCMake.h,v $
   Language:  C++
-  Date:      $Date: 2007/11/09 20:18:49 $
-  Version:   $Revision: 1.8 $
+  Date:      $Date: 2008-03-12 02:51:56 $
+  Version:   $Revision: 1.9 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -65,7 +65,7 @@ class QCMake : public QObject
 public:
   QCMake(QObject* p=0);
   ~QCMake();
-
+  void SetSuppressDevWarnings(bool value);
 public slots:
   /// load the cache file in a directory
   void loadCache(const QString& dir);
@@ -125,7 +125,7 @@ protected:
   static void progressCallback(const char* msg, float percent, void* cd);
   static void errorCallback(const char* msg, const char* title, 
                             bool&, void* cd);
-
+  bool SuppressDevWarnings;
   QString SourceDirectory;
   QString BinaryDirectory;
   QString Generator;

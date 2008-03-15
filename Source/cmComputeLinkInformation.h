@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmComputeLinkInformation.h,v $
   Language:  C++
-  Date:      $Date: 2008/03/01 17:51:07 $
-  Version:   $Revision: 1.15 $
+  Date:      $Date: 2008-03-13 20:23:18 $
+  Version:   $Revision: 1.16 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -153,13 +153,15 @@ private:
 
   // Linker search path computation.
   cmOrderDirectories* OrderLinkerSearchPath;
-  void FinishLinkerSearchDirectories();
+  bool FinishLinkerSearchDirectories();
+  void PrintLinkPolicyDiagnosis(std::ostream&);
   std::set<cmStdString> ImplicitLinkDirs;
 
   // Linker search path compatibility mode.
+  std::set<cmStdString> OldLinkDirMask;
   std::vector<std::string> OldLinkDirItems;
+  std::vector<std::string> OldUserFlagItems;
   bool OldLinkDirMode;
-  bool HaveUserFlagItem;
 
   // Runtime path computation.
   cmOrderDirectories* OrderRuntimeSearchPath;

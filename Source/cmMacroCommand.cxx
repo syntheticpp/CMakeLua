@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMacroCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/29 17:18:11 $
-  Version:   $Revision: 1.35 $
+  Date:      $Date: 2008-03-07 13:40:36 $
+  Version:   $Revision: 1.36 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -237,24 +237,12 @@ bool cmMacroHelperCommand::InvokeInitialPass
       newLFF.Arguments.push_back(arg);
       }
     cmExecutionStatus status;
-    if(!this->Makefile->ExecuteCommand(newLFF,status))
+    if(!this->Makefile->ExecuteCommand(newLFF, status) ||
+       status.GetNestedError())
       {
-      if(args.size())
-        {
-        arg.FilePath = args[0].FilePath;
-        arg.Line = args[0].Line;
-        }
-      else
-        {
-        arg.FilePath =  "Unknown";
-        arg.Line = 0;
-        }
-      cmOStringStream error;
-      error << "Error in cmake code at\n"
-            << arg.FilePath << ":" << arg.Line << ":\n"
-            << "A command failed during the invocation of macro \""
-            << this->Args[0].c_str() << "\".";
-      cmSystemTools::Error(error.str().c_str());
+      // The error message should have already included the call stack
+      // so we do not need to report an error here.
+      inStatus.SetNestedError(true);
       return false;
       }
     if (status.GetReturnInvoked())

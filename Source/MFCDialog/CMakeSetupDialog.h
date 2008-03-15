@@ -3,8 +3,8 @@
 Program:   CMake - Cross-Platform Makefile Generator
 Module:    $RCSfile: CMakeSetupDialog.h,v $
 Language:  C++
-Date:      $Date: 2005/03/28 18:20:55 $
-Version:   $Revision: 1.30 $
+Date:      $Date: 2008-03-12 02:51:56 $
+Version:   $Revision: 1.31 $
 
 Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
 See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -63,6 +63,7 @@ protected:
   //{{AFX_DATA(CMakeSetupDialog)
   enum { IDD = IDD_CMakeSetupDialog_DIALOG };
   CButton       m_AdvancedValuesControl;
+  CButton       m_SuppressDevWarningsControl;
   CButton       m_BrowseSource;
   CButton       m_BrowseBuild;
   CButton m_HelpButton;
@@ -80,6 +81,7 @@ protected:
   CStatic       m_StatusDisplay;
   CButton       m_Configure;
   BOOL    m_AdvancedValues;
+  BOOL    m_SuppressDevValue;
   //}}AFX_DATA
   
   // ClassWizard generated virtual function overrides
@@ -125,6 +127,8 @@ protected:
   afx_msg void OnDeleteButton();
   afx_msg void OnAdvancedValues();
   afx_msg void OnDoubleclickedAdvancedValues();
+  afx_msg void OnSuppressDevValue();
+  afx_msg void OnDoubleclickedSuppressDevValue();
   afx_msg void OnDropFiles(HDROP);
   afx_msg BOOL OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message);
   //}}AFX_MSG

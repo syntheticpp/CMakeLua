@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: QCMake.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/16 18:05:03 $
-  Version:   $Revision: 1.20 $
+  Date:      $Date: 2008-03-12 02:51:56 $
+  Version:   $Revision: 1.21 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -28,6 +28,7 @@
 QCMake::QCMake(QObject* p)
   : QObject(p)
 {
+  this->SuppressDevWarnings = false;
   qRegisterMetaType<QCMakeCacheProperty>();
   qRegisterMetaType<QCMakeCachePropertyList>();
   
@@ -107,6 +108,7 @@ void QCMake::setBinaryDirectory(const QString& dir)
             "Please check the permissions of the directory you are trying to run CMake on.");
         }
       }
+    
     QCMakeCachePropertyList props = this->properties();
     emit this->propertiesChanged(props);
     cmCacheManager::CacheIterator itm = cachem->NewIterator();
@@ -143,6 +145,7 @@ void QCMake::configure()
   this->CMakeInstance->SetGlobalGenerator(
     this->CMakeInstance->CreateGlobalGenerator(this->Generator.toAscii().data()));
   this->CMakeInstance->LoadCache();
+  this->CMakeInstance->SetSuppressDevWarnings(this->SuppressDevWarnings);
   this->CMakeInstance->PreLoadCMakeFiles();
 
   cmSystemTools::ResetErrorOccuredFlag();
@@ -360,3 +363,7 @@ void QCMake::reloadCache()
   emit this->propertiesChanged(props);
 }
 
+void QCMake::SetSuppressDevWarnings(bool value)
+{
+  this->SuppressDevWarnings = value;
+}

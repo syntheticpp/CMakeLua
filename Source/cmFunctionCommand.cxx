@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmFunctionCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/29 17:18:11 $
-  Version:   $Revision: 1.5 $
+  Date:      $Date: 2008-03-07 13:40:36 $
+  Version:   $Revision: 1.6 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -86,7 +86,7 @@ public:
 
 bool cmFunctionHelperCommand::InvokeInitialPass
 (const std::vector<cmListFileArgument>& args,
- cmExecutionStatus &)
+ cmExecutionStatus & inStatus)
 {
   // Expand the argument list to the function.
   std::vector<std::string> expandedArgs;
@@ -157,18 +157,12 @@ bool cmFunctionHelperCommand::InvokeInitialPass
   for(unsigned int c = 0; c < this->Functions.size(); ++c)
     {
     cmExecutionStatus status;
-    if (!this->Makefile->ExecuteCommand(this->Functions[c],status))
+    if (!this->Makefile->ExecuteCommand(this->Functions[c],status) ||
+        status.GetNestedError())
       {
-      cmOStringStream error;
-      error << "Error in cmake code at\n"
-            << this->Functions[c].FilePath << ":" 
-            << this->Functions[c].Line << ":\n"
-            << "A command failed during the invocation of function \""
-            << this->Args[0].c_str() << "\".";
-      cmSystemTools::Error(error.str().c_str());
-
-      // pop scope on the makefile and return
-      this->Makefile->PopScope();
+      // The error message should have already included the call stack
+      // so we do not need to report an error here.
+      inStatus.SetNestedError(true);
       return false;
       }
     if (status.GetReturnInvoked())

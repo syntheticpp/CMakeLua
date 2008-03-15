@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmDocumentation.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/19 19:33:43 $
-  Version:   $Revision: 1.67 $
+  Date:      $Date: 2008-03-05 16:05:20 $
+  Version:   $Revision: 1.69 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -338,6 +338,8 @@ bool cmDocumentation::PrintDocumentation(Type ht, std::ostream& os)
       return this->PrintDocumentationSingle(os);
     case cmDocumentation::SingleModule:
       return this->PrintDocumentationSingleModule(os);
+    case cmDocumentation::SinglePolicy:
+      return this->PrintDocumentationSinglePolicy(os);
     case cmDocumentation::SingleProperty:
       return this->PrintDocumentationSingleProperty(os);
     case cmDocumentation::SingleVariable:
@@ -381,6 +383,8 @@ bool cmDocumentation::PrintDocumentation(Type ht, std::ostream& os)
       return this->PrintDocumentationModules(os);
     case cmDocumentation::CustomModules: 
       return this->PrintDocumentationCustomModules(os);
+    case cmDocumentation::Policies: 
+      return this->PrintDocumentationPolicies(os);
     case cmDocumentation::Properties: 
       return this->PrintDocumentationProperties(os);
     case cmDocumentation::Variables: 
@@ -694,6 +698,12 @@ bool cmDocumentation::CheckOptions(int argc, const char* const* argv)
       GET_OPT_ARGUMENT(help.Filename);
       help.HelpForm = this->GetFormFromFilename(help.Filename);
       }
+    else if(strcmp(argv[i], "--help-policies") == 0)
+      {
+      help.HelpType = cmDocumentation::Policies;
+      GET_OPT_ARGUMENT(help.Filename);
+      help.HelpForm = this->GetFormFromFilename(help.Filename);
+      }
     else if(strcmp(argv[i], "--help-variables") == 0)
       {
       help.HelpType = cmDocumentation::Variables;
@@ -764,6 +774,13 @@ bool cmDocumentation::CheckOptions(int argc, const char* const* argv)
       GET_OPT_ARGUMENT(help.Filename);
       help.HelpForm = this->GetFormFromFilename(help.Filename);
       }
+    else if(strcmp(argv[i], "--help-policy") == 0)
+      {
+      help.HelpType = cmDocumentation::SinglePolicy;
+      GET_OPT_ARGUMENT(help.Argument);
+      GET_OPT_ARGUMENT(help.Filename);
+      help.HelpForm = this->GetFormFromFilename(help.Filename);
+      }
     else if(strcmp(argv[i], "--help-variable") == 0)
       {
       help.HelpType = cmDocumentation::SingleVariable;
@@ -829,6 +846,9 @@ void cmDocumentation::Print(Form f, std::ostream& os)
 //----------------------------------------------------------------------------
 void cmDocumentation::Print(std::ostream& os)
 {
+  // if the formatter supports it, print a master index for 
+  // all sections
+  this->CurrentFormatter->PrintIndex(os, this->PrintSections);
   for(unsigned int i=0; i < this->PrintSections.size(); ++i)
     {
     std::string name = this->PrintSections[i]->
@@ -1133,6 +1153,20 @@ bool cmDocumentation::PrintDocumentationSingleProperty(std::ostream& os)
 }
 
 //----------------------------------------------------------------------------
+bool cmDocumentation::PrintDocumentationSinglePolicy(std::ostream& os)
+{
+  if (this->PrintDocumentationGeneric(os,"Policies"))
+    {
+    return true;
+    }
+
+  // Argument was not a command.  Complain.
+  os << "Argument \"" << this->CurrentArgument.c_str()
+     << "\" to --help-policy is not a CMake policy.\n";
+  return false;
+}
+
+//----------------------------------------------------------------------------
 bool cmDocumentation::PrintDocumentationSingleVariable(std::ostream& os)
 {
   bool done = false;
@@ -1224,6 +1258,21 @@ bool cmDocumentation::PrintDocumentationCustomModules(std::ostream& os)
   this->AddSectionToPrint("Custom CMake Modules");
 // the custom modules are most probably not under Kitware's copyright, Alex
 //  this->AddSectionToPrint("Copyright");
+  this->AddSectionToPrint("See Also");
+
+  this->CurrentFormatter->PrintHeader(this->GetNameString(), os);
+  this->Print(os);
+  this->CurrentFormatter->PrintFooter(os);
+  return true;
+}
+
+//----------------------------------------------------------------------------
+bool cmDocumentation::PrintDocumentationPolicies(std::ostream& os)
+{
+  this->ClearSections();
+  this->AddSectionToPrint("Description");
+  this->AddSectionToPrint("Policies");
+  this->AddSectionToPrint("Copyright");
   this->AddSectionToPrint("See Also");
 
   this->CurrentFormatter->PrintHeader(this->GetNameString(), os);

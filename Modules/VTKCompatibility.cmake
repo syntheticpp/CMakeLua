@@ -1,40 +1,35 @@
 IF(APPLE)
   SET(CMAKE_CXX_CREATE_SHARED_LIBRARY "${CMAKE_C_CREATE_SHARED_LIBRARY}")
   SET(CMAKE_CXX_CREATE_SHARED_MODULE "${CMAKE_C_CREATE_SHARED_MODULE}")
-  STRING( REGEX REPLACE "CMAKE_C_COMPILER" 
-    CMAKE_CXX_COMPILER CMAKE_CXX_CREATE_SHARED_MODULE 
+  STRING( REGEX REPLACE "CMAKE_C_COMPILER"
+    CMAKE_CXX_COMPILER CMAKE_CXX_CREATE_SHARED_MODULE
     "${CMAKE_CXX_CREATE_SHARED_MODULE}")
-  STRING( REGEX REPLACE "CMAKE_C_COMPILER" 
-    CMAKE_CXX_COMPILER CMAKE_CXX_CREATE_SHARED_LIBRARY 
+  STRING( REGEX REPLACE "CMAKE_C_COMPILER"
+    CMAKE_CXX_COMPILER CMAKE_CXX_CREATE_SHARED_LIBRARY
     "${CMAKE_CXX_CREATE_SHARED_LIBRARY}")
 ENDIF(APPLE)
 
-SET(VTKFTGL_BINARY_DIR "${VTK_BINARY_DIR}/Utilities/ftgl" 
+SET(VTKFTGL_BINARY_DIR "${VTK_BINARY_DIR}/Utilities/ftgl"
   CACHE INTERNAL "")
-SET(VTKFREETYPE_BINARY_DIR "${VTK_BINARY_DIR}/Utilities/freetype" 
+SET(VTKFREETYPE_BINARY_DIR "${VTK_BINARY_DIR}/Utilities/freetype"
   CACHE INTERNAL "")
-SET(VTKFTGL_SOURCE_DIR "${VTK_SOURCE_DIR}/Utilities/ftgl" 
+SET(VTKFTGL_SOURCE_DIR "${VTK_SOURCE_DIR}/Utilities/ftgl"
   CACHE INTERNAL "")
-SET(VTKFREETYPE_SOURCE_DIR "${VTK_SOURCE_DIR}/Utilities/freetype" 
+SET(VTKFREETYPE_SOURCE_DIR "${VTK_SOURCE_DIR}/Utilities/freetype"
   CACHE INTERNAL "")
 
-SET(VTK_GLEXT_FILE "${VTK_SOURCE_DIR}/Utilities/ParseOGLExt/headers/glext.h" 
-  CACHE FILEPATH 
+SET(VTK_GLEXT_FILE "${VTK_SOURCE_DIR}/Utilities/ParseOGLExt/headers/glext.h"
+  CACHE FILEPATH
   "Location of the OpenGL extensions header file (glext.h).")
-SET(VTK_GLXEXT_FILE 
+SET(VTK_GLXEXT_FILE
   "${VTK_SOURCE_DIR}/Utilities/ParseOGLExt/headers/glxext.h" CACHE FILEPATH
   "Location of the GLX extensions header file (glxext.h).")
-SET(VTK_WGLEXT_FILE "${VTK_SOURCE_DIR}/Utilities/ParseOGLExt/headers/wglext.h" 
+SET(VTK_WGLEXT_FILE "${VTK_SOURCE_DIR}/Utilities/ParseOGLExt/headers/wglext.h"
   CACHE FILEPATH
   "Location of the WGL extensions header file (wglext.h).")
 
 # work around an old bug in VTK
 SET(TIFF_RIGHT_VERSION 1)
-
-# vtkRendering links to X11 with "-lXt ${X11_LIBRARIES}" because CMake
-# 2.4 and below did not provide the X11_Xt_LIB variable.  We need the
-# linker search path compatiblity feature.
-SET(CMAKE_LINK_OLD_PATHS 1)
 
 # for very old VTK (versions prior to 4.2)
 MACRO(SOURCE_FILES)

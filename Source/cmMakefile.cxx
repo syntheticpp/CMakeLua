@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefile.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/03/01 21:21:41 $
-  Version:   $Revision: 1.441 $
+  Date:      $Date: 2008-03-13 21:38:51 $
+  Version:   $Revision: 1.465 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -149,6 +149,9 @@ void cmMakefile::Initialize()
   this->cmDefineRegex.compile("#cmakedefine[ \t]+([A-Za-z_0-9]*)");
   this->cmDefine01Regex.compile("#cmakedefine01[ \t]+([A-Za-z_0-9]*)");
   this->cmAtVarRegex.compile("(@[A-Za-z_0-9/.+-]+@)");
+
+  // Enter a policy level for this directory.
+  this->PushPolicy();
 }
 
 unsigned int cmMakefile::GetCacheMajorVersion()
@@ -210,6 +213,11 @@ cmMakefile::~cmMakefile()
     delete b;
     }
   this->FunctionBlockers.clear();
+  if (this->PolicyStack.size() != 1)
+  {
+    cmSystemTools::Error("Internal CMake Error, Policy Stack has not been"
+      " popped properly");
+  }
 }
 
 void cmMakefile::PrintStringVector(const char* s,
@@ -278,6 +286,79 @@ bool cmMakefile::CommandExists(const char* name) const
   return this->GetCMakeInstance()->CommandExists(name);
 }
 
+
+//----------------------------------------------------------------------------
+void cmMakefile::IssueMessage(cmake::MessageType t,
+                              std::string const& text) const
+{
+  // Collect context information.
+  cmListFileBacktrace backtrace;
+  if(!this->CallStack.empty())
+    {
+    if((t == cmake::FATAL_ERROR) || (t == cmake::INTERNAL_ERROR))
+      {
+      this->CallStack.back().Status->SetNestedError(true);
+      }
+    this->GetBacktrace(backtrace);
+    }
+  else if(!this->ListFileStack.empty())
+    {
+    // We are processing the project but are not currently executing a
+    // command.  Add whatever context information we have.
+    cmListFileContext lfc;
+    lfc.FilePath = this->ListFileStack.back();
+    lfc.Line = 0;
+    if(!this->GetCMakeInstance()->GetIsInTryCompile())
+      {
+      lfc.FilePath = this->LocalGenerator->Convert(lfc.FilePath.c_str(),
+                                                   cmLocalGenerator::HOME);
+      }
+    backtrace.push_back(lfc);
+    }
+
+  // Issue the message.
+  this->GetCMakeInstance()->IssueMessage(t, text, backtrace);
+}
+
+//----------------------------------------------------------------------------
+bool cmMakefile::GetBacktrace(cmListFileBacktrace& backtrace) const
+{
+  if(this->CallStack.empty())
+    {
+    return false;
+    }
+  for(CallStackType::const_reverse_iterator i = this->CallStack.rbegin();
+      i != this->CallStack.rend(); ++i)
+    {
+    cmListFileContext lfc = *(*i).Context;
+    lfc.FilePath = this->LocalGenerator->Convert(lfc.FilePath.c_str(),
+                                                 cmLocalGenerator::HOME);
+    backtrace.push_back(lfc);
+    }
+  return true;
+}
+
+//----------------------------------------------------------------------------
+// Helper class to make sure the call stack is valid.
+class cmMakefileCall
+{
+public:
+  cmMakefileCall(cmMakefile* mf,
+                 cmListFileContext const& lfc,
+                 cmExecutionStatus& status): Makefile(mf)
+    {
+    cmMakefile::CallStackEntry entry = {&lfc, &status};
+    this->Makefile->CallStack.push_back(entry);
+    }
+  ~cmMakefileCall()
+    {
+    this->Makefile->CallStack.pop_back();
+    }
+private:
+  cmMakefile* Makefile;
+};
+
+//----------------------------------------------------------------------------
 bool cmMakefile::ExecuteCommand(const cmListFileFunction& lff,
                                 cmExecutionStatus &status)
 {
@@ -292,34 +373,30 @@ bool cmMakefile::ExecuteCommand(const cmListFileFunction& lff,
   
   std::string name = lff.Name;
 
-  // execute the command
-  cmCommand *rm =
-    this->GetCMakeInstance()->GetCommand(name.c_str());
-  if(rm)
+  // Place this call on the call stack.
+  cmMakefileCall stack_manager(this, lff, status);
+  static_cast<void>(stack_manager);
+
+  // Lookup the command prototype.
+  if(cmCommand* proto = this->GetCMakeInstance()->GetCommand(name.c_str()))
     {
-    // const char* versionValue
-      // = this->GetDefinition("CMAKE_BACKWARDS_COMPATIBILITY");
-    // int major = 0;
-    // int minor = 0;
-    // if ( versionValue )
-      // {
-      // sscanf(versionValue, "%d.%d", &major, &minor);
-      // }
-    cmCommand* usedCommand = rm->Clone();
-    usedCommand->SetMakefile(this);
-    bool keepCommand = false;
-    if(usedCommand->GetEnabled() && !cmSystemTools::GetFatalErrorOccured()  &&
-       (!this->GetCMakeInstance()->GetScriptMode() ||
-        usedCommand->IsScriptable()))
+    // Clone the prototype.
+    cmsys::auto_ptr<cmCommand> pcmd(proto->Clone());
+    pcmd->SetMakefile(this);
+
+    // Decide whether to invoke the command.
+    if(pcmd->GetEnabled() && !cmSystemTools::GetFatalErrorOccured()  &&
+       (!this->GetCMakeInstance()->GetScriptMode() || pcmd->IsScriptable()))
       {
-      if(!usedCommand->InvokeInitialPass(lff.Arguments,status))
+      // Try invoking the command.
+      if(!pcmd->InvokeInitialPass(lff.Arguments,status) ||
+         status.GetNestedError())
         {
-        cmOStringStream error;
-        error << "Error in cmake code at\n"
-              << lff.FilePath << ":" << lff.Line << ":\n"
-              << usedCommand->GetError() << std::endl
-              << "   Called from: " << this->GetListFileStack().c_str();
-        cmSystemTools::Error(error.str().c_str());
+        if(!status.GetNestedError())
+          {
+          // The command invocation requested that we report an error.
+          this->IssueMessage(cmake::FATAL_ERROR, pcmd->GetError());
+          }
         result = false;
         if ( this->GetCMakeInstance()->GetScriptMode() )
           {
@@ -329,38 +406,28 @@ bool cmMakefile::ExecuteCommand(const cmListFileFunction& lff,
       else
         {
         // use the command
-        keepCommand = true;
-        this->UsedCommands.push_back(usedCommand);
+        this->UsedCommands.push_back(pcmd.release());
         }
       }
     else if ( this->GetCMakeInstance()->GetScriptMode()
-              && !usedCommand->IsScriptable() )
+              && !pcmd->IsScriptable() )
       {
-      cmOStringStream error;
-      error << "Error in cmake code at\n"
-            << lff.FilePath << ":" << lff.Line << ":\n"
-            << "Command " << usedCommand->GetName()
-            << "() is not scriptable" << std::endl;
-      cmSystemTools::Error(error.str().c_str());
+      std::string error = "Command ";
+      error += pcmd->GetName();
+      error += "() is not scriptable";
+      this->IssueMessage(cmake::FATAL_ERROR, error);
       result = false;
       cmSystemTools::SetFatalErrorOccured();
-      }
-    // if the Cloned command was not used
-    // then delete it
-    if(!keepCommand)
-      {
-      delete usedCommand;
       }
     }
   else
     {
     if(!cmSystemTools::GetFatalErrorOccured())
       {
-      cmOStringStream error;
-      error << "Error in cmake code at\n"
-            << lff.FilePath << ":" << lff.Line << ":\n"
-            << "Unknown CMake command \"" << lff.Name.c_str() << "\".";
-      cmSystemTools::Error(error.str().c_str());
+      std::string error = "Unknown CMake command \"";
+      error += lff.Name;
+      error += "\".";
+      this->IssueMessage(cmake::FATAL_ERROR, error);
       result = false;
       cmSystemTools::SetFatalErrorOccured();
       }
@@ -525,7 +592,7 @@ bool cmMakefile::ReadListFile(const char* filename_in,
   else
     {
   cmListFile cacheFile;
-  if( !cacheFile.ParseFile(filenametoread, requireProjectCommand) )
+  if( !cacheFile.ParseFile(filenametoread, requireProjectCommand, this) )
     {
     // pop the listfile off the stack
     this->ListFileStack.pop_back();
@@ -539,6 +606,7 @@ bool cmMakefile::ReadListFile(const char* filename_in,
     }
   // add this list file to the list of dependencies
   this->ListFiles.push_back( filenametoread);
+  bool endScopeNicely = filename? true: false;
   const size_t numberFunctions = cacheFile.Functions.size();
   for(size_t i =0; i < numberFunctions; ++i)
     {
@@ -547,19 +615,16 @@ bool cmMakefile::ReadListFile(const char* filename_in,
     if (status.GetReturnInvoked() ||
         cmSystemTools::GetFatalErrorOccured() )
       {
-      // pop the listfile off the stack
-      this->ListFileStack.pop_back();
-      this->AddDefinition("CMAKE_PARENT_LIST_FILE",
-                          currentParentFile.c_str());
-      this->AddDefinition("CMAKE_CURRENT_LIST_FILE", currentFile.c_str());
-      return true;
+      // Exit early from processing this file.
+      endScopeNicely = false;
+      break;
       }
     }
   }
   // *** end of listfile code
 
   // send scope ended to and function blockers
-  if (filename)
+  if (endScopeNicely)
     {
     // loop over all function blockers to see if any block this command
     std::list<cmFunctionBlocker *>::iterator pos;
@@ -572,6 +637,21 @@ bool cmMakefile::ReadListFile(const char* filename_in,
         {
         (*pos)->ScopeEnded(*this);
         }
+      }
+    }
+
+  // If this is the directory-level CMakeLists.txt file then enforce
+  // policy stack depth.
+  if(this->ListFileStack.size() == 1)
+    {
+    while(this->PolicyStack.size() > 1)
+      {
+      if(endScopeNicely)
+        {
+        this->IssueMessage(cmake::FATAL_ERROR, 
+                           "cmake_policy PUSH without matching POP");
+        }
+      this->PopPolicy(false);
       }
     }
 
@@ -1022,14 +1102,11 @@ void cmMakefile::RemoveDefineFlag(const char* flag)
 bool cmMakefile::ParseDefineFlag(std::string const& def, bool remove)
 {
   // Create a regular expression to match valid definitions.
-  // Definitions with non-trivial values must not be matched because
-  // escaping them could break compatibility with escapes added by
-  // users.
   static cmsys::RegularExpression
-    regex("^[-/]D[A-Za-z_][A-Za-z0-9_]*(=[A-Za-z0-9_.]+)?$");
+    valid("^[-/]D[A-Za-z_][A-Za-z0-9_]*(=.*)?$");
 
   // Make sure the definition matches.
-  if(!regex.find(def.c_str()))
+  if(!valid.find(def.c_str()))
     {
     return false;
     }
@@ -1040,6 +1117,37 @@ bool cmMakefile::ParseDefineFlag(std::string const& def, bool remove)
      (def.find("=") != def.npos))
     {
     return false;
+    }
+
+  // Definitions with non-trivial values require a policy check.
+  static cmsys::RegularExpression
+    trivial("^[-/]D[A-Za-z_][A-Za-z0-9_]*(=[A-Za-z0-9_.]+)?$");
+  if(!trivial.find(def.c_str()))
+    {
+    // This definition has a non-trivial value.
+    switch(this->GetPolicyStatus(cmPolicies::CMP0005))
+      {
+      case cmPolicies::WARN:
+        this->IssueMessage(
+          cmake::AUTHOR_WARNING,
+          this->GetPolicies()->GetPolicyWarning(cmPolicies::CMP0005)
+          );
+      case cmPolicies::OLD:
+        // OLD behavior is to not escape the value.  We should not
+        // convert the definition to use the property.
+        return false;
+      case cmPolicies::REQUIRED_IF_USED:
+      case cmPolicies::REQUIRED_ALWAYS:
+        this->IssueMessage(
+          cmake::FATAL_ERROR,
+          this->GetPolicies()->GetRequiredPolicyError(cmPolicies::CMP0005)
+          );
+        return false;
+      case cmPolicies::NEW:
+        // NEW behavior is to escape the value.  Proceed to convert it
+        // to an entry in the property.
+        break;
+      }
     }
 
   // Get the definition part after the flag.
@@ -1100,13 +1208,8 @@ void cmMakefile::AddLinkLibraryForTarget(const char *target,
       this->GetCMakeInstance()->GetGlobalGenerator()->FindTarget(0,lib);
     if(tgt)
       {
-      bool allowModules = true;
-      const char* versionValue
-        = this->GetDefinition("CMAKE_BACKWARDS_COMPATIBILITY");
-      if (versionValue &&  (atof(versionValue) >= 2.4) )
-        {
-        allowModules = false;
-        }
+      // CMake versions below 2.4 allowed linking to modules.
+      bool allowModules = this->NeedBackwardsCompatibility(2,3);
       // if it is not a static or shared library then you can not link to it
       if(!((tgt->GetType() == cmTarget::STATIC_LIBRARY) ||
            (tgt->GetType() == cmTarget::SHARED_LIBRARY) ||
@@ -1592,12 +1695,11 @@ cmTarget* cmMakefile::AddExecutable(const char *exeName,
 cmTarget*
 cmMakefile::AddNewTarget(cmTarget::TargetType type, const char* name)
 {
-  cmTargets::iterator it;
-  cmTarget target;
+  cmTargets::iterator it =
+    this->Targets.insert(cmTargets::value_type(name, cmTarget())).first;
+  cmTarget& target = it->second;
   target.SetType(type, name);
   target.SetMakefile(this);
-  it=this->Targets.insert(
-      cmTargets::value_type(target.GetName(), target)).first;
   this->LocalGenerator->GetGlobalGenerator()->AddTarget(*it);
   return &it->second;
 }
@@ -1979,7 +2081,9 @@ const char *cmMakefile::ExpandVariablesInString(std::string& source,
       {
       // This case should never be called.  At-only is for
       // configure-file/string which always does no escapes.
-      abort();
+      this->IssueMessage(cmake::INTERNAL_ERROR,
+                         "ExpandVariablesInString @ONLY called "
+                         "on something with escapes.");
       }
 
     // Store an original copy of the input.
@@ -2049,15 +2153,7 @@ const char *cmMakefile::ExpandVariablesInString(std::string& source,
           << ":" << line << ":\n"
           << parser.GetError() << ", when parsing string \""
           << source.c_str() << "\"";
-    const char* versionValue
-      = this->GetDefinition("CMAKE_BACKWARDS_COMPATIBILITY");
-    int major = 0;
-    int minor = 0;
-    if ( versionValue )
-      {
-      sscanf(versionValue, "%d.%d", &major, &minor);
-      }
-    if ( major < 2 || major == 2 && minor < 1 )
+    if(this->NeedBackwardsCompatibility(2,0))
       {
       cmSystemTools::Error(error.str().c_str());
       cmSystemTools::SetFatalErrorOccured();
@@ -2435,7 +2531,16 @@ int cmMakefile::TryCompile(const char *srcdir, const char *bindir,
   // to save time we pass the EnableLanguage info directly
   gg->EnableLanguagesFromGenerator
     (this->LocalGenerator->GetGlobalGenerator());
-
+  if(this->IsOn("CMAKE_SUPPRESS_DEVELOPER_WARNINGS"))
+    {
+    cm.AddCacheEntry("CMAKE_SUPPRESS_DEVELOPER_WARNINGS",
+                     "TRUE", "", cmCacheManager::INTERNAL);
+    }
+  else
+    {
+    cm.AddCacheEntry("CMAKE_SUPPRESS_DEVELOPER_WARNINGS",
+                     "FALSE", "", cmCacheManager::INTERNAL);
+    }    
   if (cm.Configure() != 0)
     {
     cmSystemTools::Error(
@@ -3220,18 +3325,19 @@ bool cmMakefile::EnforceUniqueName(std::string const& name, std::string& msg,
     else 
       {
       // target names must be globally unique
-      switch (this->GetPolicyStatus(cmPolicies::CMP_0002))
+      switch (this->GetPolicyStatus(cmPolicies::CMP0002))
         {
         case cmPolicies::WARN:
-          msg = this->GetPolicies()->
-            GetPolicyWarning(cmPolicies::CMP_0002);
+          this->IssueMessage(cmake::AUTHOR_WARNING, this->GetPolicies()->
+                             GetPolicyWarning(cmPolicies::CMP0002));
         case cmPolicies::OLD:
           return true;
         case cmPolicies::REQUIRED_IF_USED:
         case cmPolicies::REQUIRED_ALWAYS:
-          msg = this->GetPolicies()->
-            GetRequiredPolicyError(cmPolicies::CMP_0002);
-          return false;
+          this->IssueMessage(cmake::FATAL_ERROR,
+            this->GetPolicies()->GetRequiredPolicyError(cmPolicies::CMP0002)
+            );
+          return true;
         case cmPolicies::NEW:
           break;
         }
@@ -3273,39 +3379,9 @@ bool cmMakefile::EnforceUniqueName(std::string const& name, std::string& msg,
         default: break;
         }
       e << "created in source directory \""
-        << existing->GetMakefile()->GetCurrentDirectory() << "\".\n"
-        << "\n";
-      e <<
-        "Logical target names must be globally unique because:\n"
-        "  - Unique names may be referenced unambiguously both in CMake\n"
-        "    code and on make tool command lines.\n"
-        "  - Logical names are used by Xcode and VS IDE generators\n"
-        "    to produce meaningful project names for the targets.\n"
-        "The logical name of executable and library targets does not "
-        "have to correspond to the physical file names built.  "
-        "Consider using the OUTPUT_NAME target property to create two "
-        "targets with the same physical name while keeping logical "
-        "names distinct.  "
-        "Custom targets must simply have globally unique names.\n"
-        "\n"
-        "If you are building an older project it is possible that "
-        "it violated this rule but was working accidentally because "
-        "CMake did not previously diagnose this problem.  "
-        "Set CMAKE_BACKWARDS_COMPATIBILITY to 2.4 or lower to disable "
-        "this error.\n";
-      if(isCustom && existing->GetType() == cmTarget::UTILITY)
-        {
-        e <<
-          "\n"
-          "For projects that care only about Makefile generators and do "
-          "not wish to support Xcode or VS IDE generators, one may add\n"
-          "  set_property(GLOBAL PROPERTY ALLOW_DUPLICATE_CUSTOM_TARGETS 1)\n"
-          "to the top of the project to allow duplicate custom targets "
-          "(target names must still be unique within each directory).  "
-          "However, setting this property will cause non-Makefile generators "
-          "to produce an error and refuse to generate the project.";
-        }
-        msg = e.str();
+        << existing->GetMakefile()->GetCurrentDirectory() << "\".  "
+        << "See documentation for policy CMP0002 for more details.";
+      msg = e.str();
       return false;
       }
     }
@@ -3321,7 +3397,8 @@ cmPolicies::PolicyStatus cmMakefile
   bool done = false;
 
   // check our policy stack first
-  for (vecpos = this->PolicyStack.size(); vecpos >= 0 && !done; vecpos--)
+  for (vecpos = static_cast<int>(this->PolicyStack.size()) - 1; 
+       vecpos >= 0 && !done; vecpos--)
   {
     mappos = this->PolicyStack[vecpos].find(id);
     if (mappos != this->PolicyStack[vecpos].end())
@@ -3362,11 +3439,12 @@ bool cmMakefile::SetPolicy(const char *id,
 {
   cmPolicies::PolicyID pid;
   if (!this->GetPolicies()->GetPolicyID(id, /* out */ pid))
-  {
-    cmSystemTools::Error("Invalid policy string used. Invalid string was "
-      , id);
+    {
+    cmOStringStream e;
+    e << "Policy \"" << id << "\" is not known to this version of CMake.";
+    this->IssueMessage(cmake::FATAL_ERROR, e.str());
     return false;
-  }
+    }
   return this->SetPolicy(pid,status);
 }
 
@@ -3378,6 +3456,26 @@ bool cmMakefile::SetPolicy(cmPolicies::PolicyID id,
       IsValidPolicyStatus(id,status))
   {
     this->PolicyStack.back()[id] = status;
+
+    // Special hook for presenting compatibility variable as soon as
+    // the user requests it.
+    if(id == cmPolicies::CMP0001 &&
+       (status == cmPolicies::WARN || status == cmPolicies::OLD))
+      {
+      if(!(this->GetCacheManager()
+           ->GetCacheValue("CMAKE_BACKWARDS_COMPATIBILITY")))
+        {
+        // Set it to 2.4 because that is the last version where the
+        // variable had meaning.
+        this->AddCacheDefinition
+          ("CMAKE_BACKWARDS_COMPATIBILITY", "2.4",
+           "For backwards compatibility, what version of CMake "
+           "commands and "
+           "syntax should this version of CMake try to support.",
+           cmCacheManager::STRING);
+        }
+      }
+
     return true;
   }
   return false;
@@ -3390,14 +3488,17 @@ bool cmMakefile::PushPolicy()
   return true;
 }
 
-bool cmMakefile::PopPolicy()
+bool cmMakefile::PopPolicy(bool reportError)
 {
-  if (PolicyStack.size() == 0)
-  {
-    cmSystemTools::Error("Attempt to pop the policy stack past "
-      "it's beginning.");
+  if(this->PolicyStack.size() == 1)
+    {
+    if(reportError)
+      {
+      cmSystemTools::Error("Attempt to pop the policy stack past "
+                           "it's beginning.");
+      }
     return false;
-  }
+    }
   this->PolicyStack.pop_back();
   return true;
 }

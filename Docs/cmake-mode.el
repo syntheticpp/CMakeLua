@@ -3,7 +3,7 @@
 ;  Program:   CMake - Cross-Platform Makefile Generator
 ;  Module:    $RCSfile: cmake-mode.el,v $
 ;
-;  Copyright (c) 2000-$Date: 2008/01/02 22:32:58 $ Kitware, Inc., Insight Consortium.  All rights reserved.
+;  Copyright (c) 2000-$Date: 2008-03-11 14:54:40 $ Kitware, Inc., Insight Consortium.  All rights reserved.
 ;  See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
 ;
 ;     This software is distributed WITHOUT ANY WARRANTY; without even
@@ -148,6 +148,26 @@
         )
       )
     )
+  )
+
+;------------------------------------------------------------------------------
+
+;;
+;; Helper functions for buffer
+;;
+(defun unscreamify-cmake-buffer ()
+  "Convert all CMake commands to lowercase in buffer."
+  (interactive)
+  (setq save-point (point))
+  (goto-char (point-min))
+  (while (re-search-forward "^\\([ \t]*\\)\\(\\w+\\)\\([ \t]*(\\)" nil t)
+    (replace-match 
+     (concat 
+      (match-string 1) 
+      (downcase (match-string 2)) 
+      (match-string 3)) 
+     t))
+  (goto-char save-point)
   )
 
 ;------------------------------------------------------------------------------

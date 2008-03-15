@@ -784,24 +784,6 @@ void cmDocumentVariables::DefineVariables(cmake* cm)
      "This is needed only on very few platforms.", false,
      "Variables that Control the Build");
   cm->DefineProperty
-    ("CMAKE_LINK_OLD_PATHS", cmProperty::VARIABLE,
-     "Enable linker search path compatibility mode.",
-     "This option enables linking compatibility mode for broken projects.  "
-     "There exists code that effectively does\n"
-     "  target_link_libraries(myexe /path/to/libA.so -lB)\n"
-     "where -lB is meant to link to /path/to/libB.so.  This is broken "
-     "because it specifies -lB without adding \"/path/to\" to the linker "
-     "search path with the link_directories command.  With CMake 2.4 and "
-     "below the code worked accidentally because \"/path/to\" would be "
-     "added to the linker search path by its implementation of linking to "
-     "/path/to/libA.so (which passed -L/path/to -lA to the linker).  "
-     "This option tells CMake to add the directories containing libraries "
-     "specified with a full path to the linker search path if the link "
-     "line contains any items like -lB.  "
-     "The behavior is also enabled if CMAKE_BACKWARDS_COMPATIBILITY is "
-     "set to 2.4 or lower.", false,
-     "Variables that Control the Build");
-  cm->DefineProperty
     ("CMAKE_USE_RELATIVE_PATHS", cmProperty::VARIABLE,
      "Use relative paths (May not work!).",
      "If this is set to TRUE, then the CMake will use "
@@ -825,7 +807,7 @@ void cmDocumentVariables::DefineVariables(cmake* cm)
     ("LIBRARY_OUTPUT_PATH", cmProperty::VARIABLE,
      "Old library location variable.",
      "This variable should no longer be used as of CMake 2.6.  "
-     "Use the ARCHIVE_OUTPUT_DIRECTORY, LIBRARY_OUTPUT_PATH, and "
+     "Use the ARCHIVE_OUTPUT_DIRECTORY, LIBRARY_OUTPUT_DIRECTORY, and "
      "RUNTIME_OUTPUT_DIRECTORY target properties instead.  "
      "They will override this variable if they are set.\n"
      "If set, this is the directory where all the libraries "

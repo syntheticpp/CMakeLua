@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmake.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/03/01 20:20:35 $
-  Version:   $Revision: 1.362 $
+  Date:      $Date: 2008-03-13 19:34:17 $
+  Version:   $Revision: 1.375 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -28,6 +28,7 @@
 #include "cmSourceFile.h"
 #include "cmVersion.h"
 #include "cmTest.h"
+#include "cmDocumentationFormatterText.h"
 
 extern "C" {
 #include "lua.h"
@@ -118,6 +119,7 @@ extern "C" {
 #include <memory> // auto_ptr
 
 static bool cmakeCheckStampFile(const char* stampName);
+static bool cmakeCheckStampList(const char* stampName);
 
 void cmNeedBackwardsCompatibility(const std::string& variable,
   int access_type, void*, const char*, const cmMakefile*)
@@ -145,21 +147,14 @@ void cmNeedBackwardsCompatibility(const std::string& variable,
 
 cmake::cmake()
 {
+  this->SuppressDevWarnings = false;
   this->DebugOutput = false;
   this->DebugTryCompile = false;
   this->ClearBuildSystem = false;
   this->FileComparison = new cmFileTimeComparison;
 
   this->Policies = new cmPolicies();
-
-  this->Properties.SetCMakeInstance(this);
-
-  // initialize properties
-  cmSourceFile::DefineProperties(this);
-  cmTarget::DefineProperties(this);
-  cmMakefile::DefineProperties(this);
-  cmTest::DefineProperties(this);
-  cmake::DefineProperties(this);
+  this->InitializeProperties();
 
 #ifdef __APPLE__
   struct rlimit rlp;
@@ -235,8 +230,24 @@ cmake::~cmake()
   lua_close(this->LuaState);
 }
 
+void cmake::InitializeProperties()
+{
+  this->Properties.clear();
+  this->Properties.SetCMakeInstance(this);
+  this->AccessedProperties.clear();
+  this->PropertyDefinitions.clear();
+
+  // initialize properties
+  cmSourceFile::DefineProperties(this);
+  cmTarget::DefineProperties(this);
+  cmMakefile::DefineProperties(this);
+  cmTest::DefineProperties(this);
+  cmake::DefineProperties(this);
+}
+
 void cmake::CleanupCommandsAndMacros()
 {
+  this->InitializeProperties();
   std::vector<cmCommand*> commands;
   for(RegisteredCommandsMap::iterator j = this->Commands.begin();
       j != this->Commands.end(); ++j)
@@ -405,6 +416,14 @@ bool cmake::SetCacheArgs(const std::vector<std::string>& args)
         return false;
         }
       }
+    else if(arg.find("-Wno-dev",0) == 0)
+      {
+      this->SuppressDevWarnings = true;
+      }
+    else if(arg.find("-Wdev",0) == 0)
+      {
+      this->SuppressDevWarnings = false;
+      }
     else if(arg.find("-U",0) == 0)
       {
       std::string entryPattern = arg.substr(2);
@@ -568,6 +587,10 @@ void cmake::SetArgs(const std::vector<std::string>& args)
       {
       this->CheckStampFile = args[++i];
       }
+    else if((i < args.size()-1) && (arg.find("--check-stamp-list",0) == 0))
+      {
+      this->CheckStampList = args[++i];
+      }
 #if defined(CMAKE_HAVE_VS_GENERATORS)
     else if((i < args.size()-1) && (arg.find("--vs-solution-file",0) == 0))
       {
@@ -591,6 +614,16 @@ void cmake::SetArgs(const std::vector<std::string>& args)
       // skip for now
       }
     else if(arg.find("-P",0) == 0)
+      {
+      // skip for now
+      i++;
+      }
+    else if(arg.find("-Wno-dev",0) == 0)
+      {
+      // skip for now
+      i++;
+      }
+    else if(arg.find("-Wdev",0) == 0)
       {
       // skip for now
       i++;
@@ -1902,6 +1935,23 @@ int cmake::HandleDeleteCacheVariables(const char* var)
 
 int cmake::Configure()
 {
+  if(this->SuppressDevWarnings)
+    {
+    this->CacheManager->
+      AddCacheEntry("CMAKE_SUPPRESS_DEVELOPER_WARNINGS", "TRUE",
+                    "Suppress Warnings that are meant for"
+                    " the author of the CMakeLists.txt files.",
+                    cmCacheManager::INTERNAL);
+    }
+  else
+    {
+    this->CacheManager->
+      AddCacheEntry("CMAKE_SUPPRESS_DEVELOPER_WARNINGS", "FALSE",
+                    "Suppress Warnings that are meant for"
+                    " the author of the CMakeLists.txt files.",
+                    cmCacheManager::INTERNAL);
+    }
+
   int ret = this->ActualConfigure();
   const char* delCacheVars =
     this->GetProperty("__CMAKE_DELETE_CACHE_CHANGE_VARS_");
@@ -1936,19 +1986,6 @@ int cmake::ActualConfigure()
        "Start directory with the top level CMakeLists.txt file for this "
        "project",
        cmCacheManager::INTERNAL);
-    }
-
-  // set the default BACKWARDS compatibility to the current version
-  if(!this->CacheManager->GetCacheValue("CMAKE_BACKWARDS_COMPATIBILITY"))
-    {
-    char ver[256];
-    sprintf(ver,"%i.%i",cmVersion::GetMajorVersion(),
-            cmVersion::GetMinorVersion());
-    this->CacheManager->AddCacheEntry
-      ("CMAKE_BACKWARDS_COMPATIBILITY",ver, 
-       "For backwards compatibility, what version of CMake commands and "
-       "syntax should this version of CMake allow.",
-       cmCacheManager::STRING);
     }
 
   // no generator specified on the command line
@@ -2185,6 +2222,13 @@ int cmake::Run(const std::vector<std::string>& args, bool noconfigure)
     return -1;
     }
 
+  // If we are given a stamp list file check if it is really out of date.
+  if(!this->CheckStampList.empty() &&
+     cmakeCheckStampList(this->CheckStampList.c_str()))
+    {
+    return 0;
+    }
+
   // If we are given a stamp file check if it is really out of date.
   if(!this->CheckStampFile.empty() &&
      cmakeCheckStampFile(this->CheckStampFile.c_str()))
@@ -2208,7 +2252,6 @@ int cmake::Run(const std::vector<std::string>& args, bool noconfigure)
     {
     this->AddCMakePaths();
     }
-
   // Add any cache args
   if ( !this->SetCacheArgs(args) )
     {
@@ -2431,20 +2474,6 @@ int cmake::LoadCache()
     {
     return -3;
     }
-
-  // set the default BACKWARDS compatibility to the current version
-  if(!this->CacheManager->GetCacheValue("CMAKE_BACKWARDS_COMPATIBILITY"))
-    {
-    char ver[256];
-    sprintf(ver,"%i.%i",cmVersion::GetMajorVersion(),
-            cmVersion::GetMinorVersion());
-    this->CacheManager->AddCacheEntry
-      ("CMAKE_BACKWARDS_COMPATIBILITY",ver, 
-       "For backwards compatibility, what version of CMake commands and "
-       "syntax should this version of CMake allow.",
-       cmCacheManager::STRING);
-    }
-
   return 0;
 }
 
@@ -2481,6 +2510,11 @@ void cmake::GetCommandDocumentation(std::vector<cmDocumentationEntry>& v,
                            (*j).second->GetFullDocumentation());
     v.push_back(e);
     }
+}
+
+void cmake::GetPolicyDocumentation(std::vector<cmDocumentationEntry>& v)
+{
+  this->Policies->GetDocumentation(v);
 }
 
 void cmake::GetPropertiesDocumentation(std::map<std::string,
@@ -3360,7 +3394,7 @@ void cmake::DefineProperties(cmake *cm)
     "ALLOW_DUPLICATE_CUSTOM_TARGETS", cmProperty::GLOBAL,
     "Allow duplicate custom targets to be created.",
     "Normally CMake requires that all targets built in a project have "
-    "globally unique names.  "
+    "globally unique logical names (see policy CMP0002).  "
     "This is necessary to generate meaningful project file names in "
     "Xcode and VS IDE generators.  "
     "It also allows the target names to be referenced unambiguously.\n"
@@ -3370,7 +3404,7 @@ void cmake::DefineProperties(cmake *cm)
     "not wish to support Xcode or VS IDE generators, one may set this "
     "property to true to allow duplicate custom targets.  "
     "The property allows multiple add_custom_target command calls in "
-    "*different directories* to specify the same target name.  "
+    "different directories to specify the same target name.  "
     "However, setting this property will cause non-Makefile generators "
     "to produce an error and refuse to generate the project."
     );
@@ -3741,6 +3775,10 @@ static bool cmakeCheckStampFile(const char* stampName)
   // date.
   if(cmSystemTools::FileExists(stampName))
     {
+    // Notify the user why CMake is re-running.  It is safe to
+    // just print to stdout here because this code is only reachable
+    // through an undocumented flag used by the VS generator.
+    std::cout << "CMake is re-running due to explicit user request.\n";
     return false;
     }
 
@@ -3788,8 +3826,8 @@ static bool cmakeCheckStampFile(const char* stampName)
     // Notify the user why CMake is not re-running.  It is safe to
     // just print to stdout here because this code is only reachable
     // through an undocumented flag used by the VS generator.
-    std::cout << "CMake does not need to re-run because the "
-              << "generation timestamp is up-to-date.\n";
+    std::cout << "CMake does not need to re-run because "
+              << stampName << " is up-to-date.\n";
     return true;
     }
   else
@@ -3797,6 +3835,36 @@ static bool cmakeCheckStampFile(const char* stampName)
     cmSystemTools::Error("Cannot restore timestamp ", stampName);
     return false;
     }
+}
+
+//----------------------------------------------------------------------------
+static bool cmakeCheckStampList(const char* stampList)
+{
+  // If the stamp list does not exist CMake must rerun to generate it.
+  if(!cmSystemTools::FileExists(stampList))
+    {
+    std::cout << "CMake is re-running because generate.stamp.list "
+              << "is missing.\n";
+    return false;
+    }
+  std::ifstream fin(stampList);
+  if(!fin)
+    {
+    std::cout << "CMake is re-running because generate.stamp.list "
+              << "could not be read.\n";
+    return false;
+    }
+
+  // Check each stamp.
+  std::string stampName;
+  while(cmSystemTools::GetLineFromStream(fin, stampName))
+    {
+    if(!cmakeCheckStampFile(stampName.c_str()))
+      {
+      return false;
+      }
+    }
+  return true;
 }
 
 // For visual studio 2005 and newer manifest files need to be embeded into
@@ -4089,4 +4157,87 @@ int cmake::VisualStudioLinkNonIncremental(std::vector<std::string>& args,
     return -1;
     }
   return 0;
+}
+
+//----------------------------------------------------------------------------
+void cmake::IssueMessage(cmake::MessageType t, std::string const& text,
+                         cmListFileBacktrace const& backtrace)
+{
+  cmOStringStream msg;
+  bool isError = false;
+  // Construct the message header.
+  if(t == cmake::FATAL_ERROR)
+    {
+    isError = true;
+    msg << "CMake Error";
+    }
+  else if(t == cmake::INTERNAL_ERROR)
+    {
+    isError = true;
+    msg << "CMake Internal Error (please report a bug)";
+    }
+  else
+    {
+    msg << "CMake Warning";
+    if(t == cmake::AUTHOR_WARNING)
+      {
+      // Allow suppression of these warnings.
+      cmCacheManager::CacheIterator it = this->CacheManager
+        ->GetCacheIterator("CMAKE_SUPPRESS_DEVELOPER_WARNINGS");
+      if(!it.IsAtEnd() && it.GetValueAsBool())
+        {
+        return;
+        }
+      msg << " (dev)";
+      }
+    }
+
+  // Add the immediate context.
+  cmListFileBacktrace::const_iterator i = backtrace.begin();
+  if(i != backtrace.end())
+    {
+    cmListFileContext const& lfc = *i;
+    msg << (lfc.Line? " at ": " in ") << lfc;
+    ++i;
+    }
+
+  // Add the message text.
+  {
+  msg << ":\n";
+  cmDocumentationFormatterText formatter;
+  formatter.SetIndent("  ");
+  formatter.PrintFormatted(msg, text.c_str());
+  }
+
+  // Add the rest of the context.
+  if(i != backtrace.end())
+    {
+    msg << "Call Stack (most recent call first):\n";
+    while(i != backtrace.end())
+      {
+      cmListFileContext const& lfc = *i;
+      msg << "  " << lfc << "\n";
+      ++i;
+      }
+    }
+
+  // Add a note about warning suppression.
+  if(t == cmake::AUTHOR_WARNING)
+    {
+    msg << "This warning may be suppressed using the -Wno-dev option.";
+    }
+
+  // Add a terminating blank line.
+  msg << "\n";
+
+  // Output the message.
+  if(isError)
+    {
+    cmSystemTools::SetErrorOccured();
+    cmSystemTools::Message(msg.str().c_str(), "Error");
+    }
+  else
+    {
+    cmSystemTools::Message(msg.str().c_str(), "Warning");
+    }
 }

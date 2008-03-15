@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: CMakeSetup.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/02/19 19:06:10 $
-  Version:   $Revision: 1.17 $
+  Date:      $Date: 2008-03-14 19:18:04 $
+  Version:   $Revision: 1.18 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -67,6 +67,13 @@ static const char * cmDocumentationOptions[][3] =
 int main(int argc, char** argv)
 {
   QApplication app(argc, argv);
+  
+  // clean out standard Qt paths for plugins, which we don't use anyway
+  // when creating Mac bundles, it potentially causes problems
+  foreach(QString p, QApplication::libraryPaths())
+    {
+    QApplication::removeLibraryPath(p);
+    }
   
   // if arg for install 
   for(int i =0; i < argc; i++)
