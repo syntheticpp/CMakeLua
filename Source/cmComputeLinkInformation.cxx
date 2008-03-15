@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmComputeLinkInformation.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-14 18:21:57 $
-  Version:   $Revision: 1.26 $
+  Date:      $Date: 2008-03-15 14:00:40 $
+  Version:   $Revision: 1.27 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1349,7 +1349,6 @@ bool cmComputeLinkInformation::FinishLinkerSearchDirectories()
     case cmPolicies::NEW:
       // Should never happen due to assignment of OldLinkDirMode
       return true;
-      break;
     case cmPolicies::REQUIRED_IF_USED:
     case cmPolicies::REQUIRED_ALWAYS:
       {
@@ -1361,7 +1360,6 @@ bool cmComputeLinkInformation::FinishLinkerSearchDirectories()
                                         this->Target->GetBacktrace());
       return false;
       }
-      break;
     }
 
   // Add the link directories for full path items.
