@@ -20,11 +20,8 @@
 #include "cmTest.h"
 #include "cmPropertyDefinition.h"
 
-extern "C" {
-#include "lua.h"
-#include "lauxlib.h"
-#include "lualib.h"
-}
+#include "cmLuaUtils.h"
+
 
 static int cmGetPropertyLua(lua_State *L) 
 {

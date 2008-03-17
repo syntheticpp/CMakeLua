@@ -41,11 +41,7 @@
 
 #include <ctype.h> // for isspace
 
-extern "C" {
-#include "lua.h"
-#include "lauxlib.h"
-#include "lualib.h"
-}
+#include "cmLuaUtils.h"
 
 // default is not to be building executables
 cmMakefile::cmMakefile()

@@ -6,11 +6,6 @@
 #include "cmLuaUtils.h"
 #include <string.h>
 
-extern "C"
-{
-	#include "lua.h"
-}
-
 /**
  * This function will create a nested table in Lua based on the 
  * the string you provide.

@@ -16,12 +16,7 @@
 =========================================================================*/
 
 #include "cmCommand.h"
-
-extern "C" {
-#include "lua.h"
-#include "lauxlib.h"
-#include "lualib.h"
-}
+#include "cmLuaUtils.h"
 
 static int cmLuaFunc(lua_State *L) 
 {

@@ -1,10 +1,14 @@
 #ifndef CMLUAUTILS_H
 #define CMLUAUTILS_H
 
-
 #include <stddef.h>
 #include <string>
 
+extern "C" {
+#include "../Utilities/lua/src/lua.h"
+#include "../Utilities/lua/src/lauxlib.h"
+#include "../Utilities/lua/src/lualib.h"
+}
 
 struct lua_State;
 typedef int (*lua_CFunction) (lua_State *L);

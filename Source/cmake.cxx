@@ -29,12 +29,6 @@
 #include "cmVersion.h"
 #include "cmTest.h"
 #include "cmDocumentationFormatterText.h"
-
-extern "C" {
-#include "lua.h"
-#include "lauxlib.h"
-#include "lualib.h"
-}
 #include "cmLuaUtils.h"
 
 #if defined(CMAKE_BUILD_WITH_CMAKE)
