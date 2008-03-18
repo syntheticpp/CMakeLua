@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalUnixMakefileGenerator3.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-18 14:02:31 $
-  Version:   $Revision: 1.241 $
+  Date:      $Date: 2008-03-18 15:28:59 $
+  Version:   $Revision: 1.242 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -738,18 +738,22 @@ cmLocalUnixMakefileGenerator3
     makefileStream, "Disable implicit rules so canoncical targets will work.",
     ".SUFFIXES", no_depends, no_commands, false);
 
-  // turn off RCS and SCCS automatic stuff from gmake
-  makefileStream << "# Remove some rules from gmake that .SUFFIXES does not remove.\n"
-                 << "# This makes gmake faster as it does not try to run implicit rules\n"
-                 << "# on targets that never exist.\n"
-                 << "%: %,v\n"
-                 << "%: RCS/%,v\n"
-                 << "%: RCS/%\n"
-                 << "%: s.%\n"
-                 << "%: %.w\n"
-                 << "%.c: %.w %.ch\n"
-                 << "%: %.tex\n"
-                 << "%: SCCS/s.%\n\n";
+  if(!this->NMake && !this->WatcomWMake)
+    {
+    // turn off RCS and SCCS automatic stuff from gmake
+    makefileStream << "# Remove some rules from gmake that .SUFFIXES does not remove.\n"
+                   << "# This makes gmake faster as it does not try to run implicit rules\n"
+                   << "# on targets that never exist.\n"
+                   << "SUFFIXES =\n"
+                   << "%: %,v\n"
+                   << "%: RCS/%,v\n"
+                   << "%: RCS/%\n"
+                   << "%: s.%\n"
+                   << "%: %.w\n"
+                   << "%.c: %.w %.ch\n"
+                   << "%: %.tex\n"
+                   << "%: SCCS/s.%\n\n";
+    }
   // Add a fake suffix to keep HP happy.  Must be max 32 chars for SGI make.
   std::vector<std::string> depends;
   depends.push_back(".hpux_make_needs_suffix_list");
