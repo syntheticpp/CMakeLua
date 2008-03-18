@@ -153,7 +153,7 @@ joined_list3 = string.join(\";\", list.reverse(list.concat(l1, l2)) )
 ")
 
 message(STATUS "")
-message(STATUS "list exmaples")
+message(STATUS "list examples")
 message(STATUS "-------------")
 message(STATUS "number of entries        : ${num}")
 message(STATUS "joined with \"-\"          : ${joined_list1}")
@@ -161,4 +161,65 @@ message(STATUS "joined with \"  ,  \"      : ${joined_list2}")
 message(STATUS "join(\";\", reverse(concat): ${joined_list3}")
 message(STATUS "")
 
+
+# list metafunctions
+
+# use CMake values as fall back
+
+lua("
+CMAKE_VARIABLES = {}
+
+isStringList = function(x) 
+					-- TODO
+					return true
+				end
+	
+setmetatable(_G, {
+__index = function (_, n) 
+		local val = GetDefinition(n) 
+		if val == nil then
+			return _G[n] 
+		else
+			-- return the CMake list as indexed table
+			return string.split(\";\", val) 
+		end
+	end,
+__newindex = function (_, n1, n2) 
+		if isStringList(n1) then 
+			-- only string lists are visible in CMake
+			AddDefinition(n1, string.join(\";\", n2)) 
+		else 
+			rawset(_G, n1, n2)
+		end
+	end
+	})
+")
+
+
+message(STATUS "")
+message(STATUS "list metatable examples")
+message(STATUS "-------------")
+set(cmlist x1 x2 x3 x4)
+
+lua("
+print(\"-- table in lua after  set(cmlist x1 x2 x3 x4): \")
+print(cmlist)
+print()
+items = {tostring(#cmlist)}
+lualist = {\"l1\", \"l2\", \"l3\", \"l4\", \"l5\"} 
+itemslua =  {tostring(#lualist)}
+")
+
+lua("
+lualist2 = lualist
+lualist3 = cmlist
+") 
+ 
+message(STATUS "items in cmlist    : ${items}")
+message(STATUS "items in lualist   : ${itemslua}")
+message(STATUS "set(cmlist ...)    : ${cmlist}")
+message(STATUS "lualist  = {...}   : ${lualist}")
+message(STATUS "lualist2 = lualist : ${lualist2}")
+message(STATUS "lualist3 = cmlist  : ${lualist3}")
+message(STATUS "")
 
