@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCoreTryCompile.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-07 13:53:22 $
-  Version:   $Revision: 1.7 $
+  Date:      $Date: 2008-03-19 19:44:56 $
+  Version:   $Revision: 1.8 $
 
   Copyright (c) 2007 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -175,7 +175,7 @@ int cmCoreTryCompile::TryCompileCode(std::vector<std::string> const& argv)
     const char* lang =(this->Makefile->GetCMakeInstance()->GetGlobalGenerator()
                         ->GetLanguageFromExtension(ext.c_str()));
     const char* def = this->Makefile->GetDefinition("CMAKE_MODULE_PATH");
-    fprintf(fout, "cmake_policy(VERSION %u.%u)\n",
+    fprintf(fout, "cmake_minimum_required(VERSION %u.%u)\n",
             cmVersion::GetMajorVersion(), cmVersion::GetMinorVersion());
     if(def)
       {
