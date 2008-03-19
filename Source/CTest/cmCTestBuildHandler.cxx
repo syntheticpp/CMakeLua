@@ -3,8 +3,13 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCTestBuildHandler.cxx,v $
   Language:  C++
+<<<<<<< cmCTestBuildHandler.cxx
   Date:      $Date: 2008/01/30 16:17:36 $
   Version:   $Revision: 1.61 $
+=======
+  Date:      $Date: 2008-03-19 15:18:40 $
+  Version:   $Revision: 1.62 $
+>>>>>>> 1.62
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -62,6 +67,7 @@ static const char* cmCTestErrorMatches[] = {
   "^fatal error C[0-9]+:",
   ": syntax error ",
   "^collect2: ld returned 1 exit status",
+  "ld terminated with signal",
   "Unsatisfied symbols:",
   "^Unresolved:",
   "Undefined symbols:",
