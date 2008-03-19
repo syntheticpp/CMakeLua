@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmComputeLinkInformation.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-18 21:32:26 $
-  Version:   $Revision: 1.28 $
+  Date:      $Date: 2008-03-19 13:14:10 $
+  Version:   $Revision: 1.29 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1177,8 +1177,11 @@ void cmComputeLinkInformation::AddUserItem(std::string const& item)
     }
   else if(item[0] == '-' || item[0] == '$' || item[0] == '`')
     {
-    // This is a linker option provided by the user.
-    this->OldUserFlagItems.push_back(item);
+    if(item.find("-framework") != 0)
+      {
+      // This is a linker option provided by the user.
+      this->OldUserFlagItems.push_back(item);
+      }
 
     // Restore the target link type since this item does not specify
     // one.
