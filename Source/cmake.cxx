@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmake.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-13 19:34:17 $
-  Version:   $Revision: 1.375 $
+  Date:      $Date: 2008-03-20 14:11:52 $
+  Version:   $Revision: 1.376 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -4185,7 +4185,8 @@ void cmake::IssueMessage(cmake::MessageType t, std::string const& text,
   // Add a note about warning suppression.
   if(t == cmake::AUTHOR_WARNING)
     {
-    msg << "This warning may be suppressed using the -Wno-dev option.";
+    msg <<
+      "This warning is for project developers.  Use -Wno-dev to suppress it.";
     }
 
   // Add a terminating blank line.
