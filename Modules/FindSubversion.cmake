@@ -47,7 +47,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+<<<<<<< FindSubversion.cmake
 # $Id: FindSubversion.cmake,v 1.2 2008/01/14 22:19:20 alex Exp $
+=======
+# $Id: FindSubversion.cmake,v 1.3 2008-03-20 15:44:25 david.cole Exp $
+>>>>>>> 1.3
 
 SET(Subversion_FOUND FALSE)
 SET(Subversion_SVN_FOUND FALSE)
@@ -67,7 +71,7 @@ IF(Subversion_SVN_EXECUTABLE)
 
   MACRO(Subversion_WC_INFO dir prefix)
     EXECUTE_PROCESS(COMMAND ${Subversion_SVN_EXECUTABLE} --version
-      WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+      WORKING_DIRECTORY ${dir}
       OUTPUT_VARIABLE Subversion_VERSION_SVN
       OUTPUT_STRIP_TRAILING_WHITESPACE)
 
