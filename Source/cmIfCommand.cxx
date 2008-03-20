@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmIfCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/03/01 02:33:33 $
-  Version:   $Revision: 1.84 $
+  Date:      $Date: 2008-03-20 22:25:59 $
+  Version:   $Revision: 1.85 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -349,6 +349,23 @@ bool cmIfCommand::IsTrue(const std::vector<std::string> &args,
           *arg = "1";
           }
         else 
+          {
+          *arg = "0";
+          }
+        newArgs.erase(argP1);
+        argP1 = arg;
+        IncrementArguments(newArgs,argP1,argP2);
+        reducible = 1;
+        }
+      // does a policy exist
+      if (*arg == "POLICY" && argP1 != newArgs.end())
+        {
+        cmPolicies::PolicyID pid;
+        if(makefile->GetPolicies()->GetPolicyID((argP1)->c_str(), pid))
+          {
+          *arg = "1";
+          }
+        else
           {
           *arg = "0";
           }
