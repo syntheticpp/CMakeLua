@@ -3,8 +3,13 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmIfCommand.h,v $
   Language:  C++
+<<<<<<< cmIfCommand.h
   Date:      $Date: 2008/02/10 22:19:10 $
   Version:   $Revision: 1.46 $
+=======
+  Date:      $Date: 2008-03-20 22:25:59 $
+  Version:   $Revision: 1.47 $
+>>>>>>> 1.47
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -139,6 +144,9 @@ public:
       "  if(COMMAND command-name)\n"
       "True if the given name is a command, macro or function that can be "
       "invoked.\n"
+      "  if(POLICY policy-id)\n"
+      "True if the given name is an existing policy "
+      "(of the form CMP<NNNN>).\n"
       "  if(EXISTS file-name)\n"
       "  if(EXISTS directory-name)\n"
       "True if the named file or directory exists.  "
