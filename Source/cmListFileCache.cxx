@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmListFileCache.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-19 19:18:21 $
-  Version:   $Revision: 1.42 $
+  Date:      $Date: 2008-03-20 14:40:24 $
+  Version:   $Revision: 1.43 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -134,8 +134,41 @@ bool cmListFile::ParseFile(const char* filename,
         break;
       }
     }
-    // if no version command is found this is a warning or error
+    // if no policy command is found this is an error if they use any non advanced functions or a lot of functions
     if(!hasVersion)
+    {
+      bool isProblem = true;
+      if (this->Functions.size() < 30)
+      {
+        // the list of simple commands DO NOT ADD TO THIS LIST!!!!!
+        // these commands must have backwards compatibility forever and
+        // and that is a lot longer than your tiny mind can comprehend mortal
+        std::set<std::string> allowedCommands;
+        allowedCommands.insert("project");
+        allowedCommands.insert("set");
+        allowedCommands.insert("if");
+        allowedCommands.insert("endif");
+        allowedCommands.insert("else");
+        allowedCommands.insert("elseif");
+        allowedCommands.insert("add_executable");
+        allowedCommands.insert("add_library");
+        allowedCommands.insert("target_link_libraries");
+        allowedCommands.insert("option");
+        allowedCommands.insert("message");
+        isProblem = false;
+        for(std::vector<cmListFileFunction>::iterator i 
+              = this->Functions.begin();
+            i != this->Functions.end(); ++i)
+        {
+          std::string name = cmSystemTools::LowerCase(i->Name);
+          if (allowedCommands.find(name) == allowedCommands.end())
+          {
+          isProblem = true;
+          }       
+        }
+      }
+      
+      if (isProblem)
       {
       cmOStringStream msg;
       msg << "No cmake_minimum_required command is present.  "
@@ -162,6 +195,7 @@ bool cmListFile::ParseFile(const char* filename,
           return false;
         }
       }
+    }
   }
 
   if(topLevel)
