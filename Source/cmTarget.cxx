@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmTarget.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-13 20:35:39 $
-  Version:   $Revision: 1.209 $
+  Date:      $Date: 2008-03-15 14:00:06 $
+  Version:   $Revision: 1.210 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -2586,11 +2586,10 @@ void cmTarget::GetExecutableNamesInternal(std::string& name,
   // enforcement of the limited imported target API.
   if(this->IsImported())
     {
-    std::string msg =  "GetExecutableNamesInternal called on imported target: ";
+    std::string msg =
+      "GetExecutableNamesInternal called on imported target: ";
     msg += this->GetName();
-    this->GetMakefile()->
-      IssueMessage(cmake::INTERNAL_ERROR,
-                   msg.c_str());
+    this->GetMakefile()->IssueMessage(cmake::INTERNAL_ERROR, msg.c_str());
     }
 
   // This versioning is supported only for executables and then only
