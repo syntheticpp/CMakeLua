@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmake.h,v $
   Language:  C++
-  Date:      $Date: 2008-03-13 17:48:57 $
-  Version:   $Revision: 1.109 $
+  Date:      $Date: 2008-03-22 14:24:05 $
+  Version:   $Revision: 1.110 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -388,6 +388,7 @@ protected:
   std::string cmStartDirectory; 
   std::string StartOutputDirectory;
   bool SuppressDevWarnings;
+  bool DoSuppressDevWarnings;
   std::set<cmStdString> WrittenFiles;
 
   ///! return true if the same cmake was used to make the cache.
