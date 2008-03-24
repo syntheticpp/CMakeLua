@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator3
   Module:    $RCSfile: cmGlobalUnixMakefileGenerator3.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-12 18:37:46 $
-  Version:   $Revision: 1.126 $
+  Date:      $Date: 2008-03-24 14:26:38 $
+  Version:   $Revision: 1.127 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -967,7 +967,7 @@ void cmGlobalUnixMakefileGenerator3::WriteHelpRule
       }
     }
   lg->WriteMakeRule(ruleFileStream, "Help Target",
-                    "help:",
+                    "help",
                     no_depends, commands, true);
   ruleFileStream << "\n\n";
 }
