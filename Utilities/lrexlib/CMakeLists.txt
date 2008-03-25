@@ -1,0 +1,4 @@
+PROJECT(lrexlib)
+
+ADD_SUBDIRECTORY(src)
+

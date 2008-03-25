@@ -43,6 +43,10 @@ MACRO(CMAKE_HANDLE_SYSTEM_LIBRARIES)
         CACHE BOOL "Use system-installed xmlrpc" FORCE)
       SET(CMAKE_USE_SYSTEM_ZLIB "${CMAKE_USE_SYSTEM_LIBRARIES}" 
         CACHE BOOL "Use system-installed zlib" FORCE)
+      SET(CMAKE_USE_SYSTEM_PCRE "${CMAKE_USE_SYSTEM_LIBRARIES}" 
+        CACHE BOOL "Use system-installed pcre" FORCE)
+      SET(CMAKE_USE_SYSTEM_LREXLIB "${CMAKE_USE_SYSTEM_LIBRARIES}" 
+        CACHE BOOL "Use system-installed lrexlib" FORCE)
     ENDIF(CMAKE_USE_SYSTEM_LIBRARIES_USER)
     
     # Optionally use system utility libraries.
@@ -54,6 +58,10 @@ MACRO(CMAKE_HANDLE_SYSTEM_LIBRARIES)
       ${CMAKE_USE_SYSTEM_LIBRARIES} "NOT CMAKE_USE_SYSTEM_XMLRPC" ON)
     CMAKE_DEPENDENT_OPTION(CMAKE_USE_SYSTEM_ZLIB "Use system-installed zlib"
       ${CMAKE_USE_SYSTEM_LIBRARIES} "NOT CMAKE_USE_SYSTEM_CURL" ON)
+    OPTION(CMAKE_USE_SYSTEM_PCRE   "Use system-installed pcre" 
+      ${CMAKE_USE_SYSTEM_LIBRARIES})
+    CMAKE_DEPENDENT_OPTION(CMAKE_USE_SYSTEM_LREXLIB "Use system-installed lrexlib"
+      ${CMAKE_USE_SYSTEM_LIBRARIES} "NOT CMAKE_USE_SYSTEM_PCRE" ON)
     
     # There is currently no option for system tar because the upstream
     # libtar does not have our modifications to allow reentrant
@@ -64,11 +72,13 @@ MACRO(CMAKE_HANDLE_SYSTEM_LIBRARIES)
     SET(CMAKE_USE_SYSTEM_EXPAT 0)
     SET(CMAKE_USE_SYSTEM_XMLRPC 0)
     SET(CMAKE_USE_SYSTEM_ZLIB 0)
+    SET(CMAKE_USE_SYSTEM_PCRE 0)
+    SET(CMAKE_USE_SYSTEM_LREXLIB 0)
   ENDIF(CMAKE_ALLOW_SYSTEM_LIBRARIES)
 
 
   # Mention to the user what system libraries are being used.
-  FOREACH(util CURL EXPAT XMLRPC ZLIB)
+  FOREACH(util CURL EXPAT XMLRPC ZLIB PCRE LREXLIB)
     IF(CMAKE_USE_SYSTEM_${util})
       MESSAGE(STATUS "Using system-installed ${util}")
     ENDIF(CMAKE_USE_SYSTEM_${util})
@@ -167,7 +177,7 @@ MACRO(CMAKE_SETUP_TESTING)
     ENDIF(MSVC AND NOT CMAKE_TEST_DIFFERENT_GENERATOR)
     
     SET(CMAKE_TEST_SYSTEM_LIBRARIES 0)
-    FOREACH(util CURL EXPAT XMLRPC ZLIB)
+    FOREACH(util CURL EXPAT XMLRPC ZLIB PCRE LREXLIB)
       IF(CMAKE_USE_SYSTEM_${util})
         SET(CMAKE_TEST_SYSTEM_LIBRARIES 1)
       ENDIF(CMAKE_USE_SYSTEM_${util})
@@ -329,6 +339,19 @@ MACRO (CMAKE_BUILD_UTILITIES)
   ENDIF(CMAKE_USE_SYSTEM_XMLRPC)
   
   #---------------------------------------------------------------------
+  # Build PCRE
+  add_subdirectory (Utilities/pcre)
+    SET(CMAKE_PCRE_INCLUDES ${CMAKE_BINARY_DIR}/Utilities/pcre)
+    SET(CMAKE_PCRE_LIBRARIES pcre)
+  
+  #---------------------------------------------------------------------
+  # Build lrexlib
+  add_subdirectory (Utilities/lrexlib)
+  #    SET(CMAKE_LREXLIB_INCLUDES ${CMAKE_SOURCE_DIR}/Utilities/lrexlib)
+    SET(CMAKE_LREXLIB_LIBRARIES rex_pcre)
+  
+	
+  #---------------------------------------------------------------------
   # Use curses?
   IF (UNIX)
     # there is a bug in the Syllable libraries which makes linking ccmake fail, Alex
@@ -457,12 +480,12 @@ ENDIF(BUILD_QtDialog)
 # the build tree, which is both the build and the install RPATH.
 IF (UNIX)
   IF(   CMAKE_USE_SYSTEM_CURL   OR  CMAKE_USE_SYSTEM_ZLIB
-        OR  CMAKE_USE_SYSTEM_EXPAT  OR  CMAKE_USE_SYSTEM_XMLRPC  OR  CURSES_NEED_RPATH  OR  QT_NEED_RPATH)
+        OR  CMAKE_USE_SYSTEM_EXPAT  OR  CMAKE_USE_SYSTEM_XMLRPC  OR CMAKE_USE_SYSTEM_PCRE  OR  CURSES_NEED_RPATH  OR  QT_NEED_RPATH)
     SET(CMAKE_SKIP_RPATH OFF CACHE INTERNAL "CMake built with RPATH.")
     SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
     SET(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
   ENDIF(CMAKE_USE_SYSTEM_CURL   OR  CMAKE_USE_SYSTEM_ZLIB
-        OR  CMAKE_USE_SYSTEM_EXPAT  OR  CMAKE_USE_SYSTEM_XMLRPC  OR  CURSES_NEED_RPATH  OR  QT_NEED_RPATH)
+        OR  CMAKE_USE_SYSTEM_EXPAT  OR  CMAKE_USE_SYSTEM_XMLRPC  OR CMAKE_USE_SYSTEM_PCRE  OR  CURSES_NEED_RPATH  OR  QT_NEED_RPATH)
 ENDIF (UNIX)
 
 

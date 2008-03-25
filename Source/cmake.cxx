@@ -54,6 +54,12 @@
 #  define CMAKE_USE_ECLIPSE
 #endif
 
+#define CMAKE_BUILD_WITH_CMAKELUA CMAKE_BUILD_WITH_CMAKE 
+extern "C"
+{
+extern int luaopen_rex_pcre(lua_State *L);
+}
+
 #if defined(__MINGW32__) && !defined(CMAKE_BUILD_WITH_CMAKE)
 # define CMAKE_BOOT_MINGW
 #endif
@@ -193,6 +199,12 @@ cmake::cmake()
   // setup lua
   this->LuaState = lua_open(); 
   luaL_openlibs(this->LuaState);
+ 
+#ifdef CMAKE_BUILD_WITH_CMAKELUA
+  lua_pushcfunction(this->LuaState, luaopen_rex_pcre);
+  lua_pushstring(this->LuaState, "rex_pcre");
+  lua_call(this->LuaState, 1, 0);
+#endif
 
   this->AddDefaultGenerators();
   this->AddDefaultExtraGenerators();
