@@ -34,7 +34,7 @@
 
 #include <assert.h>
 
-cmGlobalGenerator::cmGlobalGenerator()
+cmGlobalGenerator::cmGlobalGenerator() : lua_state(0)
 {
   // By default the .SYMBOLIC dependency is not needed on symbolic rules.
   this->NeedSymbolicMark = false;
@@ -697,6 +697,7 @@ void cmGlobalGenerator::Configure()
 
   // start with this directory
   cmLocalGenerator *lg = this->CreateLocalGenerator();
+  lg->Makefile->bindToLua((lua_State*) lua_state);
   this->LocalGenerators.push_back(lg);
 
   // set the Start directories

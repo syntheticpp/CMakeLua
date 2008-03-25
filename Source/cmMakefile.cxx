@@ -43,6 +43,15 @@
 
 #include "cmLuaUtils.h"
 
+extern "C" {
+#include "lua.h"
+#include "lauxlib.h"
+#include "lualib.h"
+}
+
+#include "cmLuaUtils.h"
+
+
 // default is not to be building executables
 cmMakefile::cmMakefile()
 {
@@ -137,6 +146,15 @@ cmMakefile::cmMakefile(const cmMakefile& mf)
   this->PreOrder = mf.PreOrder;
   this->ListFileStack = mf.ListFileStack;
   this->Initialize();
+}
+
+//----------------------------------------------------------------------------550
+void cmMakefile::bindToLua(void* L)
+{
+  if (L) {
+    registerMemberFunction((lua_State*)L, this, &cmMakefile::GetDefinition, "GetDefinition");
+    registerMemberFunction((lua_State*)L, this, &cmMakefile::AddDefinition, "AddDefinition");
+  }
 }
 
 //----------------------------------------------------------------------------

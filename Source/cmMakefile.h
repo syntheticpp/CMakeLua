@@ -77,6 +77,12 @@ public:
    */
   ~cmMakefile();
 
+
+  /**
+   * Make member function visible in Lua
+  */
+  void bindToLua(void* lua_state);
+
   /**
    * Read and parse a CMakeLists.txt file.
    */

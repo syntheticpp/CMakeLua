@@ -31,6 +31,13 @@
 #include "cmDocumentationFormatterText.h"
 #include "cmLuaUtils.h"
 
+extern "C" {
+#include "lua.h"
+#include "lauxlib.h"
+#include "lualib.h"
+}
+#include "cmLuaUtils.h"
+
 #if defined(CMAKE_BUILD_WITH_CMAKE)
 # include "cmDependsFortran.h" // For -E cmake_copy_f90_mod callback.
 # include "cmVariableWatch.h"
@@ -194,6 +201,10 @@ cmake::cmake()
   this->LuaState = lua_open(); 
   luaL_openlibs(this->LuaState);
 
+  // setup lua
+  this->LuaState = lua_open(); 
+  luaL_openlibs(this->LuaState);
+
   this->AddDefaultGenerators();
   this->AddDefaultExtraGenerators();
   this->AddDefaultCommands();
@@ -343,7 +354,7 @@ void cmake::AddCommand(cmCommand* wg)
     lua_setglobal(this->LuaState, fname.c_str());
 #else
 	const char* cmakelua_api_namespace = "cmake";
-	std::cerr << "RegisterFunc for: " << name << ".\n";
+	//std::cerr << "RegisterFunc for: " << name << ".\n";
 	LuaUtils_RegisterFunc(this->LuaState, wg->LuaFunction, name.c_str(), cmakelua_api_namespace);
 #endif
     }
@@ -714,6 +725,10 @@ void cmake::SetDirectoriesFromFile(const char* arg)
       cachePath = path;
       }
     if(cmSystemTools::FileExists(listFile.c_str()))
+      {
+      listPath = path;
+      }
+    if(cmSystemTools::FileExists(luaListFile.c_str()))
       {
       listPath = path;
       }
@@ -1738,6 +1753,9 @@ cmGlobalGenerator* cmake::CreateGlobalGenerator(const char* name)
   generator = (genIt->second)();
   generator->SetCMakeInstance(this);
   generator->SetExternalMakefileProjectGenerator(extraGenerator);
+   
+  generator->lua_state = (void*) LuaState;
+
   return generator;
 }
 

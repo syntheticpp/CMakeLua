@@ -6,7 +6,9 @@ ENDIF(COMMAND CMAKE_POLICY)
 
 MARK_AS_ADVANCED(CMAKE_BACKWARDS_COMPATIBILITY)
 
-
+if(MSVC_IDE)
+	set (CMAKE_SUPPRESS_REGENERATION 1)
+endif(MSVC_IDE)
 
 #-----------------------------------------------------------------------
 # a macro to deal with system libraries, implemented as a macro
@@ -274,6 +276,14 @@ MACRO (CMAKE_BUILD_UTILITIES)
 
   #---------------------------------------------------------------------
   # Build zlib library for Curl, CMake, and CTest.
+  add_subdirectory (Utilities/lua)
+  get_directory_property (CMAKE_LUA_INCLUDES DIRECTORY Utilities/lua 
+    DEFINITION LUA_INCLUDE_DIRS)
+  get_directory_property (CMAKE_LUA_LIBRARIES DIRECTORY Utilities/lua 
+    DEFINITION LUA_LIBRARIES)
+
+  #---------------------------------------------------------------------
+  # 
   add_subdirectory (Utilities/lua)
   get_directory_property (CMAKE_LUA_INCLUDES DIRECTORY Utilities/lua 
     DEFINITION LUA_INCLUDE_DIRS)
