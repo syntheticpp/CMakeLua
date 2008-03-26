@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCoreTryCompile.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-26 17:14:16 $
-  Version:   $Revision: 1.9 $
+  Date:      $Date: 2008-03-26 17:50:23 $
+  Version:   $Revision: 1.10 $
 
   Copyright (c) 2007 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -371,6 +371,7 @@ void cmCoreTryCompile::CleanupFiles(const char* binDir)
                 {
                 removed = true;
                 }
+              numAttempts++;
               }
             if(!removed)
               {
