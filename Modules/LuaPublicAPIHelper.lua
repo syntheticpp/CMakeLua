@@ -147,6 +147,7 @@ end
 -- For every registered (C++) CMake API function (in cmake. table)
 -- provide fancy argument handling
 --for key, value in pairs(cmake) do
+--[[
 for key, value in pairs(_G) do
 	if type(value) == "function" then
 		local func_name = string.match(key, '^cm_(.*)$')
@@ -161,9 +162,8 @@ for key, value in pairs(_G) do
 --		print("Type:", type(value), "for key:", key)
 	end
 end
+--]]
 
-
---[[
 for key, value in pairs(cmake) do
 	if type(value) == "function" then
 --			print("Found function:", key, ".")
@@ -172,10 +172,9 @@ for key, value in pairs(cmake) do
 			--cmake[func_name] = setup_fancy_argument_handling(value)
 			--_G[key] = nil
 	else
-		print("Type:", type(value), "for key:", key)
+--		print("Type:", type(value), "for key:", key)
 	end
 end
---]]
 --print("end of helper")
 
 
