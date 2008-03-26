@@ -180,6 +180,10 @@ for key, value in pairs(cmake) do
 	if type(value) == "function" then
 --			print("Found function:", key, ".")
 			cmake[key] = setup_fancy_argument_handling(value)
+			
+			-- also make them global
+			--_G[key] = cmake[key] 
+			
 			--cmake[func_name] = value
 			--cmake[func_name] = setup_fancy_argument_handling(value)
 			--_G[key] = nil
@@ -189,7 +193,8 @@ for key, value in pairs(cmake) do
 end
 --print("end of helper")
 
-
+-- clean namespace
+list = nil
 
 lua_module_path = GetDefinition("CMAKE_MODULE_PATH")
 if lua_module_path == nil then
@@ -211,5 +216,55 @@ if lua_module_path ~= nil then
 	require "table_ext"
 	require "base"
 end
+
+
+
+-- in CMakeLua assumes all args for CMake are string lists 
+isStringList = function(x) 
+					if x == nil then
+						return false
+					elseif type(x) == "function" then
+						return false
+					else
+						-- TODO
+						return true
+					end
+				end
+	
+setmetatable(_G, 
+{
+__index = function (_, n) 
+		local val = GetDefinition(n) 
+		if val == nil then
+			val = cmake[n]
+			if val == nil then
+				return rawget(_G, n)
+			else
+				return val
+			end
+		else
+			-- return the CMake list as indexed table
+			return string.split(";", val) 
+		end
+	end,
+__newindex = function (_, n1, n2) 
+		if isStringList(n2) then 
+			-- only string lists are visible in CMake
+			AddDefinition(n1, string.join(";", n2)) 
+		else 
+			rawset(_G, n1, n2)
+		end
+	end
+})
+
+
+-- from CMake we only get lists so we have evtl to make a simple string
+tostr = function (x) 
+		if x == nil then
+			return ""
+		else
+			return string.join(";", x)
+		end
+	end
 
 
