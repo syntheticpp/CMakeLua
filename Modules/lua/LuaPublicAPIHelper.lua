@@ -1,4 +1,15 @@
+--[[=========================================================================
 
+  Copyright (c) 2008 Eric Wing
+  Copyright (c) 2008 Peter Kümmel
+  All rights reserved.
+  See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
+
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+     PURPOSE.  See the above copyright notices for more information.
+
+=========================================================================--]]
 -- Eric Wing
 -- Little experiment to handle different styles of passing in parameters to
 -- CMake functions, plus demonstrations of how to setup some basic things very
