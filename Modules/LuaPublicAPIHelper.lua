@@ -178,3 +178,26 @@ end
 --print("end of helper")
 
 
+
+lua_module_path = GetDefinition("CMAKE_MODULE_PATH")
+if lua_module_path == nil then
+	lua_module_path = GetDefinition("CMAKE_ROOT")
+	if lua_module_path ~= nil then
+		lua_module_path = lua_module_path .. "/Modules"
+	end
+end
+if lua_module_path ~= nil then	
+	lua_module_path = ";" .. lua_module_path .. "/lua"
+	-- add here new serach pathes
+	package.path = package.path ..lua_module_path.."/?.lua" ..lua_module_path.."/stdlib/modules/?.lua"
+	lua_module_path = nil
+	--print(package.path)
+	
+	-- load parts of stdlib
+	require "list"
+	require "string_ext"
+	require "table_ext"
+	require "base"
+end
+
+

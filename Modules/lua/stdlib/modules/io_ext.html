@@ -1,0 +1,74 @@
+<html><head></head><body>
+<p>
+I/O<br>
+</p><hr>
+<p>
+<strong>readLines:</strong> <em>Read a file into a list of lines and close it<br></em>
+&nbsp;&nbsp;<strong>[h]</strong>: file handle or name [io.input ()]<br>
+<strong>returns</strong><br>
+&nbsp;&nbsp;<strong>l</strong>: list of lines<br>
+</p><hr>
+<p>
+<strong>writeLine:</strong> <em>Write values adding a newline after each<br></em>
+&nbsp;&nbsp;<strong>[h]</strong>: file handle [io.output ()]<br>
+&nbsp;&nbsp;<strong>...</strong>: values to write (as for write)<br>
+</p><hr>
+<p>
+<strong>basename:</strong> <em>POSIX basename<br></em>
+&nbsp;&nbsp;@param path<br>
+<strong>returns</strong><br>
+&nbsp;&nbsp;<strong>base</strong>: base name<br>
+</p><hr>
+<p>
+<strong>dirname:</strong> <em>POSIX dirname<br></em>
+&nbsp;&nbsp;@param path<br>
+<strong>returns</strong><br>
+&nbsp;&nbsp;<strong>dir</strong>: directory component<br>
+</p><hr>
+<p>
+<strong>changeSuffix:</strong> <em>Change the suffix of a filename<br></em>
+&nbsp;&nbsp;<strong>from</strong>: suffix to change (".-" for any suffix)<br>
+&nbsp;&nbsp;<strong>to</strong>: suffix to replace with<br>
+&nbsp;&nbsp;<strong>name</strong>: file name to change<br>
+<strong>returns</strong><br>
+&nbsp;&nbsp;<strong>name_</strong>: file name with new suffix<br>
+</p><hr>
+<p>
+<strong>addSuffix:</strong> <em>Add a suffix to a filename if not already present<br></em>
+&nbsp;&nbsp;<strong>suff</strong>: suffix to add<br>
+&nbsp;&nbsp;<strong>name</strong>: file name to change<br>
+<strong>returns</strong><br>
+&nbsp;&nbsp;<strong>name_</strong>: file name with new suffix<br>
+</p><hr>
+<p>
+<strong>pathSplit:</strong> <em>split a path into components<br></em>
+Multiple separators are compressed into one; the current directory<br>
+becomes an empty list, while the root directory becomes {"/"}.<br>
+Trailing separators are ignored.<br>
+&nbsp;&nbsp;<strong>path</strong>: path<br>
+<strong>returns</strong><br>
+&nbsp;&nbsp;@param: path1, ..., pathn: path components<br>
+</p><hr>
+<p>
+<strong>pathConcat:</strong> <em>concatenate path components into a path<br></em>
+Empty components are ignored; an empty list is taken to be the<br>
+current directory<br>
+&nbsp;&nbsp;@param: path1, ..., pathn: path components<br>
+<strong>returns</strong><br>
+&nbsp;&nbsp;<strong>path</strong>: path<br>
+</p><hr>
+<p>
+<strong>shell:</strong> <em>Perform a shell command and return its output<br></em>
+&nbsp;&nbsp;<strong>c</strong>: command<br>
+<strong>returns</strong><br>
+&nbsp;&nbsp;<strong>o</strong>: output, or nil if error<br>
+</p><hr>
+<p>
+<strong>processFiles:</strong> <em>Process files specified on the command-line<br></em>
+If no files given, process io.stdin; in list of files, "-" means<br>
+io.stdin<br>
+&nbsp;&nbsp;<strong>f</strong>: function to process files with<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<strong>name</strong>: the name of the file being read<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<strong>i</strong>: the number of the argument<br>
+</p><hr>
+</body></html>
