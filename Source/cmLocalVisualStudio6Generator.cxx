@@ -205,7 +205,7 @@ void cmLocalVisualStudio6Generator::AddDSPBuildRule(cmTarget& tgt)
   commandLine.push_back(dsprule);
   std::string makefileIn = this->Makefile->GetStartDirectory();
   makefileIn += "/";
-  makefileIn += "CMakeLists.txt";
+  makefileIn += "CMakeLists";
   std::string comment = "Building Custom Rule ";
   comment += makefileIn;
   std::string args;
