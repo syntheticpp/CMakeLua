@@ -149,12 +149,44 @@ cmMakefile::cmMakefile(const cmMakefile& mf)
 }
 
 //----------------------------------------------------------------------------550
-void cmMakefile::bindToLua(void* L)
+void cmMakefile::InitializeLuaState()
 {
-  if (L) {
-    registerMemberFunction((lua_State*)L, this, &cmMakefile::GetDefinition, "GetDefinition");
-    registerMemberFunction((lua_State*)L, this, &cmMakefile::AddDefinition, "AddDefinition");
-  }
+  lua_State* L = this->GetCMakeInstance()->GetLuaState();
+  if (L) 
+    {     
+    registerMemberFunction(L, this, &cmMakefile::GetDefinition, "GetDefinition");
+    registerMemberFunction(L, this, &cmMakefile::AddDefinition, "AddDefinition");
+
+    // Run utility helper
+    RunLuaFile(this->GetModulesFile("lua/LuaPublicAPIHelper.lua"));
+    }
+}
+
+
+void cmMakefile::RunLuaFile(const std::string& filename)
+{
+  lua_State* L = this->GetCMakeInstance()->GetLuaState();
+  if (!filename.empty())
+    {
+    std::cerr << "Path to runLuaFile file is: " << filename << std::endl;
+   
+    int s = luaL_loadfile(L, filename.c_str());
+    if ( s==0 )
+      {
+      // execute Lua program
+      s = lua_pcall(L, 0, 0, 0);
+      if ( s!=0 )
+        {
+        std::cerr << "-- " << lua_tostring(L, -1) << std::endl;
+        lua_pop(L, 1);
+        }
+      }
+    else
+      {
+      std::cerr << "-- " << lua_tostring(L, -1) << std::endl;
+      lua_pop(L, 1);
+      }
+    }
 }
 
 //----------------------------------------------------------------------------
@@ -545,29 +577,7 @@ bool cmMakefile::ReadListFile(const char* filename_in,
   if (cmSystemTools::GetFilenameLastExtension(filenametoread) == ".lua")
     {
     lua_State *L = this->GetCMakeInstance()->GetLuaState();
-    this->ListFiles.push_back( filenametoread);
-
-    // Run utility helper
-    std::string lua_helper_file;
-    lua_helper_file = this->GetModulesFile("LuaPublicAPIHelper.lua");
-    std::cerr << "Path to lua_helper file is: " << lua_helper_file << std::endl;
-
-    int s = luaL_loadfile(L, lua_helper_file.c_str());
-    if ( s==0 )
-      {
-      // execute Lua program
-      s = lua_pcall(L, 0, 0, 0);
-      if ( s!=0 )
-        {
-        std::cerr << "-- " << lua_tostring(L, -1) << std::endl;
-        lua_pop(L, 1);
-        }
-      }
-    else
-      {
-      std::cerr << "-- " << lua_tostring(L, -1) << std::endl;
-      lua_pop(L, 1);
-      }
+    this->ListFiles.push_back(filenametoread);
 
     // get the current makefile setting
     lua_pushstring(L,"cmCurrentMakefile");

@@ -124,10 +124,6 @@ message(STATUS "T   : unknown in cmake. ${T}")
 set(cml1 a1 a2 a3)
 set(cml2 "b 1" "b 2" "b 3")
 
-lua("
-require \"list\"
-require \"string_ext\"
-")
 
 lua("
 CMakeString \"cml1\" 

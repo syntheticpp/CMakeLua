@@ -81,7 +81,12 @@ public:
   /**
    * Make member function visible in Lua
   */
-  void bindToLua(void* lua_state);
+  void InitializeLuaState();
+
+  /*
+    TODO private?
+  */
+  void RunLuaFile(const std::string& filename);
 
   /**
    * Read and parse a CMakeLists.txt file.

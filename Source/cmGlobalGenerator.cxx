@@ -697,7 +697,7 @@ void cmGlobalGenerator::Configure()
 
   // start with this directory
   cmLocalGenerator *lg = this->CreateLocalGenerator();
-  lg->Makefile->bindToLua((lua_State*) lua_state);
+  lg->Makefile->InitializeLuaState();
   this->LocalGenerators.push_back(lg);
 
   // set the Start directories
