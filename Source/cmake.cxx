@@ -343,7 +343,7 @@ void cmake::AddCommand(cmCommand* wg)
   // add to Lua
   if (wg->GetExposeToLua())
     {
-#define CMAKELUA_NO_NAMESPACE
+//#define CMAKELUA_NO_NAMESPACE
 #ifdef CMAKELUA_NO_NAMESPACE
     lua_pushstring(this->LuaState, name.c_str());
     lua_pushcclosure(this->LuaState, wg->LuaFunction, 1);
@@ -354,7 +354,7 @@ void cmake::AddCommand(cmCommand* wg)
     lua_setglobal(this->LuaState, fname.c_str());
 #else
 	const char* cmakelua_api_namespace = "cmake";
-	//std::cerr << "RegisterFunc for: " << name << ".\n";
+//	std::cerr << "RegisterFunc for: " << name << ".\n";
 	LuaUtils_RegisterFunc(this->LuaState, wg->LuaFunction, name.c_str(), cmakelua_api_namespace);
 #endif
     }
