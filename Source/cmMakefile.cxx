@@ -539,6 +539,7 @@ bool cmMakefile::ReadListFile(const char* filename_in,
     }
 
 
+  // *** start of listfile code
   // *** Here is the core listfile reading code ***
   // is it a lua file ?
   if (cmSystemTools::GetFilenameLastExtension(filenametoread) == ".lua")
@@ -546,29 +547,27 @@ bool cmMakefile::ReadListFile(const char* filename_in,
     lua_State *L = this->GetCMakeInstance()->GetLuaState();
     this->ListFiles.push_back( filenametoread);
 
-	// Run utility helper
-	std::string lua_helper_file;
-	lua_helper_file = this->GetModulesFile("LuaPublicAPIHelper.lua");
-	std::cerr << "Path to lua_helper file is: " << lua_helper_file << std::endl;
-	
-	int s = luaL_loadfile(L, lua_helper_file.c_str());
+    // Run utility helper
+    std::string lua_helper_file;
+    lua_helper_file = this->GetModulesFile("LuaPublicAPIHelper.lua");
+    std::cerr << "Path to lua_helper file is: " << lua_helper_file << std::endl;
+
+    int s = luaL_loadfile(L, lua_helper_file.c_str());
     if ( s==0 )
-	{
+      {
       // execute Lua program
       s = lua_pcall(L, 0, 0, 0);
-		if ( s!=0 )
-		{
-			std::cerr << "-- " << lua_tostring(L, -1) << std::endl;
-			lua_pop(L, 1);
-		}
-	}
-	else
-	{
-			std::cerr << "-- " << lua_tostring(L, -1) << std::endl;
-			lua_pop(L, 1);
-	}
-
-
+      if ( s!=0 )
+        {
+        std::cerr << "-- " << lua_tostring(L, -1) << std::endl;
+        lua_pop(L, 1);
+        }
+      }
+    else
+      {
+      std::cerr << "-- " << lua_tostring(L, -1) << std::endl;
+      lua_pop(L, 1);
+      }
 
     // get the current makefile setting
     lua_pushstring(L,"cmCurrentMakefile");
@@ -608,35 +607,35 @@ bool cmMakefile::ReadListFile(const char* filename_in,
     }
   else
     {
-  cmListFile cacheFile;
-  if( !cacheFile.ParseFile(filenametoread, requireProjectCommand, this) )
-    {
-    // pop the listfile off the stack
-    this->ListFileStack.pop_back();
-    if(fullPath!=0)
+    cmListFile cacheFile;
+    if( !cacheFile.ParseFile(filenametoread, requireProjectCommand, this) )
       {
-      *fullPath = "";
+      // pop the listfile off the stack
+      this->ListFileStack.pop_back();
+      if(fullPath!=0)
+        {
+        *fullPath = "";
+        }
+      this->AddDefinition("CMAKE_PARENT_LIST_FILE", currentParentFile.c_str());
+      this->AddDefinition("CMAKE_CURRENT_LIST_FILE", currentFile.c_str());
+      return false;
       }
-    this->AddDefinition("CMAKE_PARENT_LIST_FILE", currentParentFile.c_str());
-    this->AddDefinition("CMAKE_CURRENT_LIST_FILE", currentFile.c_str());
-    return false;
-    }
-  // add this list file to the list of dependencies
-  this->ListFiles.push_back( filenametoread);
-  const size_t numberFunctions = cacheFile.Functions.size();
-  for(size_t i =0; i < numberFunctions; ++i)
-    {
-    cmExecutionStatus status;
-    this->ExecuteCommand(cacheFile.Functions[i],status);
-    if (status.GetReturnInvoked() ||
+    // add this list file to the list of dependencies
+    this->ListFiles.push_back( filenametoread);
+    const size_t numberFunctions = cacheFile.Functions.size();
+    for(size_t i =0; i < numberFunctions; ++i)
+      {
+      cmExecutionStatus status;
+      this->ExecuteCommand(cacheFile.Functions[i],status);
+      if (status.GetReturnInvoked() ||
         cmSystemTools::GetFatalErrorOccured() )
-      {
-      // Exit early from processing this file.
-      endScopeNicely = false;
-      break;
+        {
+        // Exit early from processing this file.
+        endScopeNicely = false;
+        break;
+        }
       }
     }
-  }
   // *** end of listfile code
 
   // send scope ended to and function blockers
