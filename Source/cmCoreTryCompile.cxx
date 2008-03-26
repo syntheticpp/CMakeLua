@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCoreTryCompile.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-19 19:44:56 $
-  Version:   $Revision: 1.8 $
+  Date:      $Date: 2008-03-26 17:14:16 $
+  Version:   $Revision: 1.9 $
 
   Copyright (c) 2007 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -359,9 +359,25 @@ void cmCoreTryCompile::CleanupFiles(const char* binDir)
           {
           if(!cmSystemTools::RemoveFile(fullPath.c_str()))
             {
-            std::string m = "Remove failed on file: ";
-            m += fullPath;
-            cmSystemTools::ReportLastSystemError(m.c_str());
+            bool removed = false;
+            int numAttempts = 0;
+            // sometimes anti-virus software hangs on to
+            // new files and we can not delete them, so try
+            // 5 times with .5 second delay between tries.
+            while(!removed && numAttempts < 5)
+              {
+              cmSystemTools::Delay(500);
+              if(cmSystemTools::RemoveFile(fullPath.c_str()))
+                {
+                removed = true;
+                }
+              }
+            if(!removed)
+              {
+              std::string m = "Remove failed on file: ";
+              m += fullPath;
+              cmSystemTools::ReportLastSystemError(m.c_str());
+              }
             }
           }
         }
