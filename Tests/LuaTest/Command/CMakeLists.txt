@@ -1,3 +1,4 @@
+lua(FILE test.lua)
 
 
 set(A a b c)

@@ -84,9 +84,8 @@ public:
   void InitializeLuaState();
 
   /*
-    TODO private?
   */
-  void RunLuaFile(const std::string& filename);
+  int RunLuaFile(const std::string& filename);
 
   /**
    * Read and parse a CMakeLists.txt file.

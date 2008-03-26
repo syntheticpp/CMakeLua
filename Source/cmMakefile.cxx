@@ -163,19 +163,20 @@ void cmMakefile::InitializeLuaState()
 }
 
 
-void cmMakefile::RunLuaFile(const std::string& filename)
+int cmMakefile::RunLuaFile(const std::string& filename)
 {
+  int error = 0;
   lua_State* L = this->GetCMakeInstance()->GetLuaState();
   if (!filename.empty())
     {
     std::cerr << "Path to runLuaFile file is: " << filename << std::endl;
    
-    int s = luaL_loadfile(L, filename.c_str());
-    if ( s==0 )
+    int error = luaL_loadfile(L, filename.c_str());
+    if ( error==0 )
       {
       // execute Lua program
-      s = lua_pcall(L, 0, 0, 0);
-      if ( s!=0 )
+      error = lua_pcall(L, 0, 0, 0);
+      if ( error!=0 )
         {
         std::cerr << "-- " << lua_tostring(L, -1) << std::endl;
         lua_pop(L, 1);
@@ -187,6 +188,7 @@ void cmMakefile::RunLuaFile(const std::string& filename)
       lua_pop(L, 1);
       }
     }
+  return error;
 }
 
 //----------------------------------------------------------------------------

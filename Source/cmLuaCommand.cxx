@@ -26,24 +26,35 @@ bool cmLuaCommand
   // assume there is only one string
   if(args.size() < 1)
   {
-    SetError("called with incorrect number of arguments");
+    SetError("lua command called with incorrect number of arguments");
     return false;
   }
 
-  // join args
-  std::string str;
-  for(std::vector<std::string>::const_iterator it = args.begin(); it != args.end(); ++it)
-  {
-    str += *it;
-  }
+  int error = 0;
+  if (args.size() == 2 && args[0] == "FILE") 
+    {
+    std::string luaFile = Makefile->GetCurrentDirectory();
+    luaFile += "/";
+    luaFile += args[1];
+    error = Makefile->RunLuaFile(luaFile);
+    }
+  else
+    {
+    // join args
+    std::string str;
+    for(std::vector<std::string>::const_iterator it = args.begin(); it != args.end(); ++it)
+      {
+      str += *it;
+      }
 
-  int error = luaL_dostring(Makefile->GetCMakeInstance()->GetLuaState(), str.c_str());
+    error = luaL_dostring(Makefile->GetCMakeInstance()->GetLuaState(), str.c_str());
+    }
 
   if (error != 0) 
-  {
-    this->SetError("Error when processing Lua code");
+    {
+    SetError("Error when processing Lua code");
     return false;
-  }
+    }
 
   return true;
 }
