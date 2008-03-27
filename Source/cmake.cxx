@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmake.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-27 02:34:27 $
-  Version:   $Revision: 1.378 $
+  Date:      $Date: 2008-03-27 21:05:11 $
+  Version:   $Revision: 1.379 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -783,6 +783,7 @@ int cmake::AddCMakePaths()
 {
   // Find the cmake executable
   std::string cMakeSelf = cmSystemTools::GetExecutableDirectory();
+  cMakeSelf = cmSystemTools::GetRealPath(cMakeSelf.c_str());
   cMakeSelf += "/cmake";
   cMakeSelf += cmSystemTools::GetExecutableExtension();
   if(!cmSystemTools::FileExists(cMakeSelf.c_str()))
@@ -858,6 +859,7 @@ int cmake::AddCMakePaths()
     {
     // next try exe/..
     cMakeRoot  = cmSystemTools::GetProgramPath(cMakeSelf.c_str());
+    cMakeRoot = cmSystemTools::GetRealPath(cMakeRoot.c_str());
     std::string::size_type slashPos = cMakeRoot.rfind("/");
     if(slashPos != std::string::npos)
       {
