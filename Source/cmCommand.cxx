@@ -57,7 +57,9 @@ static int cmLuaFunc(lua_State *L)
 	}
   else
     {
-		std::cerr << "CMakeLua functions can only take a single table (array) parameter in cmCommand::cmLuaFunc(). It is expected that fancy argument handling is handled in LuaPublicAPIHelper.lua which should prepare all arguments to be formatted for this function. If this message is seen, either the helper failed or invocation bypassed the helper." << std::endl;
+    std::cerr << "Error at: "
+      << LuaUtils_GetLocationString(L)
+      << "\nCMakeLua functions can only take a single table (array) parameter in cmCommand::cmLuaFunc(). It is expected that fancy argument handling is handled in LuaPublicAPIHelper.lua which should prepare all arguments to be formatted for this function. If this message is seen, either the helper failed or invocation bypassed the helper." << std::endl;
     }
   // get the current makefile
   lua_pushstring(L,"cmCurrentMakefile");

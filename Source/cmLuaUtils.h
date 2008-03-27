@@ -40,6 +40,7 @@ bool LuaUtils_RegisterValue(lua_State* script,
 							const char* literal_name,
 							const char* library_name = NULL);
 
+std::string LuaUtils_GetLocationString(lua_State* script, int level = 1);
 
 
 

@@ -17,6 +17,8 @@
 
 #include "cmLuaUtils.h"
 #include <string.h>
+#include <sstream>
+
 
 /**
  * This function will create a nested table in Lua based on the 
@@ -136,8 +138,8 @@ bool LuaUtils_RegisterFunc(lua_State* lua_state,
 	}
 	
 	/* Register function into lua_state object.
-	 * Also passes pointer to a SpaceObjScriptIO instance 
-	 * via lightuserdata.
+	 * Also passes a pointer for user data (which could be 
+	 * a class instance for example) via lightuserdata.
 	 */
 	// use function_name when calling from Lua
 	lua_pushstring( lua_state, function_name );               // stack: table string
@@ -194,5 +196,208 @@ bool LuaUtils_RegisterValue(lua_State* script,
 	return true;
 }
 
+/**
+ * Returns an string containing the function, filename, and line number.
+ * Returns an string containing the function, filename, and line number.
+ * It may look like "SomeFunction:/home/foo/MyProj/src/CMakeLua.lua:151
+ * @return Returns a std::string containing these items separated by colons.
+ */
+std::string LuaUtils_GetLocationString(lua_State* lua_script, int level)
+{
+	std::string function_name;
+	std::string file_name;
+	std::string ret_string;
+	std::ostringstream format_stream;
+	int error;
+	lua_Debug ar;
+	
+	
+	// Typically, the level is 1 to 
+	// go one up the stack to find information about 
+	// who called this function so we can find the name
+	// and line number.
+	// This function only fills the private parts of the structure.
+	// lua_getinfo must be called afterwards.
+	error = lua_getstack(lua_script, level, &ar);
+	// If there was an error, return
+	if(1 != error)
+	{
+		return ret_string;
+	}
+	/* Fill up the structure with requested information
+	 * n - gets the "name" of the function we're looking at
+	 * n also gets "namewhat" which states 'global', 'local',
+	 * 'field', or 'method'.
+	 * S - Provides the "source" which seems to be 
+	 * the full path and filename (via chunkname) associated
+	 * with this lua state.
+	 * S also provides "short_src" which seems to be a 60 max character
+	 * truncated version of source.
+	 * S also provides "what" which is Lua function, C function, 
+	 * Lua main.
+	 * And S provides the line number ("linedefined") that the 
+	 * current function begins its definition.
+	 * l - Provides the current line number ("currentline").
+	 * u - provides the number of upvalues ("nups").
+	 */
+	//	error = lua_getinfo(script_ptr, "nSlu", &ar);
+	error = lua_getinfo(lua_script, "nSl", &ar);
+	
+	// If there was an error, print out what we have
+	if(0 == error)
+	{
+		return ret_string;
+	}
+
+#if 0
+	fprintf(stderr, "Name: %s\n", ar.name);
+	
+	fprintf(stderr, "namewhat: %s\n", ar.namewhat);
+	fprintf(stderr, "what: %s\n", ar.what);
+	fprintf(stderr, "short_src: %s\n", ar.short_src);
+	
+	fprintf(stderr, "source: %s\n", ar.source);
+	fprintf(stderr, "currentline: %d\n", ar.currentline);
+	fprintf(stderr, "linedefined: %d\n", ar.linedefined);
+	fprintf(stderr, "upvalues: %d\n", ar.nups);
+#endif
+	
+	// Clear the buffer 
+//	format_stream.str("");
+#if 0
+	// May crash program if any fields are NULL
+	format_stream << ar.name
+		<< ":"
+		<< ar.source
+		<< ":"
+		<< ar.currentline;
+	subkeyword = format_stream.str();
+#endif
+	
+	format_stream << ar.currentline;
+	
+#if 1
+	if(NULL != ar.source)
+	{
+		file_name = ar.source;
+	}
+#else
+	if(NULL != ar.short_src)
+	{
+		file_name = ar.short_src;
+	}
+#endif
+	if(NULL != ar.name)
+	{
+		function_name = ar.name;
+	}
+	else
+	{
+		/* Ugh. Lua 5.1 doesn't report function names at 
+		 * the global level when called from C.
+		 * Mike Pall offered me some code that works from within Lua
+		 * to restore the 5.0 behavior.
+		 */
+//		fprintf(stderr, "top (start) =%d\n", lua_gettop(lua_script));
+		error = lua_getinfo(lua_script, "f", &ar);
+		if(0 == error)
+		{
+			fprintf(stderr, "Unexpected error calling lua_getinfo");
+		}
+		/* There should be a function pushed on top by calling get_info with "f". 
+		 * If not, I don't know what's going on. Hopefully something was pushed.
+		 * otherwise my pop is going to be unbalanced.
+		 */
+		if(lua_isfunction(lua_script, -1))
+		{
+			/* table is in the stack at index 't' */
+			lua_pushnil(lua_script);  /* dummy key because each call to lua_next pops 1 */
+			while(lua_next(lua_script, LUA_GLOBALSINDEX) != 0)
+			{
+				/* uses 'key' (at index -2) and 'value' (at index -1) */
+				/*
+				printf("%s - %s\n",
+					   lua_typename(lua_script, lua_type(lua_script, -2)),
+					   lua_typename(lua_script, lua_type(lua_script, -1)));
+					   
+				if(lua_type(lua_script, -2) == LUA_TSTRING)
+				{
+					printf("\tkey  : %s\n", lua_tostring(lua_script, -2));
+				}
+				else
+				{
+			//		printf("\tkey  : %d\n", lua_tointeger(lua_script, -2));
+				}
+				if(lua_type(lua_script, -1) == LUA_TSTRING)
+				{
+					printf("\tvalue: %s\n", lua_tostring(lua_script, -1));
+				}
+				else
+				{
+			//		printf("\tvalue: %d\n", lua_tointeger(lua_script, -1));
+				}
+				*/
+				
+				/* Experimental results are coming out as:
+				 * string - function (key - value)
+				 * The current function is at index: -1, and the function we want
+				 * to compare against is at -3 (put there by lua_getinfo(L, "f", &ar)).
+				 * If we hit, the function name is the string at index: -2
+				 */
+				if(lua_type(lua_script, -1) == LUA_TFUNCTION)
+				{
+					if(lua_rawequal(lua_script, -1, -3))
+					{
+						//printf("We have a match!!!\n");
+						if(lua_type(lua_script, -2) == LUA_TSTRING)
+						{
+							function_name = lua_tostring(lua_script, -2);
+						//	printf("\tkey  : %s\n", lua_tostring(lua_script, -2));
+						}
+						/* else, we don't have a global name? */
+						
+						/* We're going to break early. We need to make sure
+						 * the stack is popped correctly. Normally,
+						 * the end of the loop pops 1, and the next call to
+						 * lua_next pops another 1. Since we are bypassing
+						 * both, we need to pop 2.
+						 */
+						 lua_pop(lua_script, 2);
+						 break;
+					}
+				}
+						   
+				/* removes 'value'; keeps 'key' for next iteration where 
+				 * the next call to lua_next will pop the key and start all over again
+				 */
+				lua_pop(lua_script, 1);
+			}
+//			fprintf(stderr, "top (out) =%d\n", lua_gettop(lua_script));
+
+			/* We need to pop the function on the stack placed by lua_getinfo(L, "f", &ar) */
+		}
+		/* pop the function placed by get_info */
+		lua_pop(lua_script, 1);
+//		fprintf(stderr, "top (end) =%d\n", lua_gettop(lua_script));
+
+	}
+	// Adjust the memory size of ret_string to 
+	// try to keep memory allocations to a minimum
+	ret_string.reserve(function_name.size() 
+					   + file_name.size()
+					   + format_stream.str().size()
+					   + 2  // add the size of the colons
+					   );
+
+	ret_string = 
+		function_name
+		+ std::string(":") 
+		+ file_name
+		+ std::string(":") 
+		+ format_stream.str()
+		;
+
+	return ret_string;
+}
 
 

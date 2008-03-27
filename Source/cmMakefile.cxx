@@ -158,7 +158,13 @@ void cmMakefile::InitializeLuaState()
     registerMemberFunction(L, this, &cmMakefile::AddDefinition, "AddDefinition");
 
     // Run utility helper
-    RunLuaFile(this->GetModulesFile("lua/LuaPublicAPIHelper.lua"));
+    int error = RunLuaFile(this->GetModulesFile("lua/LuaPublicAPIHelper.lua"));
+    if(0 != error)
+      {
+        this->IssueMessage(cmake::FATAL_ERROR, 
+                           "Could not load LuaPublicAPIHelper.lua. Perhaps your CMake installation is not installed correctly.");
+        cmSystemTools::SetFatalErrorOccured();
+      }
     }
 }
 
