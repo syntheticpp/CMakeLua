@@ -1,7 +1,7 @@
 # just install the modules
 # new file added, force rerunning cmake 
 
-SUBDIRS(Platform)
+SUBDIRS(Platform lua)
 INSTALL_FILES(${CMAKE_DATA_DIR}/Modules .*\\.cmake$)
 INSTALL_FILES(${CMAKE_DATA_DIR}/Modules .*\\.cpp$)
 INSTALL_FILES(${CMAKE_DATA_DIR}/Modules .*\\.cxx$)
