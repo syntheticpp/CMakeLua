@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmake.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-22 14:24:06 $
-  Version:   $Revision: 1.377 $
+  Date:      $Date: 2008-03-27 02:34:27 $
+  Version:   $Revision: 1.378 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -3936,10 +3936,15 @@ bool cmake::RunCommand(const char* comment,
   // use rc command to create .res file
   cmSystemTools::RunSingleCommand(command,
                                   &output,
-                                  &retCode);
-  if(verbose)
+                                  &retCode, 0, false);
+  // always print the output of the command, unless
+  // it is the dumb rc command banner, but if the command
+  // returned an error code then print the output anyway as 
+  // the banner may be mixed with some other important information.
+  if(output.find("Resource Compiler Version") == output.npos
+     || retCode !=0)
     {
-    std::cout << output << "\n";
+    std::cout << output;
     }
   // if retCodeOut is requested then always return true
   // and set the retCodeOut to retCode
