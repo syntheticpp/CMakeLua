@@ -3,13 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmGlobalKdevelopGenerator.cxx,v $
   Language:  C++
-<<<<<<< cmGlobalKdevelopGenerator.cxx
-  Date:      $Date: 2007/10/22 17:28:49 $
-  Version:   $Revision: 1.29 $
-=======
-  Date:      $Date: 2008-03-27 19:33:09 $
-  Version:   $Revision: 1.30 $
->>>>>>> 1.30
+  Date:      $Date: 2008-03-27 21:40:43 $
+  Version:   $Revision: 1.31 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   Copyright (c) 2004 Alexander Neundorf neundorf@kde.org, All rights reserved.
@@ -55,15 +50,6 @@ cmGlobalKdevelopGenerator::cmGlobalKdevelopGenerator()
 :cmExternalMakefileProjectGenerator()
 {
   this->SupportedGlobalGenerators.push_back("Unix Makefiles");
-}
-
-
-void cmGlobalKdevelopGenerator::SetGlobalGenerator(
-                                                  cmGlobalGenerator* generator)
-{
-  cmExternalMakefileProjectGenerator::SetGlobalGenerator(generator);
-  cmGlobalUnixMakefileGenerator3* mf = (cmGlobalUnixMakefileGenerator3*)
-                                                                     generator;
 }
 
 void cmGlobalKdevelopGenerator::Generate()
@@ -483,9 +469,9 @@ void cmGlobalKdevelopGenerator
         "      <abortonerror>false</abortonerror>\n"
         "      <numberofjobs>1</numberofjobs>\n"
         "      <dontact>false</dontact>\n"
-        "      <makebin>VERBOSE=1 " << 
-            this->GlobalGenerator->GetLocalGenerators()[0]->GetMakefile()->
-            GetRequiredDefinition("CMAKE_BUILD_TOOL") << "</makebin>\n"
+        "      <makebin>" << this->GlobalGenerator->GetLocalGenerators()[0]->
+            GetMakefile()->GetRequiredDefinition("CMAKE_BUILD_TOOL") 
+            << " VERBOSE=1 </makebin>\n"
         "      <selectedenvironment>default</selectedenvironment>\n"
         "      <environments>\n"
         "        <default/>\n"
