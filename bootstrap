@@ -192,6 +192,7 @@ CMAKE_CXX_SOURCES="\
   cmExprLexer \
   cmExprParser \
   cmExprParserHelper \
+  cmLuaUtils \
 "
 
 if ${cmake_system_mingw}; then
