@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmTarget.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-15 14:00:06 $
-  Version:   $Revision: 1.210 $
+  Date:      $Date: 2008-03-28 17:07:03 $
+  Version:   $Revision: 1.211 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -567,7 +567,9 @@ void cmTarget::DefineProperties(cmake *cm)
      "and the compiler supports a module output directory this specifies "
      "the directory in which the modules will be placed.  "
      "When this property is not set the modules will be placed in the "
-     "build directory corresponding to the target's source directory.");
+     "build directory corresponding to the target's source directory.  "
+     "If the variable CMAKE_Fortran_MODULE_DIRECTORY is set when a target "
+     "is created its value is used to initialize this property.");
 
   cm->DefineProperty
     ("XCODE_ATTRIBUTE_<an-attribute>", cmProperty::TARGET,
