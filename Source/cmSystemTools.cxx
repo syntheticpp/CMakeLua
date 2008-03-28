@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmSystemTools.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-02 21:19:26 $
-  Version:   $Revision: 1.368 $
+  Date:      $Date: 2008-03-28 18:29:28 $
+  Version:   $Revision: 1.369 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -2107,6 +2107,8 @@ void cmSystemTools::FindExecutableDirectory(const char* argv0)
   std::string exe;
   if(cmSystemTools::FindProgramPath(argv0, exe, errorMsg))
     {
+    // remove symlinks
+    exe = cmSystemTools::GetRealPath(exe.c_str());
     cmSystemToolsExecutableDirectory =
       cmSystemTools::GetFilenamePath(exe.c_str());
     }
