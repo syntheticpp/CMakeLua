@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: CMakeSetupDialog.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-13 20:21:44 $
-  Version:   $Revision: 1.42 $
+  Date:      $Date: 2008-03-28 16:53:31 $
+  Version:   $Revision: 1.43 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -393,15 +393,18 @@ void CMakeSetupDialog::doHelp()
     "directory.");
 
   QDialog dialog;
+  QFontMetrics met(this->font());
+  int msgWidth = met.width(msg);
+  dialog.setMinimumSize(msgWidth/15,20);
   dialog.setWindowTitle(tr("Help"));
   QVBoxLayout* l = new QVBoxLayout(&dialog);
   QLabel* lab = new QLabel(&dialog);
-  l->addWidget(lab);
   lab->setText(msg);
   lab->setWordWrap(true);
   QDialogButtonBox* btns = new QDialogButtonBox(QDialogButtonBox::Ok,
                                                 Qt::Horizontal, &dialog);
   QObject::connect(btns, SIGNAL(accepted()), &dialog, SLOT(accept()));
+  l->addWidget(lab);
   l->addWidget(btns);
   dialog.exec();
 }
