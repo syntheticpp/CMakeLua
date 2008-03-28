@@ -3,8 +3,13 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalVisualStudio7Generator.cxx,v $
   Language:  C++
+<<<<<<< cmLocalVisualStudio7Generator.cxx
   Date:      $Date: 2008/01/30 17:04:38 $
   Version:   $Revision: 1.217 $
+=======
+  Date:      $Date: 2008-03-28 01:51:32 $
+  Version:   $Revision: 1.218 $
+>>>>>>> 1.218
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -353,6 +358,7 @@ cmVS7FlagTable cmLocalVisualStudio7GeneratorFlagTable[] =
 
   // boolean flags
   {"BufferSecurityCheck", "GS", "Buffer security check", "TRUE", 0},
+  {"BufferSecurityCheck", "GS-", "Turn off Buffer security check", "FALSE", 0},
   {"EnableFibreSafeOptimization", "GT", "OmitFramePointers", "TRUE", 0},
   {"EnableFunctionLevelLinking", "Gy",
    "EnableFunctionLevelLinking", "TRUE", 0},
@@ -365,6 +371,8 @@ cmVS7FlagTable cmLocalVisualStudio7GeneratorFlagTable[] =
   {"OptimizeForWindowsApplication", "GA", "Optimize for windows", "TRUE", 0},
   {"RuntimeTypeInfo", "GR",
    "Turn on Run time type information for c++", "TRUE", 0},
+  {"RuntimeTypeInfo", "GR-",
+   "Turn off Run time type information for c++", "FALSE", 0},
   {"SmallerTypeCheck", "RTCc", "smaller type check", "TRUE", 0},
   {"SuppressStartupBanner", "nologo", "SuppressStartupBanner", "TRUE", 0},
   {"WarnAsError", "WX", "Treat warnings as errors", "TRUE", 0},
