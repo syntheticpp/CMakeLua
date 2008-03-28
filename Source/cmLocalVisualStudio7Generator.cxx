@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalVisualStudio7Generator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-28 01:54:49 $
-  Version:   $Revision: 1.219 $
+  Date:      $Date: 2008-03-28 02:00:16 $
+  Version:   $Revision: 1.220 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -356,7 +356,8 @@ cmVS7FlagTable cmLocalVisualStudio7GeneratorFlagTable[] =
   {"BufferSecurityCheck", "GS-", "Turn off Buffer security check", "FALSE", 0},
   {"Detect64BitPortabilityProblems", "Wp64", 
    "Detect 64-bit Portability Problems", "TRUE", 0},
-  {"EnableFibreSafeOptimization", "GT", "OmitFramePointers", "TRUE", 0},
+  {"EnableFiberSafeOptimization", "GT", "Enable Fiber-safe Optimizations",
+   "TRUE", 0},
   {"EnableFunctionLevelLinking", "Gy",
    "EnableFunctionLevelLinking", "TRUE", 0},
   {"EnableIntrinsicFunctions", "Oi", "EnableIntrinsicFunctions", "TRUE", 0},
