@@ -3,8 +3,13 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCPackDebGenerator.cxx,v $
   Language:  C++
+<<<<<<< cmCPackDebGenerator.cxx
   Date:      $Date: 2008/01/24 12:31:59 $
   Version:   $Revision: 1.20 $
+=======
+  Date:      $Date: 2008-03-29 00:23:01 $
+  Version:   $Revision: 1.21 $
+>>>>>>> 1.21
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -124,7 +129,27 @@ int cmCPackDebGenerator::CompressFiles(const char* outFileName,
   std::string cmd;
   cmd = "\"";
   cmd += cmakeExecutable;
-  cmd += "\" -E tar cfz data.tar.gz ./usr";
+  cmd += "\" -E tar cfz data.tar.gz ";
+
+  // now add all directories which have to be compressed
+  // collect all top level install dirs for that
+  // e.g. /opt/bin/foo, /usr/bin/bar and /usr/bin/baz would give /usr and /opt
+  int topLevelLength = strlen(toplevel);
+  std::set<std::string> installDirs;
+  for (std::vector<std::string>::const_iterator fileIt = files.begin(); 
+       fileIt != files.end(); ++ fileIt )
+    {
+    std::string::size_type slashPos = fileIt->find('/', topLevelLength+1);
+    std::string relativeDir = fileIt->substr(topLevelLength, 
+                                             slashPos - topLevelLength);
+    if (installDirs.find(relativeDir) == installDirs.end())
+      {
+      installDirs.insert(relativeDir);
+      cmd += " .";
+      cmd += relativeDir;
+      }
+    }
+
   std::string output;
   int retVal = -1;
   int res = cmSystemTools::RunSingleCommand(cmd.c_str(), &output,
