@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmExportFileGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-13 21:04:32 $
-  Version:   $Revision: 1.12 $
+  Date:      $Date: 2008-03-31 17:48:50 $
+  Version:   $Revision: 1.13 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -79,12 +79,14 @@ bool cmExportFileGenerator::GenerateImportFile()
     }
   std::ostream& os = *foutPtr;
 
-  // Start with the import file header.
+  // Isolate the file policy level.
+  // We use 2.6 here instead of the current version because newer
+  // versions of CMake should be able to export files imported by 2.6
+  // until the import format changes.
   os << "CMAKE_POLICY(PUSH)\n"
-     << "CMAKE_POLICY(VERSION "
-     << cmVersion::GetMajorVersion() << "."
-     << cmVersion::GetMinorVersion() << "."
-     << cmVersion::GetPatchVersion() << ")\n";
+     << "CMAKE_POLICY(VERSION 2.6)\n";
+
+  // Start with the import file header.
   this->GenerateImportHeaderCode(os);
 
   // Create all the imported targets.
