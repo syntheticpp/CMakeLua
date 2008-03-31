@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmComputeLinkDepends.h,v $
   Language:  C++
-  Date:      $Date: 2008-03-13 20:35:39 $
-  Version:   $Revision: 1.6 $
+  Date:      $Date: 2008-03-31 16:47:31 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -53,6 +53,10 @@ public:
 
   typedef std::vector<LinkEntry> EntryVector;
   EntryVector const& Compute();
+
+  void SetOldLinkDirMode(bool b);
+  std::set<cmTarget*> const& GetOldWrongConfigItems() const
+    { return this->OldWrongConfigItems; }
 
 private:
 
@@ -128,6 +132,11 @@ private:
   void VisitComponent(cmComputeComponentGraph const& ccg, unsigned int i);
   void EmitComponent(NodeList const& nl);
   void DisplayFinalEntries();
+
+  // Compatibility help.
+  bool OldLinkDirMode;
+  void CheckWrongConfigItem(std::string const& item);
+  std::set<cmTarget*> OldWrongConfigItems;
 };
 
 #endif
