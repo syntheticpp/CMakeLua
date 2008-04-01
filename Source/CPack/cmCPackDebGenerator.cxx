@@ -3,13 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCPackDebGenerator.cxx,v $
   Language:  C++
-<<<<<<< cmCPackDebGenerator.cxx
-  Date:      $Date: 2008/01/24 12:31:59 $
-  Version:   $Revision: 1.20 $
-=======
-  Date:      $Date: 2008-03-29 00:23:01 $
-  Version:   $Revision: 1.21 $
->>>>>>> 1.21
+  Date:      $Date: 2008-04-01 21:51:10 $
+  Version:   $Revision: 1.22 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -205,6 +200,30 @@ int cmCPackDebGenerator::CompressFiles(const char* outFileName,
   cmd = "\"";
   cmd += cmakeExecutable;
   cmd += "\" -E tar cfz control.tar.gz ./control ./md5sums";
+  const char* controlExtra = 
+    this->GetOption("CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA");
+  if( controlExtra )
+    { 
+    std::vector<std::string> controlExtraList;
+    cmSystemTools::ExpandListArgument(controlExtra, controlExtraList);
+    for(std::vector<std::string>::iterator i = 
+          controlExtraList.begin(); i != controlExtraList.end(); ++i)
+      {
+      std::string filenamename = 
+        cmsys::SystemTools::GetFilenameName(i->c_str());
+      std::string localcopy = toplevel;
+      localcopy += "/";
+      localcopy += filenamename;
+      // if we can copy the file, it means it does exist, let's add it:
+      if( cmsys::SystemTools::CopyFileIfDifferent(
+            i->c_str(), localcopy.c_str()) )
+        {
+        // debian is picky and need relative to ./ path in the tar.gz
+        cmd += " ./";
+        cmd += filenamename;
+        }
+      }
+    }
   res = cmSystemTools::RunSingleCommand(cmd.c_str(), &output,
     &retVal, toplevel, this->GeneratorVerbose, 0);
 
