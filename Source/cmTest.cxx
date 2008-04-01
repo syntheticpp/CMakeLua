@@ -3,8 +3,13 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmTest.cxx,v $
   Language:  C++
+<<<<<<< cmTest.cxx
   Date:      $Date: 2008/01/17 23:13:55 $
   Version:   $Revision: 1.9 $
+=======
+  Date:      $Date: 2008-04-01 18:22:07 $
+  Version:   $Revision: 1.10 $
+>>>>>>> 1.10
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -75,10 +80,6 @@ void cmTest::SetProperty(const char* prop, const char* value)
   if (!prop)
     {
     return;
-    }
-  if (!value)
-    {
-    value = "NOTFOUND";
     }
 
   this->Properties.SetProperty(prop, value, cmProperty::TEST);

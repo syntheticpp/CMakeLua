@@ -3,8 +3,13 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmSourceFile.cxx,v $
   Language:  C++
+<<<<<<< cmSourceFile.cxx
   Date:      $Date: 2008/02/18 21:38:34 $
   Version:   $Revision: 1.47 $
+=======
+  Date:      $Date: 2008-04-01 18:22:07 $
+  Version:   $Revision: 1.48 $
+>>>>>>> 1.48
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -261,10 +266,6 @@ void cmSourceFile::SetProperty(const char* prop, const char* value)
   if (!prop)
     {
     return;
-    }
-  if (!value)
-    {
-    value = "NOTFOUND";
     }
 
   this->Properties.SetProperty(prop, value, cmProperty::SOURCE_FILE);
