@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: CMakeSetupDialog.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-28 16:53:31 $
-  Version:   $Revision: 1.43 $
+  Date:      $Date: 2008-04-02 18:01:37 $
+  Version:   $Revision: 1.44 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -237,6 +237,7 @@ void CMakeSetupDialog::doConfigure()
     return;
     }
 
+  // make sure build directory exists
   QString bindir = this->CMakeThread->cmakeInstance()->binaryDirectory();
   QDir dir(bindir);
   if(!dir.exists())
@@ -257,10 +258,13 @@ void CMakeSetupDialog::doConfigure()
     dir.mkpath(".");
     }
 
-  // prompt for generator if one doesn't exist
+  // prompt for generator if it hasn't been set
   if(this->CMakeThread->cmakeInstance()->generator().isEmpty())
     {
-    this->promptForGenerator();
+    if(!this->promptForGenerator())
+      {
+      return;
+      }
     }
 
   // remember path
@@ -520,7 +524,7 @@ void CMakeSetupDialog::setEnabledState(bool enabled)
   this->RemoveEntry->setEnabled(false);  // let selection re-enable it
 }
 
-void CMakeSetupDialog::promptForGenerator()
+bool CMakeSetupDialog::promptForGenerator()
 {
   QSettings settings;
   settings.beginGroup("Settings/StartPath");
@@ -540,19 +544,25 @@ void CMakeSetupDialog::promptForGenerator()
     {
     combo->setCurrentIndex(idx);
     }
-  QDialogButtonBox* btns = new QDialogButtonBox(QDialogButtonBox::Ok,
+  QDialogButtonBox* btns = new QDialogButtonBox(QDialogButtonBox::Ok |
+                                                QDialogButtonBox::Cancel,
                                                 Qt::Horizontal, &dialog);
   QObject::connect(btns, SIGNAL(accepted()), &dialog, SLOT(accept()));
+  QObject::connect(btns, SIGNAL(rejected()), &dialog, SLOT(reject()));
   
   QVBoxLayout* l = new QVBoxLayout(&dialog);
   l->addWidget(lab);
   l->addWidget(combo);
   l->addWidget(btns);
-  dialog.exec();
-  
-  lastGen = combo->currentText();
-  settings.setValue("LastGenerator", lastGen);
-  this->CMakeThread->cmakeInstance()->setGenerator(combo->currentText());
+  if(dialog.exec() == QDialog::Accepted)
+    {
+    lastGen = combo->currentText();
+    settings.setValue("LastGenerator", lastGen);
+    this->CMakeThread->cmakeInstance()->setGenerator(combo->currentText());
+    return true;
+    }
+
+  return false;
 }
 
 void CMakeSetupDialog::updateGeneratorLabel(const QString& gen)
