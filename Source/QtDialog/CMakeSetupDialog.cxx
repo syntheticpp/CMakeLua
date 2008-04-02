@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: CMakeSetupDialog.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-04-02 18:01:37 $
-  Version:   $Revision: 1.44 $
+  Date:      $Date: 2008-04-02 21:41:24 $
+  Version:   $Revision: 1.45 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -96,10 +96,16 @@ CMakeSetupDialog::CMakeSetupDialog()
   this->GenerateAction = ToolsMenu->addAction(tr("&Generate"));
   QObject::connect(this->GenerateAction, SIGNAL(triggered(bool)), 
                    this, SLOT(doGenerate()));
-  this->SuppressDevWarningsAction = ToolsMenu->addAction(tr("&Suppress dev Warnings (-Wno-dev)"));
-  QObject::connect(this->SuppressDevWarningsAction, SIGNAL(triggered(bool)), 
+  
+  QMenu* OptionsMenu = this->menuBar()->addMenu(tr("&Options"));
+  QAction* supressDevWarningsAction = OptionsMenu->addAction(tr("&Suppress dev Warnings (-Wno-dev)"));
+  QObject::connect(supressDevWarningsAction, SIGNAL(triggered(bool)), 
                    this, SLOT(doSuppressDev()));
-  this->SuppressDevWarningsAction->setCheckable(true);
+  supressDevWarningsAction->setCheckable(true);
+  QAction* debugAction = OptionsMenu->addAction(tr("&Debug Output"));
+  debugAction->setCheckable(true);
+  QObject::connect(debugAction, SIGNAL(toggled(bool)), 
+                   this, SLOT(setDebugOutput(bool)));
   
   QMenu* HelpMenu = this->menuBar()->addMenu(tr("&Help"));
   QAction* a = HelpMenu->addAction(tr("About"));
@@ -861,4 +867,9 @@ void CMakeSetupDialog::startSearch()
   this->Search->selectAll();
 }
 
+void CMakeSetupDialog::setDebugOutput(bool flag)
+{
+  QMetaObject::invokeMethod(this->CMakeThread->cmakeInstance(),
+    "setDebugOutput", Qt::QueuedConnection, Q_ARG(bool, flag));
+}
 
