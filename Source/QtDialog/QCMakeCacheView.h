@@ -3,8 +3,13 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: QCMakeCacheView.h,v $
   Language:  C++
+<<<<<<< QCMakeCacheView.h
   Date:      $Date: 2008/02/15 00:58:31 $
   Version:   $Revision: 1.17 $
+=======
+  Date:      $Date: 2008-04-02 19:28:17 $
+  Version:   $Revision: 1.18 $
+>>>>>>> 1.18
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -108,6 +113,11 @@ public:
       const QModelIndex& index ) const;
   bool editorEvent (QEvent* event, QAbstractItemModel* model, 
        const QStyleOptionViewItem& option, const QModelIndex& index);
+  bool eventFilter(QObject* object, QEvent* event);
+protected slots:
+  void setFileDialogFlag(bool);
+protected:
+  bool FileDialogFlag;
 };
 
 /// Editor widget for editing paths or file paths
@@ -118,6 +128,8 @@ public:
   QCMakeCacheFileEditor(QWidget* p, const QString& var);
 protected slots:
   virtual void chooseFile() = 0;
+signals:
+  void fileDialogExists(bool);
 protected:
   void resizeEvent(QResizeEvent* e);
   QToolButton* ToolButton;
