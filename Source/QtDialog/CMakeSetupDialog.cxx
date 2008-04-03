@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: CMakeSetupDialog.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-04-03 20:49:45 $
-  Version:   $Revision: 1.47 $
+  Date:      $Date: 2008-04-03 22:35:01 $
+  Version:   $Revision: 1.48 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -84,7 +84,7 @@ CMakeSetupDialog::CMakeSetupDialog()
   this->DeleteCacheAction = FileMenu->addAction(tr("&Delete Cache"));
   QObject::connect(this->DeleteCacheAction, SIGNAL(triggered(bool)), 
                    this, SLOT(doDeleteCache()));
-  this->ExitAction = FileMenu->addAction(tr("&Exit"));
+  this->ExitAction = FileMenu->addAction(tr("E&xit"));
   QObject::connect(this->ExitAction, SIGNAL(triggered(bool)), 
                    this, SLOT(close()));
 
