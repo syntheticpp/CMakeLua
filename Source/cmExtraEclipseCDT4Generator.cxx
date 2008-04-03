@@ -3,8 +3,13 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmExtraEclipseCDT4Generator.cxx,v $
   Language:  C++
+<<<<<<< cmExtraEclipseCDT4Generator.cxx
   Date:      $Date: 2008/02/19 21:34:49 $
   Version:   $Revision: 1.13 $
+=======
+  Date:      $Date: 2008-04-03 22:43:43 $
+  Version:   $Revision: 1.14 $
+>>>>>>> 1.14
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   Copyright (c) 2004 Alexander Neundorf neundorf@kde.org, All rights reserved.
@@ -654,11 +659,23 @@ void cmExtraEclipseCDT4Generator::CreateCProjectFile() const
               || (t->first=="test")
               || (t->first=="Experimental")
               || (t->first=="Nightly")
+              || (t->first=="edit_cache")
               || (t->first=="package")
               || (t->first=="package_source")
               || (t->first=="rebuild_cache") ))
             {
             break;
+            }
+          // add the edit_cache target only if it's not ccmake
+          // otherwise ccmake will be executed in the log view of Eclipse,
+          // which is no terminal, so curses don't work there, Alex
+          if (t->first=="edit_cache") 
+            {
+            if (strstr(mf->GetRequiredDefinition("CMAKE_EDIT_COMMAND"), 
+                                                 "ccmake")!=NULL)
+              {
+              break;
+              }
             }
           }
         case cmTarget::EXECUTABLE:
