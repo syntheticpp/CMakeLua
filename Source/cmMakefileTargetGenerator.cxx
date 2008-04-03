@@ -3,8 +3,13 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefileTargetGenerator.cxx,v $
   Language:  C++
+<<<<<<< cmMakefileTargetGenerator.cxx
   Date:      $Date: 2008/02/27 22:10:45 $
   Version:   $Revision: 1.93 $
+=======
+  Date:      $Date: 2008-04-03 15:11:54 $
+  Version:   $Revision: 1.94 $
+>>>>>>> 1.94
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1594,6 +1599,7 @@ cmMakefileTargetGenerator
   responseFileNameFull += "/";
   responseFileNameFull += name;
   cmGeneratedFileStream responseStream(responseFileNameFull.c_str());
+  responseStream.SetCopyIfDifferent(true);
   responseStream << options << "\n";
 
   // Add a dependency so the target will rebuild when the set of
