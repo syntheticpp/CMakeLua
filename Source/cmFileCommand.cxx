@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmFileCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-13 13:28:26 $
-  Version:   $Revision: 1.103 $
+  Date:      $Date: 2008-04-04 20:02:50 $
+  Version:   $Revision: 1.104 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1244,7 +1244,8 @@ void cmFileCommand
 bool cmFileCommand::HandleInstallDestination(cmFileInstaller& installer,
                                              std::string& destination)
 {
-  if ( destination.size() < 2 )
+  // allow for / to be a valid destination
+  if ( destination.size() < 2 && destination != "/" )
     {
     this->SetError("called with inapropriate arguments. "
         "No DESTINATION provided or .");

@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmake.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-04-02 21:29:25 $
-  Version:   $Revision: 1.381 $
+  Date:      $Date: 2008-04-04 20:02:50 $
+  Version:   $Revision: 1.382 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -786,6 +786,19 @@ int cmake::AddCMakePaths()
   cMakeSelf = cmSystemTools::GetRealPath(cMakeSelf.c_str());
   cMakeSelf += "/cmake";
   cMakeSelf += cmSystemTools::GetExecutableExtension();
+#if __APPLE__
+  // on the apple this might be the gui bundle
+  if(!cmSystemTools::FileExists(cMakeSelf.c_str()))
+    {
+    cMakeSelf = cmSystemTools::GetExecutableDirectory();
+    cMakeSelf = cmSystemTools::GetRealPath(cMakeSelf.c_str());
+    cMakeSelf += "../../../..";
+    cMakeSelf = cmSystemTools::GetRealPath(cMakeSelf.c_str());
+    cMakeSelf = cmSystemTools::CollapseFullPath(cMakeSelf.c_str());
+    cMakeSelf += "/cmake";
+    std::cerr << cMakeSelf.c_str() << "\n";
+    }
+#endif 
   if(!cmSystemTools::FileExists(cMakeSelf.c_str()))
     {
     cmSystemTools::Error("CMake executable cannot be found at ",
