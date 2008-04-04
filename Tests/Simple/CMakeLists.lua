@@ -12,6 +12,8 @@ add_library {"simpleLib", "STATIC",
 target_link_libraries {"Simple", "simpleLib"}
 
 -- make sure optimized libs are not used by debug builds
-if tostr(CMAKE_BUILD_TYPE) == "Debug" then
+if CMAKE_BUILD_TYPE == "Debug" then
 	target_link_libraries{"Simple", "optimized", "c:/not/here.lib"}
 end
+
+print(CMAKE_ROOT)

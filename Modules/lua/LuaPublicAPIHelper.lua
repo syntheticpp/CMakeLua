@@ -225,8 +225,8 @@ isStringList = function(x)
 						return false
 					elseif type(x) == "function" then
 						return false
-					else
-						-- TODO
+					elseif type(x) == "table" then
+						-- TODO check for array only
 						return true
 					end
 				end
@@ -244,11 +244,18 @@ __index = function (_, n)
 			end
 		else
 			-- return the CMake list as indexed table
-			return string.split(";", val) 
-		end
+			local t = string.split(";", val) 
+			if #t == 1 then
+				return rawget(t, 1)
+			else
+				return t
+			end
+		end		
 	end,
-__newindex = function (_, n1, n2) 
-		if isStringList(n2) then 
+__newindex = function (_, n1, n2)
+		if type(n2) == "string" then
+			AddDefinition(n1, n2)
+		elseif isStringList(n2) then 
 			-- only string lists are visible in CMake
 			AddDefinition(n1, string.join(";", n2)) 
 		else 
