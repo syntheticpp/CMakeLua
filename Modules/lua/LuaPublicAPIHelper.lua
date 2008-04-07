@@ -30,9 +30,25 @@ else
 end
 
 
+-- create a namespace for public functions using tables
+if cmake == nil then
+	cmake = {}
+end
+
+-- create a namespace for public functions using tables
+if cmakelua == nil then
+	cmakelua = {}
+end
+
+-- Create some global constants (maybe we want this in the namespace too?)
+cmake.STATIC = "STATIC"
+cmake.DYNAMIC = "DYNAMIC"
+cmake.MODULE = "MODULE"
+cmake.DEBUG = "Debug"
+cmake.RELEASE = "Release"
 
 -- Print a (nested) table (just for debugging, you can ignore this)
-function TablePrint(t, indent, done)
+function cmakelua.table_print(t, indent, done)
     local my_string
     done = done or {}
     indent = indent or 0
@@ -46,7 +62,7 @@ function TablePrint(t, indent, done)
             --      Note (tostring (key), ":");
             local mystring = my_string .. tostring(key) .. ":"
             print(mystring)
-            TablePrint(value, indent + 2, done)
+             cmakelua.table_print(value, indent + 2, done)
         else
             -- Tell (tostring (key), "=")
             my_string = my_string .. tostring(key) .. "=" .. tostring(value)
@@ -57,20 +73,6 @@ end
 
 
 
--- create a namespace for public functions using tables
-if cmake == nil then
-	cmake = {}
-end
-
--- Create some global constants (maybe we want this in the namespace too?)
-cmake.STATIC = "STATIC"
-
---[[
-if cm == nil then
-	cm = {}
-end
-cm.STATIC = "STATIC"
---]]
 
 
 
@@ -84,7 +86,7 @@ cm.STATIC = "STATIC"
 -- The parameter 'list' is the list of parameters the user passes in. It can
 -- be a string, or table of strings, or nested tables of strings.
 -- The function returns partial lists for internal/private use for recursion.
-function recursive_file_concat(big_table, list)
+local function recursive_file_concat(big_table, list)
 	if type(list) ~= "table" then
 --		print("not table:", list)
 		table.insert(big_table, list)
@@ -96,7 +98,7 @@ function recursive_file_concat(big_table, list)
 		res[i] = recursive_file_concat(big_table, list[i])
 	end
 --	print("returning res", res)
---	TablePrint(res)
+--	cmakelua.table_print(res)
 	return res
 end
 
@@ -205,8 +207,9 @@ if lua_module_path == nil then
 end
 if lua_module_path ~= nil then	
 	lua_module_path = ";" .. lua_module_path .. "/lua"
-	-- add here new serach pathes
-	package.path = package.path ..lua_module_path.."/?.lua" ..lua_module_path.."/stdlib/modules/?.lua"
+	-- set search paths
+	package.path = lua_module_path.."/?.lua" ..lua_module_path.."/stdlib/modules/?.lua"
+	print("package.path is", package.path)
 	lua_module_path = nil
 	--print(package.path)
 	
@@ -220,7 +223,7 @@ end
 
 
 -- in CMakeLua assumes all args for CMake are string lists 
-isStringList = function(x) 
+cmakelua.is_string_list = function(x) 
 					if x == nil then
 						return false
 					elseif type(x) == "function" then
@@ -255,7 +258,7 @@ __index = function (_, n)
 __newindex = function (_, n1, n2)
 		if type(n2) == "string" then
 			AddDefinition(n1, n2)
-		elseif isStringList(n2) then 
+		elseif cmakelua.is_string_list(n2) then 
 			-- only string lists are visible in CMake
 			AddDefinition(n1, string.join(";", n2)) 
 		else 
@@ -266,7 +269,7 @@ __newindex = function (_, n1, n2)
 
 
 -- from CMake we only get lists so we have evtl to make a simple string
-tostr = function (x) 
+cmakelua.tostring = function (x) 
 		if x == nil then
 			return ""
 		else
