@@ -195,6 +195,184 @@ for key, value in pairs(cmake) do
 end
 --print("end of helper")
 
+
+
+-- from CMake we only get lists so we have evtl to make a simple string
+cmakelua.tostring = function (x) 
+	if x == nil then
+		return ""
+	else
+		return string.join(";", x)
+	end
+end
+
+cmakelua.totable = function(x)
+	if x == nil then
+		return {}
+	elseif type(x) == 'table' then
+		return x
+	else
+		return { x }
+	end
+end
+
+-- converts single CMake value to boolean.
+-- empty, 0, N, NO, OFF, FALSE, NOTFOUND, or <variable>-NOTFOUND.
+-- Will create compile error if table is passed.
+cmakelua.toboolean = function(x)
+	if x == nil then
+		return false
+	elseif type(x) == 'boolean' then
+		return x
+	elseif type(x) == 'number' then
+		if x == 0 then -- contrary to lua, 0 is false in CMake
+			return false
+		else
+			return true
+		end
+	elseif type(x) == 'string' then
+		local lower_case_string = string.lower(x)
+		if lower_case_string == 'false' then
+			return false
+		elseif lower_case_string == 'no' then
+			return false
+		elseif lower_case_string == 'off' then
+			return false
+		elseif lower_case_string == 'n' then
+			return false
+		elseif lower_case_string == 'notfound' then
+			return false
+		elseif lower_case_string == 'true' then
+			return true
+		elseif lower_case_string == 'yes' then
+			return true
+		elseif lower_case_string == 'on' then
+			return true
+		elseif lower_case_string == 'y' then
+			return true
+		elseif lower_case_string == '' then
+			return false
+		-- handle <variable>-NOTFOUND
+		elseif string.find(lower_case_string, '-notfound') then
+			return false
+		-- return true for all other strings
+		else
+			return true
+		end
+	elseif type(x) == 'table' then
+		-- if table is empty, return false
+		if #x == 0 then
+			return false
+		-- return true for all other tables
+		else
+			return true
+		end
+	-- catch all, return true for anything else
+	else
+		return true
+	end
+end
+
+-- converts single CMake value to boolean.
+-- empty, 0, N, NO, OFF, FALSE, NOTFOUND, or <variable>-NOTFOUND.
+-- Will create compile error if table is passed.
+cmakelua.isboolean = function(x)
+	if x == nil then
+		return false
+	elseif type(x) == 'boolean' then
+		return true
+	elseif type(x) == 'number' then
+		if x == 0 then -- contrary to lua, 0 is false in CMake
+			return true
+		elseif x == 1 then
+			return true
+		-- any other number is not a boolean in my opinion
+		else
+			return false
+		end
+	elseif type(x) == 'string' then
+		local lower_case_string = string.lower(x)
+		if lower_case_string == 'false' then
+			return true
+		elseif lower_case_string == 'no' then
+			return true
+		elseif lower_case_string == 'off' then
+			return true
+		elseif lower_case_string == 'n' then
+			return true
+		elseif lower_case_string == 'notfound' then
+			return true
+		elseif lower_case_string == 'true' then
+			return true
+		elseif lower_case_string == 'yes' then
+			return true
+		elseif lower_case_string == 'on' then
+			return true
+		elseif lower_case_string == 'y' then
+			return true
+		elseif lower_case_string == '' then
+			return true
+		-- handle <variable>-NOTFOUND
+		elseif string.find(lower_case_string, '-notfound') then
+			return true
+		-- return false for all other strings
+		else
+			return false
+		end
+	elseif type(x) == 'table' then
+		-- how about: the only way that a table will be a boolean 
+		-- is if it contains a single value that happens to be a boolean?
+		-- if table is empty, return false
+		if #x == 1 then
+			return cmakelua.isboolean(x[1])
+		else
+			return false
+		end
+	-- catch all, return false for anything else
+	else
+		return false
+	end
+end
+
+cmakelua.tonumber = tonumber
+cmakelua.isnumber = tonumber
+
+cmakelua.convert_to_native_lua_types = function(x)
+	if x == nil then
+		return x
+	elseif type(x) == 'string' then
+		if cmakelua.isboolean(x) then
+			return cmakelua.toboolean(x)
+		elseif cmakelua.isnumber(x) then
+			return cmakelua.tonumber(x)
+		else
+			return x
+		end
+	elseif type(x) == 'table' then
+		for key,value in pairs(x) do
+			x[key] = cmakelua.convert_to_native_lua_types(x[key])
+		end
+		return x
+	else
+		return x
+	end
+end
+
+-- in CMakeLua assumes all args for CMake are string lists 
+cmakelua.is_string_list = function(x) 
+					if x == nil then
+						return false
+					elseif type(x) == "function" then
+						return false
+					elseif type(x) == "table" then
+						-- TODO check for array only
+						return true
+					end
+				end
+
+
+
+
 -- clean namespace
 list = nil
 
@@ -222,17 +400,6 @@ end
 
 
 
--- in CMakeLua assumes all args for CMake are string lists 
-cmakelua.is_string_list = function(x) 
-					if x == nil then
-						return false
-					elseif type(x) == "function" then
-						return false
-					elseif type(x) == "table" then
-						-- TODO check for array only
-						return true
-					end
-				end
 	
 setmetatable(_G, 
 {
@@ -249,14 +416,18 @@ __index = function (_, n)
 			-- return the CMake list as indexed table
 			local t = string.split(";", val) 
 			if #t == 1 then
-				return rawget(t, 1)
+				return cmakelua.convert_to_native_lua_types(rawget(t, 1))
 			else
-				return t
+				return cmakelua.convert_to_native_lua_types(t)
 			end
 		end		
 	end,
 __newindex = function (_, n1, n2)
-		if type(n2) == "string" then
+		if type(n2) == "boolean" then
+			AddDefinition(n1, tostring(n2))
+		elseif type(n2) == "number" then
+			AddDefinition(n1, tostring(n2))
+		elseif type(n2) == "string" then
 			AddDefinition(n1, n2)
 		elseif cmakelua.is_string_list(n2) then 
 			-- only string lists are visible in CMake
@@ -268,14 +439,8 @@ __newindex = function (_, n1, n2)
 })
 
 
--- from CMake we only get lists so we have evtl to make a simple string
-cmakelua.tostring = function (x) 
-		if x == nil then
-			return ""
-		else
-			return string.join(";", x)
-		end
-	end
+
+
 
 
 
