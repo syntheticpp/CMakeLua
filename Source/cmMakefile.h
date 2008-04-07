@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefile.h,v $
   Language:  C++
-  Date:      $Date: 2008-03-13 17:48:57 $
-  Version:   $Revision: 1.230 $
+  Date:      $Date: 2008-03-31 17:33:09 $
+  Version:   $Revision: 1.231 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -803,6 +803,9 @@ public:
   void IssueMessage(cmake::MessageType t,
                     std::string const& text) const;
 
+  /** Set whether or not to report a CMP0000 violation.  */
+  void SetCheckCMP0000(bool b) { this->CheckCMP0000 = b; }
+
 protected:
   // add link libraries and directories to the target
   void AddGlobalLinkInformation(const char* name, cmTarget& target);
@@ -914,6 +917,11 @@ private:
   typedef std::map<cmPolicies::PolicyID,
                    cmPolicies::PolicyStatus> PolicyMap;
   std::vector<PolicyMap> PolicyStack;
+
+  bool CheckCMP0000;
+
+  // Enforce rules about CMakeLists.txt files.
+  void EnforceDirectoryLevelRules(bool endScopeNicely);
 };
 
 

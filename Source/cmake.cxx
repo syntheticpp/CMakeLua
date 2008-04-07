@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmake.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-20 14:11:52 $
-  Version:   $Revision: 1.376 $
+  Date:      $Date: 2008-04-04 20:02:50 $
+  Version:   $Revision: 1.382 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -149,6 +149,7 @@ void cmNeedBackwardsCompatibility(const std::string& variable,
 cmake::cmake()
 {
   this->SuppressDevWarnings = false;
+  this->DoSuppressDevWarnings = false;
   this->DebugOutput = false;
   this->DebugTryCompile = false;
   this->ClearBuildSystem = false;
@@ -424,10 +425,12 @@ bool cmake::SetCacheArgs(const std::vector<std::string>& args)
     else if(arg.find("-Wno-dev",0) == 0)
       {
       this->SuppressDevWarnings = true;
+      this->DoSuppressDevWarnings = true;
       }
     else if(arg.find("-Wdev",0) == 0)
-      {
+      { 
       this->SuppressDevWarnings = false;
+      this->DoSuppressDevWarnings = true;
       }
     else if(arg.find("-U",0) == 0)
       {
@@ -652,7 +655,7 @@ void cmake::SetArgs(const std::vector<std::string>& args)
     else if(arg.find("--debug-output",0) == 0)
       {
       std::cout << "Running with debug output on.\n";
-      this->DebugOutputOn();
+      this->SetDebugOutputOn(true);
       }
     else if(arg.find("-G",0) == 0)
       {
@@ -827,8 +830,22 @@ int cmake::AddCMakePaths()
 {
   // Find the cmake executable
   std::string cMakeSelf = cmSystemTools::GetExecutableDirectory();
+  cMakeSelf = cmSystemTools::GetRealPath(cMakeSelf.c_str());
   cMakeSelf += "/cmake";
   cMakeSelf += cmSystemTools::GetExecutableExtension();
+#if __APPLE__
+  // on the apple this might be the gui bundle
+  if(!cmSystemTools::FileExists(cMakeSelf.c_str()))
+    {
+    cMakeSelf = cmSystemTools::GetExecutableDirectory();
+    cMakeSelf = cmSystemTools::GetRealPath(cMakeSelf.c_str());
+    cMakeSelf += "../../../..";
+    cMakeSelf = cmSystemTools::GetRealPath(cMakeSelf.c_str());
+    cMakeSelf = cmSystemTools::CollapseFullPath(cMakeSelf.c_str());
+    cMakeSelf += "/cmake";
+    std::cerr << cMakeSelf.c_str() << "\n";
+    }
+#endif 
   if(!cmSystemTools::FileExists(cMakeSelf.c_str()))
     {
     cmSystemTools::Error("CMake executable cannot be found at ",
@@ -901,7 +918,8 @@ int cmake::AddCMakePaths()
   if(!cmSystemTools::FileExists(modules.c_str()))
     {
     // next try exe/..
-    cMakeRoot  = cmSystemTools::GetProgramPath(cMakeSelf.c_str());
+    cMakeRoot = cmSystemTools::GetRealPath(cMakeSelf.c_str());
+    cMakeRoot = cmSystemTools::GetProgramPath(cMakeRoot.c_str());
     std::string::size_type slashPos = cMakeRoot.rfind("/");
     if(slashPos != std::string::npos)
       {
@@ -1947,23 +1965,25 @@ int cmake::HandleDeleteCacheVariables(const char* var)
 
 int cmake::Configure()
 {
-  if(this->SuppressDevWarnings)
+  if(this->DoSuppressDevWarnings)
     {
-    this->CacheManager->
-      AddCacheEntry("CMAKE_SUPPRESS_DEVELOPER_WARNINGS", "TRUE",
-                    "Suppress Warnings that are meant for"
-                    " the author of the CMakeLists.txt files.",
-                    cmCacheManager::INTERNAL);
+    if(this->SuppressDevWarnings)
+      {
+      this->CacheManager->
+        AddCacheEntry("CMAKE_SUPPRESS_DEVELOPER_WARNINGS", "TRUE",
+                      "Suppress Warnings that are meant for"
+                      " the author of the CMakeLists.txt files.",
+                      cmCacheManager::INTERNAL);
+      }
+    else
+      {
+      this->CacheManager->
+        AddCacheEntry("CMAKE_SUPPRESS_DEVELOPER_WARNINGS", "FALSE",
+                      "Suppress Warnings that are meant for"
+                      " the author of the CMakeLists.txt files.",
+                      cmCacheManager::INTERNAL);
+      }
     }
-  else
-    {
-    this->CacheManager->
-      AddCacheEntry("CMAKE_SUPPRESS_DEVELOPER_WARNINGS", "FALSE",
-                    "Suppress Warnings that are meant for"
-                    " the author of the CMakeLists.txt files.",
-                    cmCacheManager::INTERNAL);
-    }
-
   int ret = this->ActualConfigure();
   const char* delCacheVars =
     this->GetProperty("__CMAKE_DELETE_CACHE_CHANGE_VARS_");
@@ -3982,10 +4002,15 @@ bool cmake::RunCommand(const char* comment,
   // use rc command to create .res file
   cmSystemTools::RunSingleCommand(command,
                                   &output,
-                                  &retCode);
-  if(verbose)
+                                  &retCode, 0, false);
+  // always print the output of the command, unless
+  // it is the dumb rc command banner, but if the command
+  // returned an error code then print the output anyway as 
+  // the banner may be mixed with some other important information.
+  if(output.find("Resource Compiler Version") == output.npos
+     || retCode !=0)
     {
-    std::cout << output << "\n";
+    std::cout << output;
     }
   // if retCodeOut is requested then always return true
   // and set the retCodeOut to retCode

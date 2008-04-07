@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalVisualStudio7Generator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008/01/30 17:04:38 $
-  Version:   $Revision: 1.217 $
+  Date:      $Date: 2008-03-31 14:59:02 $
+  Version:   $Revision: 1.221 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -30,6 +30,8 @@
 #include <cmsys/System.h>
 
 #include <ctype.h> // for isspace
+
+static bool cmLVS6G_IsFAT(const char* dir);
 
 class cmLocalVisualStudio7GeneratorInternals
 {
@@ -353,7 +355,11 @@ cmVS7FlagTable cmLocalVisualStudio7GeneratorFlagTable[] =
 
   // boolean flags
   {"BufferSecurityCheck", "GS", "Buffer security check", "TRUE", 0},
-  {"EnableFibreSafeOptimization", "GT", "OmitFramePointers", "TRUE", 0},
+  {"BufferSecurityCheck", "GS-", "Turn off Buffer security check", "FALSE", 0},
+  {"Detect64BitPortabilityProblems", "Wp64", 
+   "Detect 64-bit Portability Problems", "TRUE", 0},
+  {"EnableFiberSafeOptimization", "GT", "Enable Fiber-safe Optimizations",
+   "TRUE", 0},
   {"EnableFunctionLevelLinking", "Gy",
    "EnableFunctionLevelLinking", "TRUE", 0},
   {"EnableIntrinsicFunctions", "Oi", "EnableIntrinsicFunctions", "TRUE", 0},
@@ -365,6 +371,8 @@ cmVS7FlagTable cmLocalVisualStudio7GeneratorFlagTable[] =
   {"OptimizeForWindowsApplication", "GA", "Optimize for windows", "TRUE", 0},
   {"RuntimeTypeInfo", "GR",
    "Turn on Run time type information for c++", "TRUE", 0},
+  {"RuntimeTypeInfo", "GR-",
+   "Turn off Run time type information for c++", "FALSE", 0},
   {"SmallerTypeCheck", "RTCc", "smaller type check", "TRUE", 0},
   {"SuppressStartupBanner", "nologo", "SuppressStartupBanner", "TRUE", 0},
   {"WarnAsError", "WX", "Treat warnings as errors", "TRUE", 0},
@@ -655,16 +663,21 @@ void cmLocalVisualStudio7Generator::WriteConfiguration(std::ostream& fout,
   fout << "\t\t\t\tInterfaceIdentifierFileName=\"$(InputName)_i.c\"\n";
   fout << "\t\t\t\tProxyFileName=\"$(InputName)_p.c\"/>\n";
   // end of <Tool Name=VCMIDLTool
-  
-  // If we are building a version 8 project file, add a flag telling the
-  // manifest tool to use a workaround for FAT32 file systems, which can cause
-  // an empty manifest to be embedded into the resulting executable.
-  // See CMake bug #2617.
+
+  // Check if we need the FAT32 workaround.
   if ( this->Version >= 8 )
     {
-    fout << "\t\t\t<Tool\n\t\t\t\tName=\"VCManifestTool\"\n"
-         << "\t\t\t\tUseFAT32Workaround=\"true\"\n"
-         << "\t\t\t/>\n";
+    // Check the filesystem type where the target will be written.
+    if(cmLVS6G_IsFAT(target.GetDirectory(configName)))
+      {
+      // Add a flag telling the manifest tool to use a workaround
+      // for FAT32 file systems, which can cause an empty manifest
+      // to be embedded into the resulting executable.  See CMake
+      // bug #2617.
+      fout << "\t\t\t<Tool\n\t\t\t\tName=\"VCManifestTool\"\n"
+           << "\t\t\t\tUseFAT32Workaround=\"true\"\n"
+           << "\t\t\t/>\n";
+      }
     }
 
   this->OutputTargetRules(fout, configName, target, libName);
@@ -2047,4 +2060,22 @@ GetTargetObjectFileDirectories(cmTarget* target,
   dir += "/";
   dir += this->GetGlobalGenerator()->GetCMakeCFGInitDirectory();
   dirs.push_back(dir);
+}
+
+//----------------------------------------------------------------------------
+#include <windows.h>
+static bool cmLVS6G_IsFAT(const char* dir)
+{
+  if(dir[0] && dir[1] == ':')
+    {
+    char volRoot[4] = "_:/";
+    volRoot[0] = dir[0];
+    char fsName[16];
+    if(GetVolumeInformation(volRoot, 0, 0, 0, 0, 0, fsName, 16) &&
+       strstr(fsName, "FAT") != 0)
+      {
+      return true;
+      }
+    }
+  return false;
 }

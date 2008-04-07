@@ -61,8 +61,23 @@
 #        Options may be given to rcc, such as those found
 #        when executing "rcc -help"
 #
-#  macro QT4_AUTOMOC(inputfile ... )
 #  macro QT4_GENERATE_MOC(inputfile outputfile )
+#        creates a rule to run moc on infile and create outfile.
+#        Use this if for some reason QT4_WRAP_CPP() isn't appropriate, e.g.
+#        because you need a custom filename for the moc file or something similar.
+#
+#  macro QT4_AUTOMOC(sourcefile1 sourcefile2 ... )
+#        This macro is still experimental.
+#        It can be used to have moc automatically handled.
+#        So if you have the files foo.h and foo.cpp, and in foo.h a 
+#        a class uses the Q_OBJECT macro, moc has to run on it. If you don't
+#        want to use QT4_WRAP_CPP() (which is reliable and mature), you can insert
+#        #include "foo.moc"
+#        in foo.cpp and then give foo.cpp as argument to QT4_AUTOMOC(). This will the
+#        scan all listed files at cmake-time for such included moc files and if it finds
+#        them cause a rule to be generated to run moc at build time on the 
+#        accompanying header file foo.h.
+#        If a source file has the SKIP_AUTOMOC property set it will be ignored by this macro.
 #
 #  macro QT4_ADD_DBUS_INTERFACE(outfiles interface basename)
 #        create a the interface header and implementation files with the 
@@ -109,6 +124,10 @@
 #
 #  QT_FOUND         If false, don't try to use Qt.
 #  QT4_FOUND        If false, don't try to use Qt 4.
+#
+#  QT_VERSION_MAJOR The major version of Qt found.
+#  QT_VERSION_MINOR The minor version of Qt found.
+#  QT_VERSION_PATCH The patch version of Qt found.
 #
 #  QT_EDITION               Set to the edition of Qt (i.e. DesktopLight)
 #  QT_EDITION_DESKTOPLIGHT  True if QT_EDITION == DesktopLight
@@ -326,13 +345,13 @@ IF (QT_QMAKE_EXECUTABLE)
     ENDIF (NOT req_qt_major_vers EQUAL 4)
 
     # and now the version string given by qmake
-    STRING(REGEX REPLACE "^([0-9]+)\\.[0-9]+\\.[0-9]+.*" "\\1" found_qt_major_vers "${QTVERSION}")
-    STRING(REGEX REPLACE "^[0-9]+\\.([0-9])+\\.[0-9]+.*" "\\1" found_qt_minor_vers "${QTVERSION}")
-    STRING(REGEX REPLACE "^[0-9]+\\.[0-9]+\\.([0-9]+).*" "\\1" found_qt_patch_vers "${QTVERSION}")
+    STRING(REGEX REPLACE "^([0-9]+)\\.[0-9]+\\.[0-9]+.*" "\\1" QT_VERSION_MAJOR "${QTVERSION}")
+    STRING(REGEX REPLACE "^[0-9]+\\.([0-9])+\\.[0-9]+.*" "\\1" QT_VERSION_MINOR "${QTVERSION}")
+    STRING(REGEX REPLACE "^[0-9]+\\.[0-9]+\\.([0-9]+).*" "\\1" QT_VERSION_PATCH "${QTVERSION}")
 
     # compute an overall version number which can be compared at once
     MATH(EXPR req_vers "${req_qt_major_vers}*10000 + ${req_qt_minor_vers}*100 + ${req_qt_patch_vers}")
-    MATH(EXPR found_vers "${found_qt_major_vers}*10000 + ${found_qt_minor_vers}*100 + ${found_qt_patch_vers}")
+    MATH(EXPR found_vers "${QT_VERSION_MAJOR}*10000 + ${QT_VERSION_MINOR}*100 + ${QT_VERSION_PATCH}")
 
     IF (found_vers LESS req_vers)
       SET(QT4_QMAKE_FOUND FALSE)
@@ -352,6 +371,8 @@ IF (QT4_QMAKE_FOUND)
     EXEC_PROGRAM( ${QT_QMAKE_EXECUTABLE}
       ARGS "-query QT_INSTALL_LIBS"
       OUTPUT_VARIABLE QT_LIBRARY_DIR_TMP )
+    # make sure we have / and not \ as qmake gives on windows
+    FILE(TO_CMAKE_PATH "${QT_LIBRARY_DIR_TMP}" QT_LIBRARY_DIR_TMP)
     IF(EXISTS "${QT_LIBRARY_DIR_TMP}")
       SET(QT_LIBRARY_DIR ${QT_LIBRARY_DIR_TMP} CACHE PATH "Qt library dir")
     ELSE(EXISTS "${QT_LIBRARY_DIR_TMP}")
@@ -375,8 +396,10 @@ IF (QT4_QMAKE_FOUND)
   # ask qmake for the binary dir
   IF (QT_LIBRARY_DIR AND NOT QT_BINARY_DIR)
      EXEC_PROGRAM(${QT_QMAKE_EXECUTABLE}
-        ARGS "-query QT_INSTALL_BINS"
-        OUTPUT_VARIABLE qt_bins )
+       ARGS "-query QT_INSTALL_BINS"
+       OUTPUT_VARIABLE qt_bins )
+     # make sure we have / and not \ as qmake gives on windows
+     FILE(TO_CMAKE_PATH "${qt_bins}" qt_bins)
      SET(QT_BINARY_DIR ${qt_bins} CACHE INTERNAL "")
   ENDIF (QT_LIBRARY_DIR AND NOT QT_BINARY_DIR)
 
@@ -384,7 +407,9 @@ IF (QT4_QMAKE_FOUND)
   IF (QT_LIBRARY_DIR AND NOT QT_HEADERS_DIR)
       EXEC_PROGRAM( ${QT_QMAKE_EXECUTABLE}
         ARGS "-query QT_INSTALL_HEADERS" 
-        OUTPUT_VARIABLE qt_headers )
+        OUTPUT_VARIABLE qt_headers ) 
+      # make sure we have / and not \ as qmake gives on windows
+      FILE(TO_CMAKE_PATH "${qt_headers}" qt_headers)
       SET(QT_HEADERS_DIR ${qt_headers} CACHE INTERNAL "")
   ENDIF(QT_LIBRARY_DIR AND NOT QT_HEADERS_DIR)
 
@@ -394,6 +419,8 @@ IF (QT4_QMAKE_FOUND)
     EXEC_PROGRAM( ${QT_QMAKE_EXECUTABLE}
       ARGS "-query QT_INSTALL_DOCS"
       OUTPUT_VARIABLE qt_doc_dir )
+    # make sure we have / and not \ as qmake gives on windows
+    FILE(TO_CMAKE_PATH "${qt_doc_dir}" qt_doc_dir)
     SET(QT_DOC_DIR ${qt_doc_dir} CACHE PATH "The location of the Qt docs")
   ENDIF (QT_LIBRARY_DIR AND NOT QT_DOC_DIR)
 
@@ -402,7 +429,11 @@ IF (QT4_QMAKE_FOUND)
     EXEC_PROGRAM( ${QT_QMAKE_EXECUTABLE}
       ARGS "-query QMAKE_MKSPECS"
       OUTPUT_VARIABLE qt_mkspecs_dirs )
-    STRING(REPLACE ":" ";" qt_mkspecs_dirs "${qt_mkspecs_dirs}")
+    # do not replace : on windows as it might be a drive letter
+    # and windows should already use ; as a separator
+    IF(UNIX)
+      STRING(REPLACE ":" ";" qt_mkspecs_dirs "${qt_mkspecs_dirs}")
+    ENDIF(UNIX)
     FIND_PATH(QT_MKSPECS_DIR qconfig.pri PATHS ${qt_mkspecs_dirs}
       DOC "The location of the Qt mkspecs containing qconfig.pri"
       NO_DEFAULT_PATH )
@@ -413,6 +444,8 @@ IF (QT4_QMAKE_FOUND)
     EXEC_PROGRAM( ${QT_QMAKE_EXECUTABLE}
       ARGS "-query QT_INSTALL_PLUGINS"
       OUTPUT_VARIABLE qt_plugins_dir )
+    # make sure we have / and not \ as qmake gives on windows
+    FILE(TO_CMAKE_PATH "${qt_plugins_dir}" qt_plugins_dir)
     SET(QT_PLUGINS_DIR ${qt_plugins_dir} CACHE PATH "The location of the Qt plugins")
   ENDIF (QT_LIBRARY_DIR AND NOT QT_PLUGINS_DIR)
   ########################################
@@ -872,8 +905,10 @@ IF (QT4_QMAKE_FOUND)
   QT_QUERY_QMAKE(QT_MOC_EXECUTABLE_INTERNAL "QMAKE_MOC")
   QT_QUERY_QMAKE(QT_UIC_EXECUTABLE_INTERNAL "QMAKE_UIC")
 
+  # make sure we have / and not \ as qmake gives on windows
   FILE(TO_CMAKE_PATH 
     "${QT_MOC_EXECUTABLE_INTERNAL}" QT_MOC_EXECUTABLE_INTERNAL)
+  # make sure we have / and not \ as qmake gives on windows
   FILE(TO_CMAKE_PATH 
     "${QT_UIC_EXECUTABLE_INTERNAL}" QT_UIC_EXECUTABLE_INTERNAL)
 
@@ -1178,7 +1213,7 @@ IF (QT4_QMAKE_FOUND)
 
          GET_FILENAME_COMPONENT(_abs_FILE ${_current_FILE} ABSOLUTE)
          # if "SKIP_AUTOMOC" is set to true, we will not handle this file here.
-         # here. this is required to make bouic work correctly:
+         # This is required to make uic work correctly:
          # we need to add generated .cpp files to the sources (to compile them),
          # but we cannot let automoc handle them, as the .cpp files don't exist yet when
          # cmake is run for the very first time on them -> however the .cpp files might
@@ -1504,14 +1539,14 @@ IF (QT4_QMAKE_FOUND)
     SET(QT_QTGUI_LIB_DEPENDENCIES ${QT_QTGUI_LIB_DEPENDENCIES} "-framework Carbon")
     
     # Qt 4.0, 4.1, 4.2 use QuickTime
-    IF(found_qt_minor_vers LESS 3)
+    IF(QT_VERSION_MINOR LESS 3)
       SET(QT_QTGUI_LIB_DEPENDENCIES ${QT_QTGUI_LIB_DEPENDENCIES} "-framework QuickTime")
-    ENDIF(found_qt_minor_vers LESS 3)
+    ENDIF(QT_VERSION_MINOR LESS 3)
     
     # Qt 4.2+ use AppKit
-    IF(found_qt_minor_vers GREATER 1)
+    IF(QT_VERSION_MINOR GREATER 1)
       SET(QT_QTGUI_LIB_DEPENDENCIES ${QT_QTGUI_LIB_DEPENDENCIES} "-framework AppKit")
-    ENDIF(found_qt_minor_vers LESS 1)
+    ENDIF(QT_VERSION_MINOR GREATER 1)
 
     SET(QT_QTCORE_LIB_DEPENDENCIES ${QT_QTCORE_LIB_DEPENDENCIES} "-framework ApplicationServices")
   ENDIF(Q_WS_MAC)

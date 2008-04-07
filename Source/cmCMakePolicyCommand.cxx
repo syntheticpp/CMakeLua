@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCMakePolicyCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-05 23:21:09 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2008-03-24 14:56:26 $
+  Version:   $Revision: 1.3 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -117,13 +117,6 @@ cmCMakePolicyCommand::HandleVersionMode(std::vector<std::string> const& args)
     this->SetError("VERSION given too many arguments");
     return false;
     }
-  if(!this->Makefile->SetPolicyVersion(args[1].c_str()))
-    {
-    cmOStringStream e;
-    e << "VERSION given invalid value \"" << args[1] << "\".  "
-      << "A numeric major.minor[.patch] must be given.";
-    this->SetError(e.str().c_str());
-    return false;
-    }
+  this->Makefile->SetPolicyVersion(args[1].c_str());
   return true;
 }

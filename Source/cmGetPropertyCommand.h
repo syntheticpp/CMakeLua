@@ -3,8 +3,13 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmGetPropertyCommand.h,v $
   Language:  C++
+<<<<<<< cmGetPropertyCommand.h
   Date:      $Date: 2008/01/23 15:27:59 $
   Version:   $Revision: 1.6 $
+=======
+  Date:      $Date: 2008-04-01 18:22:06 $
+  Version:   $Revision: 1.7 $
+>>>>>>> 1.7
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -68,7 +73,7 @@ public:
         "                TEST      <test>   |\n"
         "                VARIABLE>\n"
         "               PROPERTY <name>\n"
-        "               [DEFINED | BRIEF_DOCS | FULL_DOCS])\n"
+        "               [SET | DEFINED | BRIEF_DOCS | FULL_DOCS])\n"
         "Get one property from one object in a scope.  "
         "The first argument specifies the variable in which to store the "
         "result.  "
@@ -85,8 +90,11 @@ public:
         "The required PROPERTY option is immediately followed by the name "
         "of the property to get.  "
         "If the property is not set an empty value is returned.  "
+        "If the SET option is given the variable is set to a boolean "
+        "value indicating whether the property has been set."
         "If the DEFINED option is given the variable is set to a boolean "
-        "value indicating whether the property has been set.  "
+        "value indicating whether the property has been defined "
+        "such as with define_property. "
         "If BRIEF_DOCS or FULL_DOCS is given then the variable is set to "
         "a string containing documentation for the requested property.  "
         "If documentation is requested for a property that has not been "
@@ -95,7 +103,7 @@ public:
   
   cmTypeMacro(cmGetPropertyCommand, cmCommand);
 private:
-  enum OutType { OutValue, OutDefined, OutBriefDoc, OutFullDoc };
+  enum OutType { OutValue, OutDefined, OutBriefDoc, OutFullDoc, OutSet };
   std::string Variable;
   std::string Name;
   std::string PropertyName;

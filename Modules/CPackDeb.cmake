@@ -34,14 +34,24 @@ ENDIF(NOT CPACK_DEBIAN_PACKAGE_VERSION)
 
 # Architecture: (mandatory)
 IF(NOT CPACK_DEBIAN_PACKAGE_ARCHITECTURE)
-# There is no such thing as i686 architecture on debian, you should use i386 instead
-# $ dpkg --print-architecture
-  SET(CPACK_DEBIAN_PACKAGE_ARCHITECTURE i386)
+  # There is no such thing as i686 architecture on debian, you should use i386 instead
+  # $ dpkg --print-architecture
+  FIND_PROGRAM(DPKG_CMD dpkg)
+  IF(NOT DPKG_CMD)
+    MESSAGE(STATUS "Can not find dpkg in your path, default to i386.")
+    SET(CPACK_DEBIAN_PACKAGE_ARCHITECTURE i386)
+  ENDIF(NOT DPKG_CMD)
+  EXECUTE_PROCESS(COMMAND "${DPKG_CMD}" --print-architecture
+    OUTPUT_VARIABLE CPACK_DEBIAN_PACKAGE_ARCHITECTURE
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
 ENDIF(NOT CPACK_DEBIAN_PACKAGE_ARCHITECTURE)
 
 # have a look at GET_PROPERTY(result GLOBAL PROPERTY ENABLED_FEATURES),
 # this returns the successful FIND_PACKAGE() calls, maybe this can help
 # Depends:
+# You should set: DEBIAN_PACKAGE_DEPENDS
+# TODO: automate 'objdump -p | grep NEEDED'
 IF(NOT CPACK_DEBIAN_PACKAGE_DEPENDS)
   MESSAGE(STATUS "CPACK_DEBIAN_PACKAGE_DEPENDS not set, the package will have no dependencies.")
 ENDIF(NOT CPACK_DEBIAN_PACKAGE_DEPENDS)
@@ -77,6 +87,17 @@ ENDIF(NOT CPACK_DEBIAN_PACKAGE_PRIORITY )
 
 # Suggests:
 # You should set: CPACK_DEBIAN_PACKAGE_SUGGESTS
+
+# CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA
+# This variable allow advanced user to add custom script to the control.tar.gz (inside the .deb archive)
+# Typical examples are: 
+# - conffiles
+# - postinst
+# - postrm
+# - prerm"
+# Usage:
+# SET(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA 
+#    "${CMAKE_CURRENT_SOURCE_DIR/prerm;${CMAKE_CURRENT_SOURCE_DIR}/postrm")
 
 
 # For debian source packages:

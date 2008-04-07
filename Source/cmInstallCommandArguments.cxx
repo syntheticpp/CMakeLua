@@ -3,8 +3,13 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmInstallCommandArguments.cxx,v $
   Language:  C++
+<<<<<<< cmInstallCommandArguments.cxx
   Date:      $Date: 2008/02/04 22:03:48 $
   Version:   $Revision: 1.4 $
+=======
+  Date:      $Date: 2008-03-26 22:30:34 $
+  Version:   $Revision: 1.5 $
+>>>>>>> 1.5
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -40,9 +45,7 @@ cmInstallCommandArguments::cmInstallCommandArguments()
 ,NamelinkOnly  (&Parser, "NAMELINK_ONLY" , &ArgumentGroup)
 ,NamelinkSkip  (&Parser, "NAMELINK_SKIP" , &ArgumentGroup)
 ,GenericArguments(0)
-{
-  this->Component.SetDefaultString("Unspecified");
-}
+{}
 
 const std::string& cmInstallCommandArguments::GetDestination() const
 {
@@ -67,7 +70,9 @@ const std::string& cmInstallCommandArguments::GetComponent() const
     {
     return this->GenericArguments->GetComponent();
     }
-  return this->EmptyString;
+
+  static std::string unspecifiedComponent = "Unspecified";
+  return unspecifiedComponent;
 }
 
 const std::string& cmInstallCommandArguments::GetRename() const

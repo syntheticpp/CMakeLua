@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmGlobalVisualStudio8Generator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-11 21:25:48 $
-  Version:   $Revision: 1.36 $
+  Date:      $Date: 2008-04-01 21:39:04 $
+  Version:   $Revision: 1.37 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -162,7 +162,7 @@ void cmGlobalVisualStudio8Generator::Generate()
       stampListFile += "/";
       stampListFile += stampList;
       std::string stampFile;
-      cmGeneratedFileStream fout(stampList.c_str());
+      cmGeneratedFileStream fout(stampListFile.c_str());
       for(std::vector<cmLocalGenerator*>::const_iterator
             gi = generators.begin(); gi != generators.end(); ++gi)
         {

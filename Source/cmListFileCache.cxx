@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmListFileCache.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-20 14:46:24 $
-  Version:   $Revision: 1.44 $
+  Date:      $Date: 2008-03-31 17:33:08 $
+  Version:   $Revision: 1.45 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -171,30 +171,12 @@ bool cmListFile::ParseFile(const char* filename,
       
       if (isProblem)
       {
-      cmOStringStream msg;
-      msg << "No cmake_minimum_required command is present.  "
-          << "A line of code such as\n"
-          << "  cmake_minimum_required(VERSION "
-          << cmVersion::GetMajorVersion() << "."
-          << cmVersion::GetMinorVersion()
-          << ")\n"
-          << "should be added at the top of the file.  "
-          << "The version specified may be lower if you wish to "
-          << "support older CMake versions for this project.  "
-          << "For more information run "
-          << "\"cmake --help-policy CMP0000\".";
-      switch (mf->GetPolicyStatus(cmPolicies::CMP0000))
-        {
-        case cmPolicies::WARN:
-          mf->IssueMessage(cmake::AUTHOR_WARNING, msg.str().c_str());
-        case cmPolicies::OLD:
-          // Implicitly set the version for the user.
-          mf->SetPolicyVersion("2.4");
-          break;
-        default:
-          mf->IssueMessage(cmake::FATAL_ERROR, msg.str().c_str());
-          return false;
-        }
+      // Tell the top level cmMakefile to diagnose
+      // this violation of CMP0000.
+      mf->SetCheckCMP0000(true);
+
+      // Implicitly set the version for the user.
+      mf->SetPolicyVersion("2.4");
       }
     }
   }

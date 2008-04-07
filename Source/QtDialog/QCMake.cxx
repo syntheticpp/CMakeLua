@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: QCMake.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-12 02:51:56 $
-  Version:   $Revision: 1.21 $
+  Date:      $Date: 2008-04-02 21:41:24 $
+  Version:   $Revision: 1.22 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -362,6 +362,21 @@ void QCMake::reloadCache()
   props = this->properties();
   emit this->propertiesChanged(props);
 }
+  
+void QCMake::setDebugOutput(bool flag)
+{
+  if(flag != this->CMakeInstance->GetDebugOutput())
+    {
+    this->CMakeInstance->SetDebugOutputOn(flag);
+    emit this->debugOutputChanged(flag);
+    }
+}
+
+bool QCMake::getDebugOutput() const
+{
+  return this->CMakeInstance->GetDebugOutput();
+}
+
 
 void QCMake::SetSuppressDevWarnings(bool value)
 {

@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmGlobalKdevelopGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/10/22 17:28:49 $
-  Version:   $Revision: 1.29 $
+  Date:      $Date: 2008-03-27 21:40:43 $
+  Version:   $Revision: 1.31 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   Copyright (c) 2004 Alexander Neundorf neundorf@kde.org, All rights reserved.
@@ -50,17 +50,6 @@ cmGlobalKdevelopGenerator::cmGlobalKdevelopGenerator()
 :cmExternalMakefileProjectGenerator()
 {
   this->SupportedGlobalGenerators.push_back("Unix Makefiles");
-}
-
-
-void cmGlobalKdevelopGenerator::SetGlobalGenerator(
-                                                  cmGlobalGenerator* generator)
-{
-  cmExternalMakefileProjectGenerator::SetGlobalGenerator(generator);
-  cmGlobalUnixMakefileGenerator3* mf = (cmGlobalUnixMakefileGenerator3*)
-                                                                     generator;
-  mf->SetToolSupportsColor(false);
-  mf->SetForceVerboseMakefiles(true);
 }
 
 void cmGlobalKdevelopGenerator::Generate()
@@ -474,13 +463,15 @@ void cmGlobalKdevelopGenerator
         "    </run>\n"
         "    <build>\n"
         "      <buildtool>make</buildtool>\n"; //this one is important
-  fout<<"      <builddir>"<<outputDir.c_str()<<"</builddir>\n"; //and this one
+  fout<<"      <builddir>"<<outputDir.c_str()<<"</builddir>\n";  //and this one
   fout<<"    </build>\n"
         "    <make>\n"
         "      <abortonerror>false</abortonerror>\n"
         "      <numberofjobs>1</numberofjobs>\n"
         "      <dontact>false</dontact>\n"
-        "      <makebin></makebin>\n"
+        "      <makebin>" << this->GlobalGenerator->GetLocalGenerators()[0]->
+            GetMakefile()->GetRequiredDefinition("CMAKE_BUILD_TOOL") 
+            << " VERBOSE=1 </makebin>\n"
         "      <selectedenvironment>default</selectedenvironment>\n"
         "      <environments>\n"
         "        <default/>\n"

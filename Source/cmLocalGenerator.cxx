@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-13 15:38:46 $
-  Version:   $Revision: 1.269 $
+  Date:      $Date: 2008-03-28 19:54:20 $
+  Version:   $Revision: 1.270 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -946,7 +946,7 @@ cmLocalGenerator::ExpandRuleVariable(std::string const& variable,
   if(variable == "CMAKE_COMMAND")
     {
     const char* cmcommand =
-      this->GlobalGenerator->GetCMakeInstance()->GetCMakeCommand();
+      this->GetMakefile()->GetDefinition("CMAKE_COMMAND");
     return this->Convert(cmcommand, FULL, SHELL);
     }
   std::vector<std::string> enabledLanguages;

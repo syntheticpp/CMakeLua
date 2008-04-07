@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCMakeMinimumRequired.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-07 16:43:47 $
-  Version:   $Revision: 1.17 $
+  Date:      $Date: 2008-03-24 14:56:26 $
+  Version:   $Revision: 1.18 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -99,13 +99,12 @@ bool cmCMakeMinimumRequired
     {
     // The current version is too low.
     cmOStringStream e;
-    e << "This project requires version " << version_string.c_str()
-      << " of CMake.  "
-      << "You are running version "
-      << current_major << "." << current_minor << "." << current_patch
-      << ".\n";
-    cmSystemTools::Error(e.str().c_str());
+    e << "CMake " << version_string.c_str()
+      << " or higher is required.  You are running version "
+      << current_major << "." << current_minor << "." << current_patch;
+    this->Makefile->IssueMessage(cmake::FATAL_ERROR, e.str());
     cmSystemTools::SetFatalErrorOccured();
+    return true;
     }
 
   if (required_major < 2 || required_major == 2 && required_minor < 4)

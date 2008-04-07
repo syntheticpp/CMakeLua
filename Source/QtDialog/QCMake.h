@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: QCMake.h,v $
   Language:  C++
-  Date:      $Date: 2008-03-12 02:51:56 $
-  Version:   $Revision: 1.9 $
+  Date:      $Date: 2008-04-02 21:41:24 $
+  Version:   $Revision: 1.10 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -87,6 +87,8 @@ public slots:
   void deleteCache();
   /// reload the cache in binary directory
   void reloadCache();
+  /// set whether to do debug output
+  void setDebugOutput(bool);
 
 public:
   /// get the list of cache properties
@@ -99,6 +101,8 @@ public:
   QString generator() const;
   /// get the available generators
   QStringList availableGenerators() const;
+  /// get whether to do debug output
+  bool getDebugOutput() const;
 
 signals:
   /// signal when properties change (during read from disk or configure process)
@@ -118,6 +122,8 @@ signals:
   void outputMessage(const QString& msg);
   /// signal when there is an error message
   void errorMessage(const QString& msg);
+  /// signal when debug output changes
+  void debugOutputChanged(bool);
 
 protected:
   cmake* CMakeInstance;

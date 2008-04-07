@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: CMakeSetupDialog.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-13 20:21:44 $
-  Version:   $Revision: 1.42 $
+  Date:      $Date: 2008-04-03 22:35:01 $
+  Version:   $Revision: 1.48 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -31,6 +31,7 @@
 #include <QMimeData>
 #include <QUrl>
 #include <QShortcut>
+#include <QMacInstallDialog.h>
 
 #include "QCMake.h"
 #include "QCMakeCacheView.h"
@@ -83,7 +84,7 @@ CMakeSetupDialog::CMakeSetupDialog()
   this->DeleteCacheAction = FileMenu->addAction(tr("&Delete Cache"));
   QObject::connect(this->DeleteCacheAction, SIGNAL(triggered(bool)), 
                    this, SLOT(doDeleteCache()));
-  this->ExitAction = FileMenu->addAction(tr("&Exit"));
+  this->ExitAction = FileMenu->addAction(tr("E&xit"));
   QObject::connect(this->ExitAction, SIGNAL(triggered(bool)), 
                    this, SLOT(close()));
 
@@ -96,11 +97,23 @@ CMakeSetupDialog::CMakeSetupDialog()
   this->GenerateAction = ToolsMenu->addAction(tr("&Generate"));
   QObject::connect(this->GenerateAction, SIGNAL(triggered(bool)), 
                    this, SLOT(doGenerate()));
-  this->SuppressDevWarningsAction = ToolsMenu->addAction(tr("&Suppress dev Warnings (-Wno-dev)"));
-  QObject::connect(this->SuppressDevWarningsAction, SIGNAL(triggered(bool)), 
+#if defined(Q_WS_MAC)
+  this->InstallForCommandLineAction 
+    = ToolsMenu->addAction(tr("&Install For Command Line Use"));
+  QObject::connect(this->InstallForCommandLineAction, SIGNAL(triggered(bool)), 
+                   this, SLOT(doInstallForCommandLine()));
+#endif  
+  QMenu* OptionsMenu = this->menuBar()->addMenu(tr("&Options"));
+  QAction* supressDevWarningsAction = OptionsMenu->addAction(tr("&Suppress dev Warnings (-Wno-dev)"));
+  QObject::connect(supressDevWarningsAction, SIGNAL(triggered(bool)), 
                    this, SLOT(doSuppressDev()));
-  this->SuppressDevWarningsAction->setCheckable(true);
-  
+
+  supressDevWarningsAction->setCheckable(true);
+  QAction* debugAction = OptionsMenu->addAction(tr("&Debug Output"));
+  debugAction->setCheckable(true);
+  QObject::connect(debugAction, SIGNAL(toggled(bool)), 
+                   this, SLOT(setDebugOutput(bool)));
+
   QMenu* HelpMenu = this->menuBar()->addMenu(tr("&Help"));
   QAction* a = HelpMenu->addAction(tr("About"));
   QObject::connect(a, SIGNAL(triggered(bool)),
@@ -237,6 +250,7 @@ void CMakeSetupDialog::doConfigure()
     return;
     }
 
+  // make sure build directory exists
   QString bindir = this->CMakeThread->cmakeInstance()->binaryDirectory();
   QDir dir(bindir);
   if(!dir.exists())
@@ -257,10 +271,13 @@ void CMakeSetupDialog::doConfigure()
     dir.mkpath(".");
     }
 
-  // prompt for generator if one doesn't exist
+  // prompt for generator if it hasn't been set
   if(this->CMakeThread->cmakeInstance()->generator().isEmpty())
     {
-    this->promptForGenerator();
+    if(!this->promptForGenerator())
+      {
+      return;
+      }
     }
 
   // remember path
@@ -313,6 +330,12 @@ void CMakeSetupDialog::doSuppressDev()
   this->SuppressDevWarnings = !this->SuppressDevWarnings;
   this->CMakeThread->cmakeInstance()->
     SetSuppressDevWarnings(this->SuppressDevWarnings);
+}
+
+void CMakeSetupDialog::doInstallForCommandLine()
+{
+  QMacInstallDialog setupdialog(0);
+  setupdialog.exec();
 }
 
 void CMakeSetupDialog::doGenerate()
@@ -393,15 +416,18 @@ void CMakeSetupDialog::doHelp()
     "directory.");
 
   QDialog dialog;
+  QFontMetrics met(this->font());
+  int msgWidth = met.width(msg);
+  dialog.setMinimumSize(msgWidth/15,20);
   dialog.setWindowTitle(tr("Help"));
   QVBoxLayout* l = new QVBoxLayout(&dialog);
   QLabel* lab = new QLabel(&dialog);
-  l->addWidget(lab);
   lab->setText(msg);
   lab->setWordWrap(true);
   QDialogButtonBox* btns = new QDialogButtonBox(QDialogButtonBox::Ok,
                                                 Qt::Horizontal, &dialog);
   QObject::connect(btns, SIGNAL(accepted()), &dialog, SLOT(accept()));
+  l->addWidget(lab);
   l->addWidget(btns);
   dialog.exec();
 }
@@ -517,7 +543,7 @@ void CMakeSetupDialog::setEnabledState(bool enabled)
   this->RemoveEntry->setEnabled(false);  // let selection re-enable it
 }
 
-void CMakeSetupDialog::promptForGenerator()
+bool CMakeSetupDialog::promptForGenerator()
 {
   QSettings settings;
   settings.beginGroup("Settings/StartPath");
@@ -537,19 +563,25 @@ void CMakeSetupDialog::promptForGenerator()
     {
     combo->setCurrentIndex(idx);
     }
-  QDialogButtonBox* btns = new QDialogButtonBox(QDialogButtonBox::Ok,
+  QDialogButtonBox* btns = new QDialogButtonBox(QDialogButtonBox::Ok |
+                                                QDialogButtonBox::Cancel,
                                                 Qt::Horizontal, &dialog);
   QObject::connect(btns, SIGNAL(accepted()), &dialog, SLOT(accept()));
+  QObject::connect(btns, SIGNAL(rejected()), &dialog, SLOT(reject()));
   
   QVBoxLayout* l = new QVBoxLayout(&dialog);
   l->addWidget(lab);
   l->addWidget(combo);
   l->addWidget(btns);
-  dialog.exec();
-  
-  lastGen = combo->currentText();
-  settings.setValue("LastGenerator", lastGen);
-  this->CMakeThread->cmakeInstance()->setGenerator(combo->currentText());
+  if(dialog.exec() == QDialog::Accepted)
+    {
+    lastGen = combo->currentText();
+    settings.setValue("LastGenerator", lastGen);
+    this->CMakeThread->cmakeInstance()->setGenerator(combo->currentText());
+    return true;
+    }
+
+  return false;
 }
 
 void CMakeSetupDialog::updateGeneratorLabel(const QString& gen)
@@ -775,7 +807,7 @@ void CMakeSetupDialog::enterState(CMakeSetupDialog::State s)
     this->setEnabledState(false);
     this->GenerateButton->setEnabled(false);
     this->GenerateAction->setEnabled(false);
-    this->ConfigureButton->setText(tr("Stop"));
+    this->ConfigureButton->setText(tr("&Stop"));
     }
   else if(s == Generating)
     {
@@ -783,7 +815,7 @@ void CMakeSetupDialog::enterState(CMakeSetupDialog::State s)
     this->setEnabledState(false);
     this->ConfigureButton->setEnabled(false);
     this->GenerateAction->setEnabled(false);
-    this->GenerateButton->setText(tr("Stop"));
+    this->GenerateButton->setText(tr("&Stop"));
     }
   else if(s == ReadyConfigure)
     {
@@ -792,8 +824,8 @@ void CMakeSetupDialog::enterState(CMakeSetupDialog::State s)
     this->GenerateButton->setEnabled(false);
     this->GenerateAction->setEnabled(false);
     this->ConfigureButton->setEnabled(true);
-    this->ConfigureButton->setText(tr("Configure"));
-    this->GenerateButton->setText(tr("Generate"));
+    this->ConfigureButton->setText(tr("&Configure"));
+    this->GenerateButton->setText(tr("&Generate"));
     }
   else if(s == ReadyGenerate)
     {
@@ -802,8 +834,8 @@ void CMakeSetupDialog::enterState(CMakeSetupDialog::State s)
     this->GenerateButton->setEnabled(true);
     this->GenerateAction->setEnabled(true);
     this->ConfigureButton->setEnabled(true);
-    this->ConfigureButton->setText(tr("Configure"));
-    this->GenerateButton->setText(tr("Generate"));
+    this->ConfigureButton->setText(tr("&Configure"));
+    this->GenerateButton->setText(tr("&Generate"));
     }
 }
 
@@ -848,4 +880,9 @@ void CMakeSetupDialog::startSearch()
   this->Search->selectAll();
 }
 
+void CMakeSetupDialog::setDebugOutput(bool flag)
+{
+  QMetaObject::invokeMethod(this->CMakeThread->cmakeInstance(),
+    "setDebugOutput", Qt::QueuedConnection, Q_ARG(bool, flag));
+}
 

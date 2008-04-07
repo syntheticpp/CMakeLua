@@ -3,8 +3,13 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmGlobalKdevelopGenerator.h,v $
   Language:  C++
+<<<<<<< cmGlobalKdevelopGenerator.h
   Date:      $Date: 2007/08/26 23:27:33 $
   Version:   $Revision: 1.7 $
+=======
+  Date:      $Date: 2008-03-27 21:40:43 $
+  Version:   $Revision: 1.8 $
+>>>>>>> 1.8
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   Copyright (c) 2004 Alexander Neundorf, neundorf@kde.org. All rights reserved.
@@ -37,7 +42,6 @@ class cmGlobalKdevelopGenerator : public cmExternalMakefileProjectGenerator
 {
 public:
   cmGlobalKdevelopGenerator();
-  virtual void SetGlobalGenerator(cmGlobalGenerator* generator);
 
   virtual const char* GetName() const
                           { return cmGlobalKdevelopGenerator::GetActualName();}

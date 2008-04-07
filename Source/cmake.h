@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmake.h,v $
   Language:  C++
-  Date:      $Date: 2008-03-13 17:48:57 $
-  Version:   $Revision: 1.109 $
+  Date:      $Date: 2008-04-02 21:29:25 $
+  Version:   $Revision: 1.113 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -315,11 +315,10 @@ class cmake
    */
   const char* GetCTestCommand();
   const char* GetCPackCommand();
-  const char* GetCMakeCommand() const { return this->CMakeCommand.c_str(); }
 
   // Do we want debug output during the cmake run.
   bool GetDebugOutput() { return this->DebugOutput; }
-  void DebugOutputOn() { this->DebugOutput = true;}
+  void SetDebugOutputOn(bool b) { this->DebugOutput = b;}
 
   // Define a property
   void DefineProperty(const char *name, cmProperty::ScopeType scope,
@@ -349,7 +348,8 @@ class cmake
     }
   void SetSuppressDevWarnings(bool v)
     {
-      this->SuppressDevWarnings = v;
+      this->SuppressDevWarnings = v; 
+      this->DoSuppressDevWarnings = true;
     }
 
   /** Display a message to the user.  */
@@ -392,6 +392,7 @@ protected:
   std::string cmStartDirectory; 
   std::string StartOutputDirectory;
   bool SuppressDevWarnings;
+  bool DoSuppressDevWarnings;
   std::set<cmStdString> WrittenFiles;
 
   ///! return true if the same cmake was used to make the cache.
