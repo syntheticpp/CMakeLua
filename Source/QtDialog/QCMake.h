@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: QCMake.h,v $
   Language:  C++
-  Date:      $Date: 2008-04-02 21:41:24 $
-  Version:   $Revision: 1.10 $
+  Date:      $Date: 2008-04-07 23:19:50 $
+  Version:   $Revision: 1.11 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -112,6 +112,8 @@ signals:
   /// signal when the source directory changes (binary directory already
   /// containing a CMakeCache.txt file)
   void sourceDirChanged(const QString& dir);
+  /// signal when the binary directory changes
+  void binaryDirChanged(const QString& dir);
   /// signal for progress events
   void progressChanged(const QString& msg, float percent);
   /// signal when configure is done

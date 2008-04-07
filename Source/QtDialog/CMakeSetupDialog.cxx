@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: CMakeSetupDialog.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-04-03 22:35:01 $
-  Version:   $Revision: 1.48 $
+  Date:      $Date: 2008-04-07 23:19:49 $
+  Version:   $Revision: 1.49 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -181,7 +181,10 @@ void CMakeSetupDialog::initialize()
   QObject::connect(this->CMakeThread->cmakeInstance(),
                    SIGNAL(sourceDirChanged(QString)),
                    this, SLOT(updateSourceDirectory(QString)));
- 
+  QObject::connect(this->CMakeThread->cmakeInstance(),
+                   SIGNAL(binaryDirChanged(QString)),
+                   this, SLOT(updateBinaryDirectory(QString)));
+  
   QObject::connect(this->CMakeThread->cmakeInstance(),
                    SIGNAL(progressChanged(QString, float)),
                    this, SLOT(showProgress(QString,float)));
@@ -445,7 +448,7 @@ void CMakeSetupDialog::doSourceBrowse()
     tr("Enter Path to Source"), this->SourceDirectory->text());
   if(!dir.isEmpty())
     {
-    this->setSourceDirectory(QDir::fromNativeSeparators(dir));
+    this->setSourceDirectory(dir);
     }
 }
 
@@ -459,13 +462,23 @@ void CMakeSetupDialog::updateSourceDirectory(const QString& dir)
     }
 }
 
+void CMakeSetupDialog::updateBinaryDirectory(const QString& dir)
+{
+  if(this->BinaryDirectory->currentText() != dir)
+    {
+    this->BinaryDirectory->blockSignals(true);
+    this->BinaryDirectory->setEditText(dir);
+    this->BinaryDirectory->blockSignals(false);
+    }
+}
+
 void CMakeSetupDialog::doBinaryBrowse()
 {
   QString dir = QFileDialog::getExistingDirectory(this, 
     tr("Enter Path to Build"), this->BinaryDirectory->currentText());
   if(!dir.isEmpty() && dir != this->BinaryDirectory->currentText())
     {
-    this->setBinaryDirectory(QDir::fromNativeSeparators(dir));
+    this->setBinaryDirectory(dir);
     }
 }
 

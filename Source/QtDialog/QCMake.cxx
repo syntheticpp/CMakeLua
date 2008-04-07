@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: QCMake.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-04-02 21:41:24 $
-  Version:   $Revision: 1.22 $
+  Date:      $Date: 2008-04-07 23:19:50 $
+  Version:   $Revision: 1.23 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -86,8 +86,8 @@ void QCMake::setSourceDirectory(const QString& dir)
 {
   if(this->SourceDirectory != dir)
     {
-    this->SourceDirectory = dir;
-    emit this->sourceDirChanged(dir);
+    this->SourceDirectory = QDir::fromNativeSeparators(dir);
+    emit this->sourceDirChanged(this->SourceDirectory);
     }
 }
 
@@ -95,12 +95,14 @@ void QCMake::setBinaryDirectory(const QString& dir)
 {
   if(this->BinaryDirectory != dir)
     {
+    this->BinaryDirectory = QDir::fromNativeSeparators(dir);
+    emit this->binaryDirChanged(this->BinaryDirectory);
     cmCacheManager *cachem = this->CMakeInstance->GetCacheManager();
-    this->BinaryDirectory = dir;
     this->setGenerator(QString());
-    if(!this->CMakeInstance->GetCacheManager()->LoadCache(dir.toLocal8Bit().data()))
+    if(!this->CMakeInstance->GetCacheManager()->LoadCache(
+      this->BinaryDirectory.toLocal8Bit().data()))
       {
-      QDir testDir(dir);
+      QDir testDir(this->BinaryDirectory);
       if(testDir.exists("CMakeCache.txt"))
         {
         cmSystemTools::Error("There is a CMakeCache.txt file for the current binary "
