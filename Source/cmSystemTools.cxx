@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmSystemTools.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-28 18:29:28 $
-  Version:   $Revision: 1.369 $
+  Date:      $Date: 2008-04-07 14:55:52 $
+  Version:   $Revision: 1.370 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -2229,7 +2229,13 @@ bool cmSystemTools::ChangeRPath(std::string const& file,
         }
       if(emsg)
         {
-        *emsg = "The current RPATH does not begin with that specified.";
+        cmOStringStream e;
+        e << "The current RPATH is:\n"
+          << "  " << se->Value << "\n"
+          << "which does not begin with:\n"
+          << "  " << oldRPath << "\n"
+          << "as was expected.";
+        *emsg = e.str();
         }
       return false;
       }

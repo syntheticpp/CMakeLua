@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmFileCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-04-04 20:02:50 $
-  Version:   $Revision: 1.104 $
+  Date:      $Date: 2008-04-07 14:55:51 $
+  Version:   $Revision: 1.105 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1407,8 +1407,10 @@ bool cmFileCommand::HandleChrpathCommand(std::vector<std::string> const& args)
   else
     {
     cmOStringStream e;
-    e << "CHRPATH could not write new RPATH \""
-      << newRPath << "\" to the file \"" << file << "\": "
+    e << "CHRPATH could not write new RPATH:\n"
+      << "  " << newRPath << "\n"
+      << "to the file:\n"
+      << "  " << file << "\n"
       << emsg;
     this->SetError(e.str().c_str());
     return false;
