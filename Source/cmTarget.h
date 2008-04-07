@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmTarget.h,v $
   Language:  C++
-  Date:      $Date: 2008-03-13 20:35:39 $
-  Version:   $Revision: 1.111 $
+  Date:      $Date: 2008-04-07 17:39:13 $
+  Version:   $Revision: 1.112 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -462,9 +462,6 @@ private:
   // Use a makefile variable to set a default for the given property.
   // If the variable is not defined use the given default instead.
   void SetPropertyDefault(const char* property, const char* default_value);
-
-  // Get the full path to the target output directory.
-  const char* GetAndCreateOutputDir(bool implib, bool create);
 
   // Get the full path to the target output directory.
   const char* GetOutputDir(bool implib);

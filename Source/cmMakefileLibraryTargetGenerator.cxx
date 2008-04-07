@@ -3,8 +3,13 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefileLibraryTargetGenerator.cxx,v $
   Language:  C++
+<<<<<<< cmMakefileLibraryTargetGenerator.cxx
   Date:      $Date: 2008/02/27 22:10:45 $
   Version:   $Revision: 1.58 $
+=======
+  Date:      $Date: 2008-04-07 17:39:13 $
+  Version:   $Revision: 1.59 $
+>>>>>>> 1.59
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -369,10 +374,12 @@ void cmMakefileLibraryTargetGenerator::WriteLibraryRules
   else
     {
     outpath = this->Target->GetDirectory();
+    cmSystemTools::MakeDirectory(outpath.c_str());
     outpath += "/";
     if(!targetNameImport.empty())
       {
       outpathImp = this->Target->GetDirectory(0, true);
+      cmSystemTools::MakeDirectory(outpathImp.c_str());
       outpathImp += "/";
       }
     }

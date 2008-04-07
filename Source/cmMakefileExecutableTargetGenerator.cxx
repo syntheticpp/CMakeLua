@@ -3,8 +3,13 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefileExecutableTargetGenerator.cxx,v $
   Language:  C++
+<<<<<<< cmMakefileExecutableTargetGenerator.cxx
   Date:      $Date: 2008/02/27 22:10:45 $
   Version:   $Revision: 1.46 $
+=======
+  Date:      $Date: 2008-04-07 17:39:13 $
+  Version:   $Revision: 1.47 $
+>>>>>>> 1.47
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -147,9 +152,11 @@ void cmMakefileExecutableTargetGenerator::WriteExecutableRule(bool relink)
     }
   else
     {
+    cmSystemTools::MakeDirectory(outpath.c_str());
     if(!targetNameImport.empty())
       {
       outpathImp = this->Target->GetDirectory(0, true);
+      cmSystemTools::MakeDirectory(outpathImp.c_str());
       outpathImp += "/";
       }
     }
