@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmFindBase.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-07 20:30:33 $
-  Version:   $Revision: 1.35 $
+  Date:      $Date: 2008-04-07 02:19:06 $
+  Version:   $Revision: 1.36 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -495,7 +495,15 @@ void cmFindBase::ExpandRegistryAndCleanPath(std::vector<std::string>& paths)
           this->SearchPathSuffixes.begin();
         j != this->SearchPathSuffixes.end(); ++j)
       {
-      std::string p = *i + std::string("/") + *j;
+      // if *i is only / then do not add a //
+      // this will get incorrectly considered a network
+      // path on windows and cause huge delays.
+      std::string p = *i;
+      if(p.size() && p[p.size()-1] != '/')
+        {
+        p += std::string("/");
+        }
+      p +=  *j;
       // add to all paths because the search path may be modified 
       // later with lib being replaced for lib64 which may exist
       paths.push_back(p);
