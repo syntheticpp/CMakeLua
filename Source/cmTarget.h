@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmTarget.h,v $
   Language:  C++
-  Date:      $Date: 2008-04-08 04:06:46 $
-  Version:   $Revision: 1.113 $
+  Date:      $Date: 2008-04-08 20:13:43 $
+  Version:   $Revision: 1.114 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -471,7 +471,7 @@ private:
 
   // Get the full path to the target output directory.
   std::string GetOutputDir(bool implib);
-  std::string const& cmTarget::ComputeBaseOutputDir(bool implib);
+  std::string const& ComputeBaseOutputDir(bool implib);
 
   const char* ImportedGetLocation(const char* config);
   const char* NormalGetLocation(const char* config);
