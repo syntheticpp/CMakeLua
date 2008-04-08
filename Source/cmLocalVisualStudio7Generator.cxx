@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalVisualStudio7Generator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-31 14:59:02 $
-  Version:   $Revision: 1.221 $
+  Date:      $Date: 2008-04-08 04:06:46 $
+  Version:   $Revision: 1.222 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -668,7 +668,7 @@ void cmLocalVisualStudio7Generator::WriteConfiguration(std::ostream& fout,
   if ( this->Version >= 8 )
     {
     // Check the filesystem type where the target will be written.
-    if(cmLVS6G_IsFAT(target.GetDirectory(configName)))
+    if(cmLVS6G_IsFAT(target.GetDirectory(configName).c_str()))
       {
       // Add a flag telling the manifest tool to use a workaround
       // for FAT32 file systems, which can cause an empty manifest

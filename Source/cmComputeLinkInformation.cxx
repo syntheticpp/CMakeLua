@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmComputeLinkInformation.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-31 16:47:31 $
-  Version:   $Revision: 1.32 $
+  Date:      $Date: 2008-04-08 04:06:46 $
+  Version:   $Revision: 1.33 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -611,18 +611,8 @@ void cmComputeLinkInformation::AddItem(std::string const& item, cmTarget* tgt)
       std::string lib = tgt->GetFullPath(config, implib, true);
       this->Depends.push_back(lib);
 
-      if(tgt->IsFrameworkOnApple())
-        {
-        // Frameworks on OS X need only the framework directory to
-        // link.
-        std::string fw = tgt->GetDirectory(config, implib);
-        this->AddFrameworkItem(fw);
-        }
-      else
-        {
-        this->AddTargetItem(lib, tgt);
-        this->AddLibraryRuntimeInfo(lib, tgt);
-        }
+      this->AddTargetItem(lib, tgt);
+      this->AddLibraryRuntimeInfo(lib, tgt);
       }
     }
   else
@@ -1023,7 +1013,7 @@ void cmComputeLinkInformation::AddTargetItem(std::string const& item,
 
   // For compatibility with CMake 2.4 include the item's directory in
   // the linker search path.
-  if(this->OldLinkDirMode &&
+  if(this->OldLinkDirMode && !target->IsFrameworkOnApple() &&
      this->OldLinkDirMask.find(cmSystemTools::GetFilenamePath(item)) ==
      this->OldLinkDirMask.end())
     {

@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmInstallTargetGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-02 21:48:50 $
-  Version:   $Revision: 1.62 $
+  Date:      $Date: 2008-04-08 04:06:46 $
+  Version:   $Revision: 1.63 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -239,16 +239,17 @@ cmInstallTargetGenerator
 
       // Compute the build tree location of the framework directory
       std::string from1 = fromDirConfig;
-      // Remove trailing slashes... so that from1 ends with ".framework":
-      //
-      cmSystemTools::ConvertToUnixSlashes(from1);
+      from1 += targetName;
+      from1 += ".framework";
       files.push_back(from1);
 
       type = cmTarget::INSTALL_DIRECTORY;
 
       // Need to apply install_name_tool and stripping to binary
       // inside framework.
-      toInstallPath += ".framework/";
+      toInstallPath += ".framework/Versions/";
+      toInstallPath += this->Target->GetFrameworkVersion();
+      toInstallPath += "/";
       toInstallPath += this->GetInstallFilename(this->Target, config,
                                                 NameNormal);
 

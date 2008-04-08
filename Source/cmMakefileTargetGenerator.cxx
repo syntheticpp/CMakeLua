@@ -3,13 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefileTargetGenerator.cxx,v $
   Language:  C++
-<<<<<<< cmMakefileTargetGenerator.cxx
-  Date:      $Date: 2008/02/27 22:10:45 $
-  Version:   $Revision: 1.93 $
-=======
-  Date:      $Date: 2008-04-03 15:11:54 $
-  Version:   $Revision: 1.94 $
->>>>>>> 1.94
+  Date:      $Date: 2008-04-08 04:06:46 $
+  Version:   $Revision: 1.95 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -338,6 +333,9 @@ void cmMakefileTargetGenerator::WriteMacOSXContentRules(cmSourceFile& source,
   std::string macdir = this->MacContentDirectory;
   macdir += pkgloc;
   cmSystemTools::MakeDirectory(macdir.c_str());
+
+  // Record use of this content location.
+  this->MacContentFolders.insert(pkgloc);
 
   // Get the input file location.
   std::string input = source.GetFullPath();
@@ -1461,11 +1459,8 @@ void cmMakefileTargetGenerator
       if(cmTarget* tgt =
          this->GlobalGenerator->FindTarget(0, lib->first.c_str()))
         {
-        if(const char* location =
-           tgt->GetLocation(this->LocalGenerator->ConfigurationName.c_str()))
-          {
-          depends.push_back(location);
-          }
+        const char* config = this->LocalGenerator->ConfigurationName.c_str();
+        depends.push_back(tgt->GetFullPath(config, false));
         }
       // depend on full path libs as well
       else if(cmSystemTools::FileIsFullPath(lib->first.c_str()))
