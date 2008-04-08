@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmSystemTools.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-04-08 20:06:44 $
-  Version:   $Revision: 1.373 $
+  Date:      $Date: 2008-04-08 21:37:13 $
+  Version:   $Revision: 1.374 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -1281,10 +1281,7 @@ void cmSystemTools::ExpandListArgument(const std::string& arg,
         } break;
       case ']':
         {
-        if(squareNesting)
-          {
-          --squareNesting;
-          }
+        --squareNesting;
         newArgVec.push_back(*c);
         } break;
       case ';':
