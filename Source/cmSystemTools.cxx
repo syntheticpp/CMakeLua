@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmSystemTools.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-04-08 20:05:23 $
-  Version:   $Revision: 1.372 $
+  Date:      $Date: 2008-04-08 20:06:44 $
+  Version:   $Revision: 1.373 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -149,8 +149,19 @@ void cmSystemTools::ExpandRegistryValues(std::string& source)
     }
 }
 #else
-void cmSystemTools::ExpandRegistryValues(std::string&)
+void cmSystemTools::ExpandRegistryValues(std::string& source)
 {
+  cmsys::RegularExpression regEntry("\\[(HKEY[^]]*)\\]");
+  while (regEntry.find(source))
+    {
+    // the arguments are the second match
+    std::string key = regEntry.match(1);
+    std::string val;
+    std::string reg = "[";
+    reg += key + "]";
+    cmSystemTools::ReplaceString(source, reg.c_str(), "/registry");
+    }
+
 }
 #endif
 
