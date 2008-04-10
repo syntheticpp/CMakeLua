@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalUnixMakefileGenerator3.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-03-25 14:11:48 $
-  Version:   $Revision: 1.245 $
+  Date:      $Date: 2008-04-10 15:55:49 $
+  Version:   $Revision: 1.246 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -746,17 +746,7 @@ cmLocalUnixMakefileGenerator3
     // turn off RCS and SCCS automatic stuff from gmake
     makefileStream
       << "# Remove some rules from gmake that .SUFFIXES does not remove.\n"
-      << "# This makes gmake faster as it does not try to run implicit rules\n"
-      << "# on targets that never exist.\n"
-      << "SUFFIXES =\n"
-      << "%: %,v\n"
-      << "%: RCS/%,v\n"
-      << "%: RCS/%\n"
-      << "%: s.%\n"
-      << "%: %.w\n"
-      << "%.c: %.w %.ch\n"
-      << "%: %.tex\n"
-      << "%: SCCS/s.%\n\n";
+      << "SUFFIXES =\n\n";
     }
   // Add a fake suffix to keep HP happy.  Must be max 32 chars for SGI make.
   std::vector<std::string> depends;
