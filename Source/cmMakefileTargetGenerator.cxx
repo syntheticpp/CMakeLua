@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefileTargetGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-04-08 04:06:46 $
-  Version:   $Revision: 1.95 $
+  Date:      $Date: 2008-04-11 17:13:15 $
+  Version:   $Revision: 1.96 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -614,6 +614,9 @@ cmMakefileTargetGenerator
                   cmLocalGenerator::SHELL).c_str();
   vars.Object = shellObj.c_str();
   std::string objectDir = cmSystemTools::GetFilenamePath(obj);
+  objectDir = this->Convert(objectDir.c_str(),
+                            cmLocalGenerator::START_OUTPUT,
+                            cmLocalGenerator::SHELL);
   vars.ObjectDir = objectDir.c_str();
   vars.Flags = flags.c_str();
   vars.Defines = defines.c_str();
