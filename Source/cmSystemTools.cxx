@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmSystemTools.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-04-14 15:43:44 $
-  Version:   $Revision: 1.375 $
+  Date:      $Date: 2008-04-14 16:44:01 $
+  Version:   $Revision: 1.376 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -2165,7 +2165,7 @@ bool cmSystemTools::FileTimeSet(const char* fname, cmSystemToolsFileTime* t)
 {
 #if defined(_WIN32) && !defined(__CYGWIN__)
   cmSystemToolsWindowsHandle h =
-    CreateFile(toFile, GENERIC_WRITE, 0, 0, OPEN_EXISTING, 0, 0);
+    CreateFile(fname, GENERIC_WRITE, 0, 0, OPEN_EXISTING, 0, 0);
   if(!h)
     {
     return false;
