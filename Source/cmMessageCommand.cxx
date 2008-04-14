@@ -3,8 +3,13 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMessageCommand.cxx,v $
   Language:  C++
+<<<<<<< cmMessageCommand.cxx
   Date:      $Date: 2008/01/23 15:27:59 $
   Version:   $Revision: 1.22 $
+=======
+  Date:      $Date: 2008-04-14 13:20:16 $
+  Version:   $Revision: 1.23 $
+>>>>>>> 1.23
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -60,7 +65,7 @@ bool cmMessageCommand
 
   if (send_error || fatal_error)
     {
-    cmSystemTools::Error(message.c_str());
+    this->Makefile->IssueMessage(cmake::FATAL_ERROR, message.c_str());
     }
   else
     {
