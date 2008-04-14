@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: CMakeSetupDialog.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-04-07 23:19:49 $
-  Version:   $Revision: 1.49 $
+  Date:      $Date: 2008-04-14 20:15:28 $
+  Version:   $Revision: 1.50 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -138,6 +138,7 @@ CMakeSetupDialog::CMakeSetupDialog()
   // fixed pitch font in output window
   QFont outputFont("Courier");
   this->Output->setFont(outputFont);
+  this->ErrorFormat.setForeground(QBrush(Qt::red));
 
   // start the cmake worker thread
   this->CMakeThread = new QCMakeThread(this);
@@ -512,32 +513,17 @@ void CMakeSetupDialog::showProgress(const QString& /*msg*/, float percent)
 {
   this->ProgressBar->setValue(qRound(percent * 100));
 }
-  
+
 void CMakeSetupDialog::error(const QString& message)
 {
-  QStringList messages = message.split('\n');
-  foreach(QString m, messages)
-    {
-    // make sure we escape html tags in the cmake messages
-    m.replace(QString("&"), QString("&amp;"));
-    m.replace(QString("<"), QString("&lt;"));
-    m.replace(QString(">"), QString("&gt;"));
-    m.replace(QString(" "), QString("&nbsp;"));
-    this->Output->append(QString("<b><font color=red>%1</font></b>").arg(m));
-    }
+  this->Output->setCurrentCharFormat(this->ErrorFormat);
+  this->Output->append(message);
 }
 
 void CMakeSetupDialog::message(const QString& message)
 {
-  QStringList messages = message.split('\n');
-  foreach(QString m, messages)
-    {
-    // make sure we escape html tags in the cmake messages
-    m.replace(QString("&"), QString("&amp;"));
-    m.replace(QString("<"), QString("&lt;"));
-    m.replace(QString(">"), QString("&gt;"));
-    this->Output->append(m);
-    }
+  this->Output->setCurrentCharFormat(this->MessageFormat);
+  this->Output->append(message);
 }
 
 void CMakeSetupDialog::setEnabledState(bool enabled)
