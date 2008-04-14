@@ -3,13 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmIfCommand.h,v $
   Language:  C++
-<<<<<<< cmIfCommand.h
-  Date:      $Date: 2008/02/10 22:19:10 $
-  Version:   $Revision: 1.46 $
-=======
   Date:      $Date: 2008-03-20 22:25:59 $
   Version:   $Revision: 1.47 $
->>>>>>> 1.47
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.

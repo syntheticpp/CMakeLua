@@ -77,6 +77,16 @@ public:
    */
   ~cmMakefile();
 
+
+  /**
+   * Make member function visible in Lua
+  */
+  void InitializeLuaState();
+
+  /*
+  */
+  int RunLuaFile(const std::string& filename);
+
   /**
    * Read and parse a CMakeLists.txt file.
    */

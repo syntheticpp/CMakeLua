@@ -97,6 +97,8 @@ SET(SRCS
   cmBootstrapCommands.cxx
   cmCacheManager.cxx
   cmCacheManager.h
+  cmCommand.cxx
+  cmCommand.h
   cmCommands.cxx
   cmCommands.h
   cmCommandArgumentLexer.cxx
@@ -175,6 +177,8 @@ SET(SRCS
   cmLocalGenerator.cxx
   cmLocalGenerator.h
   cmLocalUnixMakefileGenerator3.cxx
+  cmLuaUtils.h
+  cmLuaUtils.cxx
   cmMakeDepend.cxx
   cmMakeDepend.h
   cmMakefile.cxx
@@ -247,7 +251,7 @@ IF (WIN32)
     cmCallVisualStudioMacro.cxx
     cmCallVisualStudioMacro.h
     )
-
+  
   IF(NOT UNIX)
     SET(SRCS ${SRCS}
       cmGlobalBorlandMakefileGenerator.cxx
@@ -290,6 +294,7 @@ ADD_LIBRARY(CMakeLib ${SRCS})
 TARGET_LINK_LIBRARIES(CMakeLib cmsys
   ${CMAKE_EXPAT_LIBRARIES} ${CMAKE_ZLIB_LIBRARIES}
   ${CMAKE_TAR_LIBRARIES} ${CMAKE_COMPRESS_LIBRARIES}
+  ${CMAKE_LUA_LIBRARIES}
   ${CMAKE_CURL_LIBRARIES})
 
 # On Apple we need Carbon
@@ -309,6 +314,7 @@ INCLUDE_DIRECTORIES(
   "${CMAKE_SOURCE_DIR}/Source/CTest"
   ${CMAKE_XMLRPC_INCLUDES}
   ${CMAKE_CURL_INCLUDES}
+  ${CMAKE_LUA_INCLUDES}
   )
 #
 # Sources for CTestLib

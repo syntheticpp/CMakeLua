@@ -44,6 +44,10 @@ public:
   cmGlobalGenerator();
   virtual ~cmGlobalGenerator();
   
+
+  // TODO cleanup: getter/setter
+  void* lua_state;
+  
   ///! Create a local generator appropriate to this Global Generator
   virtual cmLocalGenerator *CreateLocalGenerator();
 

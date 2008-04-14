@@ -20,11 +20,53 @@
 #include "cmTest.h"
 #include "cmPropertyDefinition.h"
 
-//----------------------------------------------------------------------------
+#include "cmLuaUtils.h"
+
+
+static int cmGetPropertyLua(lua_State *L) 
+{
+  // build a list file function 
+  cmListFileFunction lff;
+  cmExecutionStatus status;
+  
+  lff.Name = lua_tostring(L, lua_upvalueindex(1));
+  
+  // stick in a temp var
+  lff.Arguments.push_back
+    (cmListFileArgument("__GET_PROPERTY_LUA_TEMP", false, 0, 0));
+
+  int i;
+  int top = lua_gettop(L);
+  for (i = 1; i <= top; i++) 
+    { 
+    const char *arg = lua_tostring(L, i);
+    lff.Arguments.push_back(cmListFileArgument(arg, false,
+                                               0, 0));
+    }
+
+  // get the current makefile
+  lua_pushstring(L,"cmCurrentMakefile");
+  lua_gettable(L, LUA_REGISTRYINDEX);
+  cmMakefile *mf = static_cast<cmMakefile *>(lua_touserdata(L,-1));
+
+  // pass it to ExecuteCommand
+  mf->ExecuteCommand(lff, status);
+  // What should I do with status?
+
+  // get the return value
+  const char *result = mf->GetDefinition("__GET_PROPERTY_LUA_TEMP");
+  lua_pushstring(L, result);
+
+  return 1;  /* number of results */
+}
+
+// special lua code
 cmGetPropertyCommand::cmGetPropertyCommand()
 {
   this->InfoType = OutValue;
+  this->LuaFunction = cmGetPropertyLua;
 }
+
 
 //----------------------------------------------------------------------------
 bool cmGetPropertyCommand

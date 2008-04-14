@@ -41,6 +41,17 @@
 
 #include <ctype.h> // for isspace
 
+#include "cmLuaUtils.h"
+
+extern "C" {
+#include "lua.h"
+#include "lauxlib.h"
+#include "lualib.h"
+}
+
+#include "cmLuaUtils.h"
+
+
 // default is not to be building executables
 cmMakefile::cmMakefile()
 {
@@ -135,6 +146,55 @@ cmMakefile::cmMakefile(const cmMakefile& mf)
   this->PreOrder = mf.PreOrder;
   this->ListFileStack = mf.ListFileStack;
   this->Initialize();
+}
+
+//----------------------------------------------------------------------------550
+void cmMakefile::InitializeLuaState()
+{
+  lua_State* L = this->GetCMakeInstance()->GetLuaState();
+  if (L) 
+    {     
+    registerMemberFunction(L, this, &cmMakefile::GetDefinition, "GetDefinition");
+    registerMemberFunction(L, this, &cmMakefile::AddDefinition, "AddDefinition");
+
+    // Run utility helper
+    int error = RunLuaFile(this->GetModulesFile("lua/LuaPublicAPIHelper.lua"));
+    if(0 != error)
+      {
+        this->IssueMessage(cmake::FATAL_ERROR, 
+                           "Could not load LuaPublicAPIHelper.lua. Perhaps your CMake installation is not installed correctly.");
+        cmSystemTools::SetFatalErrorOccured();
+      }
+    }
+}
+
+
+int cmMakefile::RunLuaFile(const std::string& filename)
+{
+  int error = 0;
+  lua_State* L = this->GetCMakeInstance()->GetLuaState();
+  if (!filename.empty())
+    {
+    //std::cerr << "Path to runLuaFile file is: " << filename << std::endl;
+   
+    int error = luaL_loadfile(L, filename.c_str());
+    if ( error==0 )
+      {
+      // execute Lua program
+      error = lua_pcall(L, 0, 0, 0);
+      if ( error!=0 )
+        {
+        std::cerr << "-- " << lua_tostring(L, -1) << std::endl;
+        lua_pop(L, 1);
+        }
+      }
+    else
+      {
+      std::cerr << "-- " << lua_tostring(L, -1) << std::endl;
+      lua_pop(L, 1);
+      }
+    }
+  return error;
 }
 
 //----------------------------------------------------------------------------
@@ -471,9 +531,12 @@ bool cmMakefile::ReadListFile(const char* filename_in,
       }
     }
 
+  bool endScopeNicely = false;
+
   // keep track of the current file being read
   if (filename)
     {
+    endScopeNicely = true;
     if(this->cmCurrentListFile != filename)
       {
       this->cmCurrentListFile = filename;
@@ -518,35 +581,84 @@ bool cmMakefile::ReadListFile(const char* filename_in,
     {
     *fullPath=filenametoread;
     }
-  cmListFile cacheFile;
-  if( !cacheFile.ParseFile(filenametoread, requireProjectCommand, this) )
+
+
+  // *** start of listfile code
+  // *** Here is the core listfile reading code ***
+  // is it a lua file ?
+  if (cmSystemTools::GetFilenameLastExtension(filenametoread) == ".lua")
     {
-    // pop the listfile off the stack
-    this->ListFileStack.pop_back();
-    if(fullPath!=0)
+    lua_State *L = this->GetCMakeInstance()->GetLuaState();
+    this->ListFiles.push_back(filenametoread);
+
+    // get the current makefile setting
+    lua_pushstring(L,"cmCurrentMakefile");
+    lua_gettable(L, LUA_REGISTRYINDEX);
+    cmMakefile *previousMF = 
+      static_cast<cmMakefile *>(lua_touserdata(L,-1));
+
+    // make sure the current Makefile is set
+    lua_pushstring(L,"cmCurrentMakefile");
+    lua_pushlightuserdata(L, this);
+    lua_settable(L, LUA_REGISTRYINDEX);
+
+    // load and run the lua
+    int result = luaL_dofile(L, filenametoread);
+
+    // restore the prior makefile setting
+    lua_pushstring(L,"cmCurrentMakefile");
+    lua_pushlightuserdata(L, previousMF);
+    lua_settable(L, LUA_REGISTRYINDEX);
+
+    if (result)
       {
-      *fullPath = "";
+      cmSystemTools::Error("Error in Lua code: ",
+                           lua_tostring(L, -1));
+      lua_pop(L, 1);  /* pop error message from the stack */
+
+      // pop the listfile off the stack
+      this->ListFileStack.pop_back();
+      if(fullPath!=0)
+        {
+        *fullPath = "";
+        }
+      this->AddDefinition("CMAKE_PARENT_LIST_FILE", currentParentFile.c_str());
+      this->AddDefinition("CMAKE_CURRENT_LIST_FILE", currentFile.c_str());
+      return false;
       }
-    this->AddDefinition("CMAKE_PARENT_LIST_FILE", currentParentFile.c_str());
-    this->AddDefinition("CMAKE_CURRENT_LIST_FILE", currentFile.c_str());
-    return false;
     }
-  // add this list file to the list of dependencies
-  this->ListFiles.push_back( filenametoread);
-  bool endScopeNicely = filename? true: false;
-  const size_t numberFunctions = cacheFile.Functions.size();
-  for(size_t i =0; i < numberFunctions; ++i)
+  else
     {
-    cmExecutionStatus status;
-    this->ExecuteCommand(cacheFile.Functions[i],status);
-    if (status.GetReturnInvoked() ||
+    cmListFile cacheFile;
+    if( !cacheFile.ParseFile(filenametoread, requireProjectCommand, this) )
+      {
+      // pop the listfile off the stack
+      this->ListFileStack.pop_back();
+      if(fullPath!=0)
+        {
+        *fullPath = "";
+        }
+      this->AddDefinition("CMAKE_PARENT_LIST_FILE", currentParentFile.c_str());
+      this->AddDefinition("CMAKE_CURRENT_LIST_FILE", currentFile.c_str());
+      return false;
+      }
+    // add this list file to the list of dependencies
+    this->ListFiles.push_back( filenametoread);
+    const size_t numberFunctions = cacheFile.Functions.size();
+    for(size_t i =0; i < numberFunctions; ++i)
+      {
+      cmExecutionStatus status;
+      this->ExecuteCommand(cacheFile.Functions[i],status);
+      if (status.GetReturnInvoked() ||
         cmSystemTools::GetFatalErrorOccured() )
-      {
-      // Exit early from processing this file.
-      endScopeNicely = false;
-      break;
+        {
+        // Exit early from processing this file.
+        endScopeNicely = false;
+        break;
+        }
       }
     }
+  // *** end of listfile code
 
   // send scope ended to and function blockers
   if (endScopeNicely)

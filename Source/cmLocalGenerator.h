@@ -335,6 +335,7 @@ protected:
       definition.  Issues a warning.  */
   virtual bool CheckDefinition(std::string const& define) const;
 
+  friend class cmGlobalGenerator;
   cmMakefile *Makefile;
   cmGlobalGenerator *GlobalGenerator;
   // members used for relative path function ConvertToMakefilePath

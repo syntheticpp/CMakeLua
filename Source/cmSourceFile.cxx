@@ -170,6 +170,20 @@ bool cmSourceFile::FindFullPath()
         return true;
         }
       }
+
+    // TODO move to header
+    std::vector<std::string> listExt;
+    listExt.push_back("txt");
+    listExt.push_back("lua");
+    for(std::vector<std::string>::const_iterator ei = listExt.begin();
+        ei != listExt.end(); ++ei)
+      {
+      if(this->TryFullPath(tryPath.c_str(), ei->c_str()))
+        {
+        return true;
+        }
+      }
+
     }
 
   cmOStringStream e;
