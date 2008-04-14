@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmSystemTools.h,v $
   Language:  C++
-  Date:      $Date: 2008-04-14 15:43:45 $
-  Version:   $Revision: 1.151 $
+  Date:      $Date: 2008-04-14 19:02:34 $
+  Version:   $Revision: 1.152 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -392,6 +392,14 @@ public:
                           std::string const& oldRPath,
                           std::string const& newRPath,
                           std::string* emsg = 0);
+
+  /** Try to remove the RPATH from an ELF binary.  */
+  static bool RemoveRPath(std::string const& file, std::string* emsg = 0);
+
+  /** Check whether the RPATH in an ELF binary contains the path
+      given.  */
+  static bool CheckRPath(std::string const& file,
+                         std::string const& newRPath);
 
 private:
   static bool s_ForceUnixPaths;
