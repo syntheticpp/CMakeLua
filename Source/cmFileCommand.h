@@ -3,8 +3,13 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmFileCommand.h,v $
   Language:  C++
+<<<<<<< cmFileCommand.h
   Date:      $Date: 2008/03/01 17:51:07 $
   Version:   $Revision: 1.35 $
+=======
+  Date:      $Date: 2008-04-14 19:02:44 $
+  Version:   $Revision: 1.36 $
+>>>>>>> 1.36
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -171,7 +176,9 @@ protected:
   bool HandleRelativePathCommand(std::vector<std::string> const& args);
   bool HandleCMakePathCommand(std::vector<std::string> const& args,
                               bool nativePath);
-  bool HandleChrpathCommand(std::vector<std::string> const& args);
+  bool HandleRPathChangeCommand(std::vector<std::string> const& args);
+  bool HandleRPathCheckCommand(std::vector<std::string> const& args);
+  bool HandleRPathRemoveCommand(std::vector<std::string> const& args);
 
   // file(INSTALL ...) related functions
   bool HandleInstallCommand(std::vector<std::string> const& args);
